@@ -21,8 +21,9 @@ namespace Push
             // Hydrate the Source and Target Listboxes
             LoadSource();
             LoadTarget();
-        }
+        } // END_METHOD
 
+        // Load Target ListView...
         private bool LoadTarget()
         {
             // Fetch all of the files in the source filder...
@@ -77,8 +78,8 @@ namespace Push
 
             return true;
         } // END_METHOD
-
         
+        // Load Source ListView...
         private bool LoadSource()
         {
             
@@ -133,11 +134,9 @@ namespace Push
             return true;
         } // END_METHOD
 
-
-        // Copy files from Source folder to Target folder...
+        // Copy Files from Source folder to Target folder...
         private void button1_Click(object sender, EventArgs e)
         {
-
             // Decl...
             string srcfileName;
             string destFileName;
@@ -204,19 +203,53 @@ namespace Push
 
             if (dupeFileCount > 0)
             {
-                string message = string.Format("There are {0} duplicate files in the target folder. \n\n", dupeFileCount);
-                message += "Select Cancel to stop copy";
+                // ADD TaskDialog HERE...
 
-                string caption = "Duplicates Found";
-                MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
-                //...MessageBoxButtons buttons = MessageBoxButtons.YesNo; 
-                DialogResult result;
+                PSTaskDialog.cTaskDialog.ForceEmulationMode = checkBox1.Checked;
+                try { PSTaskDialog.cTaskDialog.EmulatedFormWidth = Convert.ToInt32(edWidth.Text); }
+                catch (Exception) { PSTaskDialog.cTaskDialog.EmulatedFormWidth = 450; }
 
-                // Displays the MessageBox.
-                result = MessageBox.Show(message, caption, buttons);
+                DialogResult res =
+                  PSTaskDialog.cTaskDialog.ShowTaskDialogBox(
+                        this,
+                        "Duplicate Files Found",
+                        "There were {0} duplicate files found in the Target Folder.",
+                        "What would you like to do?",
+                        "Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value.  When multiple copies exist the latest duplicate will always have the highest value.\n\nThese settings may be modified in the Configuration Dialog.",
+                    //"Optional footer text with an icon can be included",
+                        string.Empty,
+                        "Don't show me this message again",
+                    //"Radio Option 1|Radio Option 2|Radio Option 3",
+                        string.Empty,
+                    //"Command &Button 1|Command Button 2|Command Button 3|Command Button 4|Command Button 5",
+                        "Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
+                    //...PSTaskDialog.eTaskDialogButtons.OKCancel,
+                        PSTaskDialog.eTaskDialogButtons.None,
+                        PSTaskDialog.eSysIcons.Information,
+                        PSTaskDialog.eSysIcons.Warning);
+//                UpdateResult(res);
 
-                if (result == System.Windows.Forms.DialogResult.Cancel)
+                    lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
+                    "RadioButtonIndex : " + PSTaskDialog.cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
+                    "CommandButtonIndex : " + PSTaskDialog.cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
+                    "Verify CheckBox : " + (PSTaskDialog.cTaskDialog.VerificationChecked ? "true" : "false");
+
+                    // Force exit... << DEBUG ONLY >>
                     return;
+
+                //string message = string.Format("There are {0} duplicate files in the target folder. \n\n", dupeFileCount);
+                //message += "Select Cancel to stop copy";
+
+                //string caption = "Duplicates Found";
+                //MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+                ////...MessageBoxButtons buttons = MessageBoxButtons.YesNo; 
+                //DialogResult result;
+
+                //// Displays the MessageBox.
+                //result = MessageBox.Show(message, caption, buttons);
+
+                //if (result == System.Windows.Forms.DialogResult.Cancel)
+                //    return;
             }
 
 
@@ -293,7 +326,7 @@ namespace Push
 
         } // END_METHOD
 
-        // Clear Target Folder...
+        // DEVELOPMENT ONLY -- Reset Application...
         private void button2_Click(object sender, EventArgs e){
 
             //-----------------------------------------------------------------
@@ -362,11 +395,11 @@ namespace Push
             LoadTarget();
         }
 
+        // Empty... 
         private void Form1_Load(object sender, EventArgs e)
         {
 
         } // END_METHOD
-
 
         #region Constants
 
