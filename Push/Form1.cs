@@ -142,13 +142,11 @@ namespace Push
         private void button1_Click(object sender, EventArgs e)
         {
             // Decl...
-            string srcfileName;
-            string destFileName;
             ArrayList fileSourceArrayList = new ArrayList();
             
             // Paths...
-            string sourcePath = @"S:\";  //string sourcePath = @"C:\DEV_SOURCE";
-            string targetPath = @"T:\";  //string targetPath = @"C:\DEV_TARGET";
+            string sourcePath = @"S:\";
+            string targetPath = @"T:\";
             //string targetPath = @"\\Ml\XP_TARGET";
 
             // Validation..
@@ -178,8 +176,6 @@ namespace Push
                     fileSourceArrayList.Add(s);
             } // END_FOREACH
 
-
-
             // Build a list of files on the target folder...
             string[] fileTargetStrArray = System.IO.Directory.GetFiles(targetPath);
             int dupeFileCount = 0;
@@ -203,7 +199,6 @@ namespace Push
 
                 } // END_FOREACH_INNER
             } // END_FOREACH_OUTER
-
 
             if (dupeFileCount <= 0)
             {
@@ -246,28 +241,19 @@ namespace Push
                 //-------------------------------------------------------------
                 // Based on the configuration above, DialogResult and RadioButtonResult is ignored...
 
-                #region Values Not Used
-                // None = 0 | OK = 1 | Cancel = 2 | Abort = 3 | Retry = 4 | Ignore = 5 | Yes = 6 | No = 7...
-                // When eTaskDialogButtons = None, the return value will allways be 1 (OK)...
-                string result = Enum.GetName(typeof(DialogResult), res);
-                // When the radio button argument = string.Empty, the return value will always be 0...
-                int radio = cTaskDialog.RadioButtonResult; // Zero Index
-                #endregion
-
-                // 0 = Overwrite | 1 = Copy/Rename All Duplicates | 2 = Skip All Duplicates | 3 = Cancel Copy...
-                int commandBtn = PSTaskDialog.cTaskDialog.CommandButtonResult; // Zero Index
-
+                // Use this value to prevent the TaskDialog from displaying...
                 bool verify = PSTaskDialog.cTaskDialog.VerificationChecked;
 
                 switch ((commandResult)cTaskDialog.CommandButtonResult)
                 {
-                    case commandResult.Rename: // "Copy/Rename All Duplicates": 
+                    case commandResult.Rename:
                         break;
-                    case commandResult.Skip: // "Skip All Duplicates": 
+                    case commandResult.Skip:
+                        fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, targetPath, sourcePath);
                         break;
-                    case commandResult.Cancel: // "Cancel Copy": 
+                    case commandResult.Cancel:
                         return;
-                    case commandResult.Overwrite: // "Overwrite All Duplicates":
+                    case commandResult.Overwrite:
                     default:
                         CopyOverwrite(fileSourceArrayList, targetPath);
                         break;
@@ -276,7 +262,6 @@ namespace Push
 
             }
 
-
             /*----------------------------------------------------------------- 
              * If we get here, all of the files have been copied from the source folder to 
              * the target folder.
@@ -284,9 +269,10 @@ namespace Push
              * Now verify and remove each file has been copied.
              *----------------------------------------------------------------*/
 
-            // Build a list of files on the target folder...
-            //string[] fileTargetStrArray = System.IO.Directory.GetFiles(targetPath);
+            // Rebuild the Target file list with the new files that have been copied...
+            fileTargetStrArray = System.IO.Directory.GetFiles(targetPath);
 
+            #region [ DELETE COPIED FILES ]
             // OUTER LOOP -- Iterate over each file in the target list...
             foreach (string t in fileTargetStrArray)
             {
@@ -316,9 +302,10 @@ namespace Push
                     listBox1.Items.Add("CleanUp: Deleting " + s);
                     listBox1.Update();
                     break; // Exit innter loop...
-                
+
                 } // END_FOREACH_INNER
             } // END_FOREACH_OUTER
+            #endregion
 
             listBox1.Items.Add("Copy Complete");
             listBox1.Update();
@@ -327,6 +314,78 @@ namespace Push
             LoadSource();
             LoadTarget();
 
+        } // END_METHOD
+
+        private ArrayList SkipDuplicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
+        {
+            /*  
+             *  If a duplicate is SKIPPED, it should NOT be deleted from the source folder. 
+             *  We need to return a revised list of files that are only the ones that should be deleted.
+             *  
+             *  fileSourceArrayList
+             */
+            bool okToCopy = true;
+            ArrayList deleteSourceArrayList = new ArrayList();
+
+            foreach (string s in fileSourceArrayList)
+            {
+                FileInfo sourceFileInfo = new FileInfo(s);
+
+                // INNER_LOOP -- Iterate over each file in the source list...
+                foreach (string t in fileTargetStrArray)
+                {
+                    //FileInfo sourceFileInfo = new FileInfo(s);
+                    //if (targetFileInfo.Name.Equals(sourceFileInfo.Name, StringComparison.Ordinal))
+                    FileInfo targetFileInfo = new FileInfo(t);
+                    if (sourceFileInfo.Name.Equals(targetFileInfo.Name, StringComparison.Ordinal))
+                    {
+                        // If we get here, the file esists in the target folder.
+                        //      Skip this file...
+
+                        okToCopy = false;
+                        break; // Exit Inner loop...
+
+                    } // END_IF
+
+                } // END_FOREACH_INNER
+
+                if (okToCopy)
+                {
+                    // Copy the source file to the target folder...
+                    string sourcefileName = Path.GetFileName(s);
+                    string destFileName = Path.Combine(targetPath, sourcefileName);
+    
+
+
+                    File.Copy(s, destFileName, true);
+
+                    
+                    
+                    // Update the lisst of files that should be deleted from the source folder...
+                    //      Verify that 't' is the correct file name...
+                    deleteSourceArrayList.Add(s);
+
+
+
+                    // Update UI...
+                    listBox1.Items.Add("Copying " + s + " to " + destFileName);
+                    listBox1.Update();
+                }
+
+                // Raise the okToCopy flag...
+                okToCopy = true;
+
+            } // END_FOREACH_OUTER
+
+
+
+
+
+
+
+
+            return deleteSourceArrayList;
+            //...throw new NotImplementedException();
         } // END_METHOD
 
         private void CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
@@ -343,7 +402,7 @@ namespace Push
                 listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
                 listBox1.Update();
             }
-        }
+        } // END_METHOD
 
         // DEVELOPMENT ONLY -- Reset Application...
         private void button2_Click(object sender, EventArgs e){
@@ -412,7 +471,7 @@ namespace Push
             LoadSource();
 
             LoadTarget();
-        }
+        } // END_METHOD
 
         // Empty... 
         private void Form1_Load(object sender, EventArgs e)
@@ -454,7 +513,7 @@ namespace Push
         private const uint SHGFI_SHELLICONSIZE = 0x000000004;     // get shell size icon
         private const uint SHGFI_PIDL = 0x000000008;     // pszPath is a pidl
         private const uint SHGFI_USEFILEATTRIBUTES = 0x000000010;     // use passed dwFileAttribute
-       
+
         #endregion
 
         public static string GetFileTypeDescription(string fileNameOrExtension)
@@ -489,10 +548,7 @@ namespace Push
 
         
         [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
-        public static extern long StrFormatByteSize(
-                long fileSize
-                , [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer
-                , int bufferSize);
+        public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
 
         /// <summary>
         /// Converts a numeric value into a string that represents the number expressed as a size value in bytes, kilobytes, megabytes, or gigabytes, depending on the size.
@@ -504,7 +560,7 @@ namespace Push
             StringBuilder sb = new StringBuilder(11);
             StrFormatByteSize(filesize, sb, sb.Capacity);
             return sb.ToString();
-        }
+        } // END_METHOD
 
         private void TestOnly_Click(object sender, EventArgs e)
         {
@@ -531,15 +587,16 @@ namespace Push
                     PSTaskDialog.eSysIcons.Information,
                     PSTaskDialog.eSysIcons.Warning);
                     UpdateResult(res);  
-        }
+        } // END_METHOD
         
         //--------------------------------------------------------------------------------
-        void UpdateResult(DialogResult res)
+        void UpdateResult(DialogResult res) 
         {
             lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
                             "RadioButtonIndex : " + PSTaskDialog.cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
                             "CommandButtonIndex : " + PSTaskDialog.cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
                             "Verify CheckBox : " + (PSTaskDialog.cTaskDialog.VerificationChecked ? "true" : "false");
-        }
-    }
-}
+        } // END_METHOD
+
+    } // END_CLASS
+} // END_NAMESPACE
