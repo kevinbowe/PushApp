@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
+using PSTaskDialog;
 
 
 namespace Push
@@ -134,6 +135,9 @@ namespace Push
             return true;
         } // END_METHOD
 
+
+        enum commandResult { Overwrite, Rename, Skip, Cancel }; 
+
         // Copy Files from Source folder to Target folder...
         private void button1_Click(object sender, EventArgs e)
         {
@@ -201,21 +205,25 @@ namespace Push
             } // END_FOREACH_OUTER
 
 
-            if (dupeFileCount > 0)
+            if (dupeFileCount <= 0)
             {
-                // ADD TaskDialog HERE...
-
-                PSTaskDialog.cTaskDialog.ForceEmulationMode = checkBox1.Checked;
-                try { PSTaskDialog.cTaskDialog.EmulatedFormWidth = Convert.ToInt32(edWidth.Text); }
-                catch (Exception) { PSTaskDialog.cTaskDialog.EmulatedFormWidth = 450; }
+                CopyOverwrite(fileSourceArrayList, targetPath/*, out srcfileName, out destFileName*/);
+            }
+            else
+            {
+                cTaskDialog.ForceEmulationMode = checkBox1.Checked;
+                try { cTaskDialog.EmulatedFormWidth = Convert.ToInt32(edWidth.Text); }
+                catch (Exception) { cTaskDialog.EmulatedFormWidth = 450; }
 
                 DialogResult res =
-                  PSTaskDialog.cTaskDialog.ShowTaskDialogBox(
+                        cTaskDialog.ShowTaskDialogBox(
                         this,
                         "Duplicate Files Found",
-                        "There were {0} duplicate files found in the Target Folder.",
+                        string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
                         "What would you like to do?",
-                        "Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value.  When multiple copies exist the latest duplicate will always have the highest value.\n\nThese settings may be modified in the Configuration Dialog.",
+                        "Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value. " +
+                            "When multiple copies exist the latest duplicate will always have the highest value.\n\n" +
+                            "These settings may be modified in the Configuration Dialog.",
                     //"Optional footer text with an icon can be included",
                         string.Empty,
                         "Don't show me this message again",
@@ -223,56 +231,51 @@ namespace Push
                         string.Empty,
                     //"Command &Button 1|Command Button 2|Command Button 3|Command Button 4|Command Button 5",
                         "Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
-                    //...PSTaskDialog.eTaskDialogButtons.OKCancel,
-                        PSTaskDialog.eTaskDialogButtons.None,
-                        PSTaskDialog.eSysIcons.Information,
-                        PSTaskDialog.eSysIcons.Warning);
-//                UpdateResult(res);
+                    //...eTaskDialogButtons.OKCancel,
+                        eTaskDialogButtons.None,
+                        eSysIcons.Information,
+                        eSysIcons.Warning);
 
-                    lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
-                    "RadioButtonIndex : " + PSTaskDialog.cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
-                    "CommandButtonIndex : " + PSTaskDialog.cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
-                    "Verify CheckBox : " + (PSTaskDialog.cTaskDialog.VerificationChecked ? "true" : "false");
+                // __DEBUG_CODE__
+                // Get the results...
+                lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
+                "RadioButtonIndex : " + cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
+                "CommandButtonIndex : " + cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
+                "Verify CheckBox : " + (cTaskDialog.VerificationChecked ? "true" : "false");
 
-                    // Force exit... << DEBUG ONLY >>
-                    return;
+                //-------------------------------------------------------------
+                // Based on the configuration above, DialogResult and RadioButtonResult is ignored...
 
-                //string message = string.Format("There are {0} duplicate files in the target folder. \n\n", dupeFileCount);
-                //message += "Select Cancel to stop copy";
+                #region Values Not Used
+                // None = 0 | OK = 1 | Cancel = 2 | Abort = 3 | Retry = 4 | Ignore = 5 | Yes = 6 | No = 7...
+                // When eTaskDialogButtons = None, the return value will allways be 1 (OK)...
+                string result = Enum.GetName(typeof(DialogResult), res);
+                // When the radio button argument = string.Empty, the return value will always be 0...
+                int radio = cTaskDialog.RadioButtonResult; // Zero Index
+                #endregion
 
-                //string caption = "Duplicates Found";
-                //MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
-                ////...MessageBoxButtons buttons = MessageBoxButtons.YesNo; 
-                //DialogResult result;
+                // 0 = Overwrite | 1 = Copy/Rename All Duplicates | 2 = Skip All Duplicates | 3 = Cancel Copy...
+                int commandBtn = PSTaskDialog.cTaskDialog.CommandButtonResult; // Zero Index
 
-                //// Displays the MessageBox.
-                //result = MessageBox.Show(message, caption, buttons);
+                bool verify = PSTaskDialog.cTaskDialog.VerificationChecked;
 
-                //if (result == System.Windows.Forms.DialogResult.Cancel)
-                //    return;
+                switch ((commandResult)cTaskDialog.CommandButtonResult)
+                {
+                    case commandResult.Rename: // "Copy/Rename All Duplicates": 
+                        break;
+                    case commandResult.Skip: // "Skip All Duplicates": 
+                        break;
+                    case commandResult.Cancel: // "Cancel Copy": 
+                        return;
+                    case commandResult.Overwrite: // "Overwrite All Duplicates":
+                    default:
+                        CopyOverwrite(fileSourceArrayList, targetPath);
+                        break;
+
+                } // END SWITCH
+
             }
 
-
-
-
-
-
-
-
-
-
-            // Copy files...
-            foreach (string s in fileSourceArrayList )
-            {
-                srcfileName = Path.GetFileName(s);
-                destFileName = Path.Combine(targetPath, srcfileName);
-                
-                File.Copy(s, destFileName, true);
-
-                // Update UI...
-                listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
-                listBox1.Update();
-            }
 
             /*----------------------------------------------------------------- 
              * If we get here, all of the files have been copied from the source folder to 
@@ -325,6 +328,22 @@ namespace Push
             LoadTarget();
 
         } // END_METHOD
+
+        private void CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
+        {
+            // Copy files...
+            foreach (string s in fileSourceArrayList)
+            {
+                string srcfileName = Path.GetFileName(s);
+                string destFileName = Path.Combine(targetPath, srcfileName);
+
+                File.Copy(s, destFileName, true);
+
+                // Update UI...
+                listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
+                listBox1.Update();
+            }
+        }
 
         // DEVELOPMENT ONLY -- Reset Application...
         private void button2_Click(object sender, EventArgs e){
