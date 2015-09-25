@@ -487,7 +487,7 @@ namespace Push
         {
             lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
                             "RadioButtonIndex : " + cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
-                            "CommandButtonIndex : " cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
+                            "CommandButtonIndex : " + cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
                             "Verify CheckBox : " + (cTaskDialog.VerificationChecked ? "true" : "false");
         }
     }
