@@ -456,12 +456,12 @@ namespace Push
 
         private void TestOnly_Click(object sender, EventArgs e)
         {
-            PSTaskDialog.cTaskDialog.ForceEmulationMode = checkBox1.Checked;
-            try { PSTaskDialog.cTaskDialog.EmulatedFormWidth = Convert.ToInt32(edWidth.Text); }
-            catch (Exception) { PSTaskDialog.cTaskDialog.EmulatedFormWidth = 450; }
+            cTaskDialog.ForceEmulationMode = checkBox1.Checked;
+            try { cTaskDialog.EmulatedFormWidth = Convert.ToInt32(edWidth.Text); }
+            catch (Exception) { cTaskDialog.EmulatedFormWidth = 450; }
 
             DialogResult res =
-              PSTaskDialog.cTaskDialog.ShowTaskDialogBox(
+              cTaskDialog.ShowTaskDialogBox(
                     this,
                     "Duplicate Files Found",
                     "There were {0} duplicate files found in the Target Folder.",
@@ -475,9 +475,9 @@ namespace Push
                     //"Command &Button 1|Command Button 2|Command Button 3|Command Button 4|Command Button 5",
                     "Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
                     //...PSTaskDialog.eTaskDialogButtons.OKCancel,
-                    PSTaskDialog.eTaskDialogButtons.None,
-                    PSTaskDialog.eSysIcons.Information,
-                    PSTaskDialog.eSysIcons.Warning);
+                    eTaskDialogButtons.None,
+                    eSysIcons.Information,
+                    eSysIcons.Warning);
                     UpdateResult(res);  
         }
         
@@ -485,9 +485,9 @@ namespace Push
         void UpdateResult(DialogResult res)
         {
             lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
-                            "RadioButtonIndex : " + PSTaskDialog.cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
-                            "CommandButtonIndex : " + PSTaskDialog.cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
-                            "Verify CheckBox : " + (PSTaskDialog.cTaskDialog.VerificationChecked ? "true" : "false");
+                            "RadioButtonIndex : " + cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
+                            "CommandButtonIndex : " cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
+                            "Verify CheckBox : " + (cTaskDialog.VerificationChecked ? "true" : "false");
         }
     }
 }
