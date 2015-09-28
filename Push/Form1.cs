@@ -37,7 +37,6 @@ namespace Push
 				return false;
 			}
 
-
 			string[] filesStrArray = Directory.GetFiles(targetPath);
 
 			listView2.Items.Clear();
@@ -59,7 +58,7 @@ namespace Push
 
 			} // END_FOREACH
 
-			foreach (string s in fileSourceArrayList/*filesStrArray*/)
+			foreach (string s in fileSourceArrayList)
 			{
 
 				FileInfo targetFileInfo = new FileInfo(s);
@@ -136,8 +135,6 @@ namespace Push
 			return true;
 		} // END_METHOD
 
-
-
 		enum commandResult { Overwrite, Rename, Skip, Cancel }; 
 
 		// Copy Files from Source folder to Target folder...
@@ -204,14 +201,13 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				CopyOverwrite(fileSourceArrayList, targetPath/*, out srcfileName, out destFileName*/);
+				CopyOverwrite(fileSourceArrayList, targetPath);
 			}
 			else
 			{
-				cTaskDialog.ForceEmulationMode = checkBox1.Checked;
-				try { cTaskDialog.EmulatedFormWidth = Convert.ToInt32(edWidth.Text); }
-				catch (Exception) { cTaskDialog.EmulatedFormWidth = 450; }
-
+				cTaskDialog.ForceEmulationMode = true; 
+				cTaskDialog.EmulatedFormWidth = 450;
+				
 				DialogResult res =
 						cTaskDialog.ShowTaskDialogBox(
 						this,
@@ -221,24 +217,14 @@ namespace Push
 						"Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value. " +
 							"When multiple copies exist the latest duplicate will always have the highest value.\n\n" +
 							"These settings may be modified in the Configuration Dialog.",
-					//"Optional footer text with an icon can be included",
 						string.Empty,
 						"Don't show me this message again",
-					//"Radio Option 1|Radio Option 2|Radio Option 3",
 						string.Empty,
-					//"Command &Button 1|Command Button 2|Command Button 3|Command Button 4|Command Button 5",
 						"Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
-					//...eTaskDialogButtons.OKCancel,
 						eTaskDialogButtons.None,
 						eSysIcons.Information,
 						eSysIcons.Warning);
 
-				// __DEBUG_CODE__
-				// Get the results...
-				lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
-				"RadioButtonIndex : " + cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
-				"CommandButtonIndex : " + cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
-				"Verify CheckBox : " + (cTaskDialog.VerificationChecked ? "true" : "false");
 
 				//-------------------------------------------------------------
 				// Based on the configuration above, DialogResult and RadioButtonResult is ignored...
@@ -316,12 +302,7 @@ namespace Push
 			// Update Source & Target Listboxes...
 			LoadSource();
 			LoadTarget();
-
 		}
-
-
-
-
 
 		private void RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
 		{
@@ -330,8 +311,6 @@ namespace Push
 			int matchInteger = 0;
 
 			string pattern = @"(?<Prefix>(\w*))\((?<integer>\d*)\)";
-			
-			/*** ISSUE:  The okToRename flag is getting raised when the target file does not exist... ***/
 
 			// OUTER LOOP
 			// Interate over each file in the source folder...
@@ -353,7 +332,6 @@ namespace Push
 					string targetFileExtension = Path.GetExtension(t);
 					string targetFileName = Path.GetFileName(t);
 
-
 					// Compair source and target filename...
 					if (targetFileName.Equals(sourceFileName, StringComparison.Ordinal))
 					{
@@ -363,7 +341,6 @@ namespace Push
 
 					//------------------------------------------------------------------------
 					// If we get here, the source and target filenames are not the same...
-
 
 					Match match = Regex.Match(targetFileName, pattern);
 
@@ -401,97 +378,32 @@ namespace Push
 					// If we get here, target integer is less than the current sufficInteger...
 
 					continue;
-
-					/* Compare the source and target filename...
-					 * Check to see if the file names match exactly
-					 *		IF TRUE:	Raise the rename flag.
-					 *					Continue.
-					 *
-					 * Use RegEx to parse the target file into prefix and suffix-integer.
-					 *	If the target file looks like this a match will be found.  The integer must be surrounded with '()' 
-					 *	The suffix-integer group will have an integer value.  AA003(4)
-					 *	
-					 *	If the target file looks like this no match will be made:
-					 *		[ AA003 | hello My Name is | AA003 123 ]
-					 * 
-					 * Fetch the suffux-integer.
-					 * Compare the current suffix-integer to the saved suffix-integer.
-					 * If the current is >= to the saved
-					 *		IF TRUE:	overwrite the saved with the current value.
-					 *					raise the rename flag
-					 *					Continue
-					 *		IF FALSE:	discard the current value
-					 *					Continue
-					 */ 
-
 				} // END_INNER_LOOP
-
-				/* When the INNER LOOP exits...
-				 * 
-				 * Check the renme flag
-				 *		IF TRUE:	
-				 *					increment the suffix-integer.
-				 *					construct a new target file name like this:  string.format("{0}({1}).{2}",targetFileName, suffix-integer, fileExtension)
-				 *					--
-				 *					Copy the file.
-				 *		IF FALSE:
-				 *					Copy the file as is
-				 */
 
 				if (okToRename)
 				{
 					// Copy the source file to the target folder...
 					string sourcefileName = Path.GetFileNameWithoutExtension(s);
-
-					sourcefileName = string.Format("{0}({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
-
+					sourcefileName = string.Format("{0} ({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
 					string destFileName = Path.Combine(targetPath, sourcefileName);
-
 					File.Copy(s, destFileName, false);
-
 				}
 				else
 				{
 					// Copy the source file to the target folder...
 					string sourcefileName = Path.GetFileName(s);
-
-					//sourcefileName = string.Format("{0}({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
-
 					string destFileName = Path.Combine(targetPath, sourcefileName);
-
 					File.Copy(s, destFileName, false);
-
-
-
-
 				}// END_IF
-
-
-
 
 				// Reset...
 				okToRename = false;
 				suffixInteger = 0;
 				matchInteger = 0;
 
-
-				/*
-				 * continue:  Get the next file in the source list...
-				 */
-
-
-
 			} // END_OUTER_LOOP
 
-
-
 		} // END_METHOD
-
-
-
-
-
-
 
 		private ArrayList SkipDuplicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
 		{
@@ -581,17 +493,6 @@ namespace Push
 			}
 		} // END_METHOD
 
-
-
-
-
-
-
-
-
-
-
-
 		// DEVELOPMENT ONLY -- Reset Application...
 		private void button2_Click(object sender, EventArgs e){
 
@@ -615,10 +516,12 @@ namespace Push
 			foreach (string t in filesStrArray) 
 				File.Delete(t);
 
+
 			//-----------------------------------------------------------------
 			//  Initialize the Source Folder with Test Data
 
-			string testDataPath = @"C:\DEV_TESTDATA\Pictures";
+			string testSourcePicturesDataPath = @"C:\DEV_TESTDATA\Pictures";
+			string testTargetPicturesDataPath = @"C:\DEV_TESTDATA\TargetPictures";
 
 
 			// File extension types
@@ -632,11 +535,13 @@ namespace Push
 
 			ArrayList fileTestDataArrayList = new ArrayList();
 
+			//-----------------------------------------------------------------
+			// Load the Source folder with test data...
 			foreach (string ext in FileExtensionArrayList)
 			{
 				// Create extension...
 				string fileExtension = "*." + ext;
-				string[] fileTestDataStrArray = Directory.GetFiles(testDataPath, fileExtension);
+				string[] fileTestDataStrArray = Directory.GetFiles(testSourcePicturesDataPath, fileExtension);
 
 				if (fileTestDataStrArray.Length <= 0) 
 					continue;
@@ -655,6 +560,36 @@ namespace Push
 				File.Copy(s, destFileName, true);
 			}
 
+			//-----------------------------------------------------------------
+			// Load the Target folder with test data...
+			fileTestDataArrayList.Clear();
+			foreach (string ext in FileExtensionArrayList)
+			{
+				// Create extension...
+				string fileExtension = "*." + ext;
+				string[] fileTestDataStrArray = Directory.GetFiles(testTargetPicturesDataPath, fileExtension);
+
+				if (fileTestDataStrArray.Length <= 0)
+					continue;
+
+				foreach (string s in fileTestDataStrArray)
+					fileTestDataArrayList.Add(s);
+			} // END_FOREACH
+
+			testDataFileName = string.Empty;
+			destFileName = string.Empty;
+			foreach (string s in fileTestDataArrayList)
+			{
+				// Use static Path methods to extract only the file name from the path.
+				testDataFileName = Path.GetFileName(s);
+				destFileName = Path.Combine(targetPath, testDataFileName);
+				File.Copy(s, destFileName, true);
+			}
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+			listBox1.Items.Clear();
+
 			// Hydrate the Source and Target Listboxes
 			LoadSource();
 
@@ -667,7 +602,7 @@ namespace Push
 
 		} // END_METHOD
 
-		#region Constants
+		#region [ CONSTANTS ]
 
 		private const uint FILE_ATTRIBUTE_READONLY = 0x00000001;
 		private const uint FILE_ATTRIBUTE_HIDDEN = 0x00000002;
@@ -722,6 +657,7 @@ namespace Push
 		[DllImport("shell32")]
 		private static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, out SHFILEINFO psfi, uint cbFileInfo, uint flags);
 
+		#region [ STRUCT ]
 		[StructLayout(LayoutKind.Sequential)]
 		private struct SHFILEINFO
 		{
@@ -733,6 +669,7 @@ namespace Push
 			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
 			public string szTypeName;
 		} // END_STRUCT
+		#endregion
 		
 		[DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
 		public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
@@ -747,42 +684,14 @@ namespace Push
 			StringBuilder sb = new StringBuilder(11);
 			StrFormatByteSize(filesize, sb, sb.Capacity);
 			return sb.ToString();
-		} // END_METHOD
+		}
 
-		private void TestOnly_Click(object sender, EventArgs e)
-		{
-			cTaskDialog.ForceEmulationMode = checkBox1.Checked;
-			try { cTaskDialog.EmulatedFormWidth = Convert.ToInt32(edWidth.Text); }
-			catch (Exception) { cTaskDialog.EmulatedFormWidth = 450; }
 
-			DialogResult res =
-			  cTaskDialog.ShowTaskDialogBox(
-					this,
-					"Duplicate Files Found",
-					"There were {0} duplicate files found in the Target Folder.",
-					"What would you like to do?",
-					"Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value.  When multiple copies exist the latest duplicate will always have the highest value.\n\nThese settings may be modified in the Configuration Dialog.",
-					//"Optional footer text with an icon can be included",
-					string.Empty,
-					"Don't show me this message again",
-					//"Radio Option 1|Radio Option 2|Radio Option 3",
-					string.Empty,
-					//"Command &Button 1|Command Button 2|Command Button 3|Command Button 4|Command Button 5",
-					"Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
-					//...PSTaskDialog.eTaskDialogButtons.OKCancel,
-					eTaskDialogButtons.None,
-					eSysIcons.Information,
-					eSysIcons.Warning);
-					UpdateResult(res);  
-		} // END_METHOD
-		
-		//--------------------------------------------------------------------------------
-		void UpdateResult(DialogResult res) 
+		// Refresh Form...
+		private void button3_Click(object sender, EventArgs e)
 		{
-			lbResult.Text = "Result : " + Enum.GetName(typeof(DialogResult), res) + Environment.NewLine +
-							"RadioButtonIndex : " + cTaskDialog.RadioButtonResult.ToString() + Environment.NewLine +
-							"CommandButtonIndex : " + cTaskDialog.CommandButtonResult.ToString() + Environment.NewLine +
-							"Verify CheckBox : " + (cTaskDialog.VerificationChecked ? "true" : "false");
+			LoadSource();
+			LoadTarget();
 		} // END_METHOD
 
 	} // END_CLASS
