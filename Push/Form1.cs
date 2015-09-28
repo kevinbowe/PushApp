@@ -692,6 +692,16 @@ namespace Push
 		{
 			LoadSource();
 			LoadTarget();
+		}
+
+		private void toolStripButton1_Click(object sender, EventArgs e)
+		{
+			button1_Click(sender, e);
+		}
+
+		private void toolStripButton2_Click(object sender, EventArgs e)
+		{
+			button3_Click(sender, e);
 		} // END_METHOD
 
 	} // END_CLASS
