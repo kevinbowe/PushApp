@@ -447,9 +447,24 @@ namespace Push
 
 					string destFileName = Path.Combine(targetPath, sourcefileName);
 
-					File.Copy(s, destFileName,false);
+					File.Copy(s, destFileName, false);
 
-				} // END_IF
+				}
+				else
+				{
+					// Copy the source file to the target folder...
+					string sourcefileName = Path.GetFileName(s);
+
+					//sourcefileName = string.Format("{0}({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
+
+					string destFileName = Path.Combine(targetPath, sourcefileName);
+
+					File.Copy(s, destFileName, false);
+
+
+
+
+				}// END_IF
 
 
 
