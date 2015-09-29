@@ -702,6 +702,30 @@ namespace Push
 		private void toolStripButton2_Click(object sender, EventArgs e)
 		{
 			button3_Click(sender, e);
+		}
+
+		private void toolStripButton3_Click(object sender, EventArgs e)
+		{
+			string s = string.Empty;
+			Form2 dlg = new Form2();
+			if (dlg.ShowDialog(this) == DialogResult.OK)
+			{
+				s = "OK";
+			}
+			else
+			{
+				s = "Cancel";
+			}
+
+			string sCB1 = dlg.cb1.Checked.ToString();
+			string sCB2 = dlg.cb2.Checked.ToString();
+			string sCB3 = dlg.cb3.Checked.ToString();
+			string sourcePath = dlg.SourcePath.Text;
+
+			MessageBox.Show(string.Format("CheckBox1 = {0} | CheckBox2 = {1} | CheckBox3 = {2}\n" +
+										  "Path = {3}", sCB1, sCB2, sCB3, sourcePath));
+			dlg.Dispose();
+
 		} // END_METHOD
 
 	} // END_CLASS
