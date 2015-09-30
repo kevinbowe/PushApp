@@ -709,21 +709,24 @@ namespace Push
 			string s = string.Empty;
 			Form2 dlg = new Form2();
 			if (dlg.ShowDialog(this) == DialogResult.OK)
-			{
 				s = "OK";
-			}
 			else
-			{
 				s = "Cancel";
-			}
 
-			string sCB1 = dlg.cb1.Checked.ToString();
-			string sCB2 = dlg.cb2.Checked.ToString();
-			string sCB3 = dlg.cb3.Checked.ToString();
+			string displayDupeMessage = dlg.DisplayDupeMessage.Checked.ToString();
 			string sourcePath = dlg.SourcePath.Text;
+			string targetPath = dlg.TargetPath.Text;
+			string duplicateFileActionState = dlg.DuplicateFileAction;
+			string fileExtensionFilter = dlg.FileExtensionFilter.Text;
 
-			MessageBox.Show(string.Format("CheckBox1 = {0} | CheckBox2 = {1} | CheckBox3 = {2}\n" +
-										  "Path = {3}", sCB1, sCB2, sCB3, sourcePath));
+			MessageBox.Show(string.Format("Display Duplicate Message = {0}\n" +
+										  "SourcePath = {1}\n" + 
+										  "TargetPath = {2}\n" + 
+										  "Duplicate Action = {3}\n" + 
+										  "File Extension Filter = {4}", 
+										  displayDupeMessage, sourcePath, targetPath, 
+										  duplicateFileActionState,
+										  fileExtensionFilter));
 			dlg.Dispose();
 
 		} // END_METHOD

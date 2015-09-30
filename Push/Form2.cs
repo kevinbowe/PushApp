@@ -11,37 +11,38 @@ namespace Push
 	public partial class Form2 : Form
 	{
 
-		public CheckBox cb1 { get; set; }
-		public CheckBox cb2 { get; set; }
-		public CheckBox cb3 { get; set; }
-		public TextBox SourcePath { get; set; }		
+		public CheckBox DisplayDupeMessage { get; set; }
 		
+		public TextBox SourcePath { get; set; }
+		public TextBox TargetPath { get; set; }
+		public TextBox FileExtensionFilter { get; set; }
+		
+		public enum DuplicateFileActionState { OverWrite, Rename, Skip, Cancel };
+		//public DuplicateFileActionState DuplicateFileAction;
+		public string DuplicateFileAction;
+		
+		public CheckBox DisableSplashScreen { get; set; }
+		public CheckBox DisableXMLOptions { get; set; }
 		
 		public Form2()
 		{
 			InitializeComponent();
 		}
 
-		private void checkBox1_CheckedChanged(object sender, EventArgs e)
-		{
-			cb1 = checkBox1;
-		}
-
-		private void checkBox2_CheckedChanged(object sender, EventArgs e)
-		{
-			cb2 = checkBox2;
-		}
-
-		private void checkBox3_CheckedChanged(object sender, EventArgs e)
-		{
-			cb3 = checkBox3;
-		}
-
 		private void Form2_Load(object sender, EventArgs e)
 		{
-			cb1 = checkBox1;
-			cb2 = checkBox2;
-			cb3 = checkBox3; 
+			DisplayDupeMessage = checkBox1;
+			SourcePath = textBox1;
+			TargetPath = textBox2;
+			DuplicateFileAction = string.Empty; //new DuplicateFileActionState();
+			FileExtensionFilter = textBox3;
+			DisableSplashScreen = checkBox2;
+			DisableXMLOptions = checkBox3;
+		}		
+		
+		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		{
+			DisplayDupeMessage = checkBox1;
 		}
 
 		private void button3_Click(object sender, EventArgs e)
@@ -58,7 +59,75 @@ namespace Push
 			SourcePath = textBox1;
 		}
 
+		private void button4_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				textBox2.Text = fbd.SelectedPath;
+			}
+		}
+
+		private void textBox2_TextChanged(object sender, EventArgs e)
+		{
+			TargetPath = textBox2;
+		}
+
+		private void radioButton1_CheckedChanged(object sender, EventArgs e)
+		{
+			DuplicateFileAction = DuplicateFileActionState.OverWrite.ToString("G");
+		}
+
+		private void radioButton2_CheckedChanged(object sender, EventArgs e)
+		{
+			DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G"); 
+		}
+
+		private void radioButton3_CheckedChanged(object sender, EventArgs e)
+		{
+			DuplicateFileAction = DuplicateFileActionState.Skip.ToString("G"); ;
+		}
+
+		private void radioButton4_CheckedChanged(object sender, EventArgs e)
+		{
+			DuplicateFileAction = DuplicateFileActionState.Cancel.ToString("G"); ;
+		}
+
+		private void textBox3_TextChanged(object sender, EventArgs e)
+		{
+			FileExtensionFilter = textBox3;
+		}
+
+		private void button5_Click(object sender, EventArgs e)
+		{
+			textBox3.Clear();
+		}
+
+		private void button6_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
+				textBox3.Text = sr.ReadToEnd();
+				sr.Close();
+			}
+		}
+
+		private void checkBox2_CheckedChanged(object sender, EventArgs e)
+		{
+			DisableSplashScreen = checkBox2;
+		}
+
+		private void checkBox3_CheckedChanged(object sender, EventArgs e)
+		{
+			DisableXMLOptions = checkBox3;
+		}
 
 
+
+	
+
+	
 	}
 }
