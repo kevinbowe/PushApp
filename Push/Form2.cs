@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
+//---
+using System.Web.Script.Serialization;
 
 namespace Push
 {
@@ -18,7 +21,6 @@ namespace Push
 		public TextBox FileExtensionFilter { get; set; }
 		
 		public enum DuplicateFileActionState { OverWrite, Rename, Skip, Cancel };
-		//public DuplicateFileActionState DuplicateFileAction;
 		public string DuplicateFileAction;
 		
 		public CheckBox DisableSplashScreen { get; set; }
@@ -124,10 +126,43 @@ namespace Push
 			DisableXMLOptions = checkBox3;
 		}
 
+		// OK...
+		private void button1_Click(object sender, EventArgs e)
+		{
 
+			PushSettings settings = new PushSettings()
+			{
+				DisplayDupeMessage = DisplayDupeMessage.Checked,
+				SourcePath = SourcePath.Text,
+				TargetPath = TargetPath.Text,
+				FileExtensionFilter = FileExtensionFilter.Text,
+				DuplicateFileAction = DuplicateFileAction,
+				DisableSplashScreen = DisableSplashScreen.Checked,
+				DisableXMLOptions = DisableXMLOptions.Checked
+			};
 
+			string json = new JavaScriptSerializer().Serialize(settings);
+			string path = @"C:\Win_SourceCode\PushApp\PushSettings";
+			File.WriteAllText(path, json, System.Text.Encoding.ASCII);
+
+		} // END_METHOD
 	
+	} // END_CLASS
 
-	
-	}
+
+	public class PushSettings
+	{
+		public bool DisplayDupeMessage;
+		public string SourcePath;
+		public string TargetPath;
+		public string FileExtensionFilter;
+		public string DuplicateFileAction;
+
+		public bool DisableSplashScreen;
+		public bool DisableXMLOptions;
+
+	} // END_CLASS
+
+
+
 }
