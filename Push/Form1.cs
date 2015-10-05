@@ -11,11 +11,16 @@ using System.Runtime.InteropServices;
 
 using PSTaskDialog;
 using System.Text.RegularExpressions;
+//---
+using System.Web.Script.Serialization;
 
 namespace Push
 {
 	public partial class Form1 : Form
 	{
+		enum commandResult { Overwrite, Rename, Skip, Cancel };
+		PushSettings settings;
+	
 		public Form1()
 		{
 			InitializeComponent();
@@ -29,7 +34,7 @@ namespace Push
 		private bool LoadTarget()
 		{
 			// Fetch all of the files in the source filder...
-			string targetPath = @"T:\";  //string targetPath = @"C:\DEV_TARGET";
+			string targetPath = @"T:\"; 
 
 			if (!Directory.Exists(targetPath))
 			{
@@ -95,8 +100,6 @@ namespace Push
 			
 			string[] filesStrArray = Directory.GetFiles(sourcePath);
 
-			//listBox2.Items.Clear();
-
 			listView1.Items.Clear();
 
 			// File extension types
@@ -115,7 +118,7 @@ namespace Push
 				foreach (string s in fileSourceStrArray) fileSourceArrayList.Add(s);
 			} // END_FOREACH
 
-			foreach (string s in fileSourceArrayList/*filesStrArray*/)
+			foreach (string s in fileSourceArrayList)
 			{
 				FileInfo sourceFileInfo = new FileInfo(s);
 				string friendlyFileSize = StrFormatByteSize(sourceFileInfo.Length);
@@ -135,7 +138,7 @@ namespace Push
 			return true;
 		} // END_METHOD
 
-		enum commandResult { Overwrite, Rename, Skip, Cancel }; 
+
 
 		// Copy Files from Source folder to Target folder...
 		private void button1_Click(object sender, EventArgs e)
@@ -146,7 +149,6 @@ namespace Push
 			// Paths...
 			string sourcePath = @"S:\";
 			string targetPath = @"T:\";
-			//string targetPath = @"\\Ml\XP_TARGET";
 
 			// Validation..
 			if (!Directory.Exists(sourcePath) || !Directory.Exists(targetPath) )
@@ -423,8 +425,6 @@ namespace Push
 				// INNER_LOOP -- Iterate over each file in the source list...
 				foreach (string t in fileTargetStrArray)
 				{
-					//FileInfo sourceFileInfo = new FileInfo(s);
-					//if (targetFileInfo.Name.Equals(sourceFileInfo.Name, StringComparison.Ordinal))
 					FileInfo targetFileInfo = new FileInfo(t);
 					if (sourceFileInfo.Name.Equals(targetFileInfo.Name, StringComparison.Ordinal))
 					{
@@ -443,18 +443,12 @@ namespace Push
 					// Copy the source file to the target folder...
 					string sourcefileName = Path.GetFileName(s);
 					string destFileName = Path.Combine(targetPath, sourcefileName);
-	
-
 
 					File.Copy(s, destFileName, true);
 
-					
-					
 					// Update the lisst of files that should be deleted from the source folder...
 					//      Verify that 't' is the correct file name...
 					deleteSourceArrayList.Add(s);
-
-
 
 					// Update UI...
 					listBox1.Items.Add("Copying " + s + " to " + destFileName);
@@ -466,15 +460,7 @@ namespace Push
 
 			} // END_FOREACH_OUTER
 
-
-
-
-
-
-
-
 			return deleteSourceArrayList;
-			//...throw new NotImplementedException();
 		} // END_METHOD
 
 		private void CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
@@ -516,13 +502,11 @@ namespace Push
 			foreach (string t in filesStrArray) 
 				File.Delete(t);
 
-
 			//-----------------------------------------------------------------
 			//  Initialize the Source Folder with Test Data
 
 			string testSourcePicturesDataPath = @"C:\DEV_TESTDATA\Pictures";
 			string testTargetPicturesDataPath = @"C:\DEV_TESTDATA\TargetPictures";
-
 
 			// File extension types
 			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
@@ -599,6 +583,12 @@ namespace Push
 		// Empty... 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			// Load settings...
+			settings = new PushSettings();
+			// Open and read PushSettings file...
+			string pushSettingsJSON = System.IO.File.ReadAllText(@"C:\Win_SourceCode\PushApp\PushSettings");
+			// Convert to object...
+			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
 
 		} // END_METHOD
 
@@ -708,28 +698,33 @@ namespace Push
 		{
 			string s = string.Empty;
 			Form2 dlg = new Form2();
-			if (dlg.ShowDialog(this) == DialogResult.OK)
-				s = "OK";
-			else
-				s = "Cancel";
+			// Copy the current settings into the Configuration form...
+			dlg.settings = settings;
+			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
+			else s = "Cancel";
 
-			string displayDupeMessage = dlg.DisplayDupeMessage.Checked.ToString();
-			string sourcePath = dlg.SourcePath.Text;
-			string targetPath = dlg.TargetPath.Text;
-			string duplicateFileActionState = dlg.DuplicateFileAction;
-			string fileExtensionFilter = dlg.FileExtensionFilter.Text;
+			// Copy settings...
+			settings = dlg.settings;
 
-			MessageBox.Show(string.Format("Display Duplicate Message = {0}\n" +
-										  "SourcePath = {1}\n" + 
-										  "TargetPath = {2}\n" + 
-										  "Duplicate Action = {3}\n" + 
-										  "File Extension Filter = {4}", 
-										  displayDupeMessage, sourcePath, targetPath, 
-										  duplicateFileActionState,
-										  fileExtensionFilter));
 			dlg.Dispose();
 
 		} // END_METHOD
 
 	} // END_CLASS
+
+	public class PushSettings
+	{
+		public bool DisplayDupeMessage;
+		public string SourcePath;
+		public string TargetPath;
+		public string FileExtensionFilter;
+		public string DuplicateFileAction;
+
+		public bool DisableSplashScreen;
+		public bool DisableXMLOptions;
+
+	} // END_CLASS
+
+
+
 } // END_NAMESPACE

@@ -13,18 +13,8 @@ namespace Push
 {
 	public partial class Form2 : Form
 	{
-
-		public CheckBox DisplayDupeMessage { get; set; }
-		
-		public TextBox SourcePath { get; set; }
-		public TextBox TargetPath { get; set; }
-		public TextBox FileExtensionFilter { get; set; }
-		
 		public enum DuplicateFileActionState { OverWrite, Rename, Skip, Cancel };
-		public string DuplicateFileAction;
-		
-		public CheckBox DisableSplashScreen { get; set; }
-		public CheckBox DisableXMLOptions { get; set; }
+		public PushSettings settings { get; set; }
 		
 		public Form2()
 		{
@@ -33,18 +23,27 @@ namespace Push
 
 		private void Form2_Load(object sender, EventArgs e)
 		{
-			DisplayDupeMessage = checkBox1;
-			SourcePath = textBox1;
-			TargetPath = textBox2;
-			DuplicateFileAction = string.Empty; //new DuplicateFileActionState();
-			FileExtensionFilter = textBox3;
-			DisableSplashScreen = checkBox2;
-			DisableXMLOptions = checkBox3;
+			// Hydrate the controls with the current settings...
+			checkBox1.Checked = settings.DisplayDupeMessage;
+			textBox1.Text = settings.SourcePath;
+			textBox2.Text = settings.TargetPath;
+			textBox3.Text = settings.FileExtensionFilter;
+			checkBox2.Checked = settings.DisableSplashScreen;
+			checkBox3.Checked = settings.DisableXMLOptions;
+
+			switch (settings.DuplicateFileAction)
+			{
+				case "OverWrite":   radioButton1.Checked = true; break;
+				case "Rename":      radioButton2.Checked = true; break;
+				case "Skip":        radioButton3.Checked = true; break;
+				case "Cancel":      
+				default:            radioButton4.Checked = true; break;
+			} // END_SWITCH
 		}		
 		
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
-			DisplayDupeMessage = checkBox1;
+			settings.DisplayDupeMessage = checkBox1.Checked;
 		}
 
 		private void button3_Click(object sender, EventArgs e)
@@ -58,7 +57,7 @@ namespace Push
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
 		{
-			SourcePath = textBox1;
+			settings.SourcePath = textBox1.Text;
 		}
 
 		private void button4_Click(object sender, EventArgs e)
@@ -72,32 +71,32 @@ namespace Push
 
 		private void textBox2_TextChanged(object sender, EventArgs e)
 		{
-			TargetPath = textBox2;
+			settings.TargetPath = textBox2.Text;
 		}
 
 		private void radioButton1_CheckedChanged(object sender, EventArgs e)
 		{
-			DuplicateFileAction = DuplicateFileActionState.OverWrite.ToString("G");
+			settings.DuplicateFileAction = DuplicateFileActionState.OverWrite.ToString("G");
 		}
 
 		private void radioButton2_CheckedChanged(object sender, EventArgs e)
 		{
-			DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G"); 
+			settings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
 		}
 
 		private void radioButton3_CheckedChanged(object sender, EventArgs e)
 		{
-			DuplicateFileAction = DuplicateFileActionState.Skip.ToString("G"); ;
+			settings.DuplicateFileAction = DuplicateFileActionState.Skip.ToString("G");
 		}
 
 		private void radioButton4_CheckedChanged(object sender, EventArgs e)
 		{
-			DuplicateFileAction = DuplicateFileActionState.Cancel.ToString("G"); ;
+			settings.DuplicateFileAction = DuplicateFileActionState.Cancel.ToString("G");		
 		}
 
 		private void textBox3_TextChanged(object sender, EventArgs e)
 		{
-			FileExtensionFilter = textBox3;
+			settings.FileExtensionFilter = textBox3.Text;
 		}
 
 		private void button5_Click(object sender, EventArgs e)
@@ -118,29 +117,17 @@ namespace Push
 
 		private void checkBox2_CheckedChanged(object sender, EventArgs e)
 		{
-			DisableSplashScreen = checkBox2;
+			settings.DisableSplashScreen = checkBox2.Checked;
 		}
 
 		private void checkBox3_CheckedChanged(object sender, EventArgs e)
 		{
-			DisableXMLOptions = checkBox3;
+			settings.DisableXMLOptions = checkBox3.Checked;
 		}
 
 		// OK...
 		private void button1_Click(object sender, EventArgs e)
 		{
-
-			PushSettings settings = new PushSettings()
-			{
-				DisplayDupeMessage = DisplayDupeMessage.Checked,
-				SourcePath = SourcePath.Text,
-				TargetPath = TargetPath.Text,
-				FileExtensionFilter = FileExtensionFilter.Text,
-				DuplicateFileAction = DuplicateFileAction,
-				DisableSplashScreen = DisableSplashScreen.Checked,
-				DisableXMLOptions = DisableXMLOptions.Checked
-			};
-
 			string json = new JavaScriptSerializer().Serialize(settings);
 			string path = @"C:\Win_SourceCode\PushApp\PushSettings";
 			File.WriteAllText(path, json, System.Text.Encoding.ASCII);
@@ -148,21 +135,5 @@ namespace Push
 		} // END_METHOD
 	
 	} // END_CLASS
-
-
-	public class PushSettings
-	{
-		public bool DisplayDupeMessage;
-		public string SourcePath;
-		public string TargetPath;
-		public string FileExtensionFilter;
-		public string DuplicateFileAction;
-
-		public bool DisableSplashScreen;
-		public bool DisableXMLOptions;
-
-	} // END_CLASS
-
-
 
 }
