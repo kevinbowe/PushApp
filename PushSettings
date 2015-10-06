@@ -1,1 +1,1 @@
-{"DisplayDupeMessage":false,"SourcePath":"as","TargetPath":"ff","FileExtensionFilter":"asdas","DuplicateFileAction":"","DisableSplashScreen":true,"DisableXMLOptions":false}
+{"DisplayDupeMessage":true,"SourcePath":"C:\\DEV_SOURCE","TargetPath":"C:\\DEV_TARGET","FileExtensionFilter":"*.tif | *.tiff | *.jpg | *.jpeg","DuplicateFileAction":"Cancel","DisableSplashScreen":true,"DisableXMLOptions":false}
