@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -129,7 +129,7 @@ namespace Push
 		private void button1_Click(object sender, EventArgs e)
 		{
 			string json = new JavaScriptSerializer().Serialize(settings);
-			string path = @"C:\Win_SourceCode\PushApp\PushSettings";
+			string path = @"C:\SRC\PushApp\PushSettings";
 			File.WriteAllText(path, json, System.Text.Encoding.ASCII);
 
 		} // END_METHOD

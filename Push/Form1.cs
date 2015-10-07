@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -586,7 +586,7 @@ namespace Push
 			// Load settings...
 			settings = new PushSettings();
 			// Open and read PushSettings file...
-			string pushSettingsJSON = System.IO.File.ReadAllText(@"C:\Win_SourceCode\PushApp\PushSettings");
+			string pushSettingsJSON = System.IO.File.ReadAllText(@"C:\SRC\PushApp\PushSettings");
 			// Convert to object...
 			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
 
