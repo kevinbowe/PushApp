@@ -1,1 +1,1 @@
-{"DisplayDupeMessage":true,"SourcePath":"C:\\DEV_SOURCE","TargetPath":"C:\\DEV_TARGET","FileExtensionFilter":"*.tif | *.tiff | *.jpg | *.jpeg","DuplicateFileAction":"Cancel","DisableSplashScreen":true,"DisableXMLOptions":false}
+{"DisplayDupeMessage":true,"SourcePath":"\\\\Gamingpc\\dev_source","TargetPath":"\\\\Gamingpc\\dev_target","FileExtensionFilter":"*.tif | *.tiff | *.jpg | *.jpeg","DuplicateFileAction":"Cancel","DisableSplashScreen":true,"DisableXMLOptions":false}
