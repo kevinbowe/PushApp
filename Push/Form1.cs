@@ -32,19 +32,13 @@ namespace Push
 			// Fetch all of the files in the source filder...
 			if (!Directory.Exists(settings.TargetPath))
 			{
-				listBox1.Items.Add("The Target path do not exist!");
+				listBox1.Items.Add("The Target path does not exist!");
 				return false;
 			}
 
-			string[] filesStrArray = Directory.GetFiles(settings.TargetPath);
-
 			listView2.Items.Clear();
 
-			// File extension types
-			string[] delimiters = new string[] { ";", "; ", "|", "| ", " |", " | ",":", ": ", " " }; 
-			string[] fefArray = settings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
-			ArrayList FileExtensionArrayList = new ArrayList(fefArray);
-
+			ArrayList FileExtensionArrayList = LoadFileExtensions();
 
 			ArrayList fileSourceArrayList = new ArrayList();
 
@@ -79,6 +73,16 @@ namespace Push
 
 			return true;
 		} // END_METHOD
+
+		private ArrayList LoadFileExtensions()
+		{
+			ArrayList FileExtensionArrayList;
+			// File extension types
+			string[] delimiters = new string[] { ";", "; ", "|", "| ", " |", " | ", ":", ": ", " " };
+			string[] fefArray = settings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
+			FileExtensionArrayList = new ArrayList(fefArray);
+			return FileExtensionArrayList;
+		}
 		
 		// Load Source ListView...
 		private bool LoadSource()
@@ -91,19 +95,15 @@ namespace Push
 				return false;
 			}
 
-			string[] filesStrArray = Directory.GetFiles(settings.SourcePath);
-
 			listView1.Items.Clear();
 
-			// File extension types
-			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
+			// File extension types...
+			ArrayList FileExtensionArrayList = LoadFileExtensions();
 
 			ArrayList fileSourceArrayList = new ArrayList();
 
-			foreach (string ext in FileExtensionArrayList)
+			foreach (string fileExtension in FileExtensionArrayList)
 			{
-				// Create extension...
-				string fileExtension = "*." + ext;
 				string[] fileSourceStrArray = Directory.GetFiles(settings.SourcePath, fileExtension);
 
 				if (fileSourceStrArray.Length <= 0) continue;
@@ -150,13 +150,11 @@ namespace Push
 			listBox1.Items.Clear();
 
 			// File extension types...
-			ArrayList FileExtensionArrayList = new ArrayList() {"TIFF","TIF","JPGE","JPG"};
+			ArrayList FileExtensionArrayList = LoadFileExtensions();
 			
 			// Build list of file to copy... 
-			foreach(string ext in FileExtensionArrayList)
+			foreach (string fileExtension in FileExtensionArrayList)
 			{
-				// Create extension...
-				string fileExtension = "*." + ext;
 				string[] fileSourceStrArray = Directory.GetFiles(settings.SourcePath, fileExtension);
 
 				if (fileSourceStrArray.Length <= 0) 
@@ -492,7 +490,7 @@ namespace Push
 			string DEBUG_testTargetPicturesDataPath = @"C:\DEV_TESTDATA\TargetPictures";
 
 			// File extension types
-			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
+			ArrayList FileExtensionArrayList = LoadFileExtensions();
 
 			if (!Directory.Exists(settings.SourcePath) || !Directory.Exists(settings.TargetPath))
 			{
@@ -504,10 +502,8 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Load the Source folder with test data...
-			foreach (string ext in FileExtensionArrayList)
+			foreach (string fileExtension in FileExtensionArrayList)
 			{
-				// Create extension...
-				string fileExtension = "*." + ext;
 				string[] fileTestDataStrArray = Directory.GetFiles(DEBUG_testSourcePicturesDataPath, fileExtension);
 
 				if (fileTestDataStrArray.Length <= 0) 
@@ -530,10 +526,8 @@ namespace Push
 			//-----------------------------------------------------------------
 			// Load the Target folder with test data...
 			fileTestDataArrayList.Clear();
-			foreach (string ext in FileExtensionArrayList)
+			foreach (string fileExtension in FileExtensionArrayList)
 			{
-				// Create extension...
-				string fileExtension = "*." + ext;
 				string[] fileTestDataStrArray = Directory.GetFiles(DEBUG_testTargetPicturesDataPath, fileExtension);
 
 				if (fileTestDataStrArray.Length <= 0)
