@@ -236,3 +236,5 @@ $RECYCLE.BIN/
 FileExtensions.txt
 PushSettings
 PushSettings
+PushApp.ConfigFiles.txt
+PushApp.ConfigFiles.sublime-workspace

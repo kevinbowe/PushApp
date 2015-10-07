@@ -8,10 +8,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
-
+//---
 using PSTaskDialog;
 using System.Text.RegularExpressions;
-//---
 using System.Web.Script.Serialization;
 
 namespace Push
@@ -25,37 +24,33 @@ namespace Push
 		{
 			InitializeComponent();
 
-			// Hydrate the Source and Target Listboxes
-			LoadSource();
-			LoadTarget();
 		} // END_METHOD
 
 		// Load Target ListView...
 		private bool LoadTarget()
 		{
 			// Fetch all of the files in the source filder...
-			string targetPath = @"T:\"; 
-
-			if (!Directory.Exists(targetPath))
+			if (!Directory.Exists(settings.TargetPath))
 			{
 				listBox1.Items.Add("The Target path do not exist!");
 				return false;
 			}
 
-			string[] filesStrArray = Directory.GetFiles(targetPath);
+			string[] filesStrArray = Directory.GetFiles(settings.TargetPath);
 
 			listView2.Items.Clear();
 
 			// File extension types
-			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
+			string[] delimiters = new string[] { ";", "; ", "|", "| ", " |", " | ",":", ": ", " " }; 
+			string[] fefArray = settings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
+			ArrayList FileExtensionArrayList = new ArrayList(fefArray);
+
 
 			ArrayList fileSourceArrayList = new ArrayList();
 
-			foreach (string ext in FileExtensionArrayList)
+			foreach (string FileExtension in FileExtensionArrayList)
 			{
-				// Create extension...
-				string fileExtension = "*." + ext;
-				string[] fileSourceStrArray = Directory.GetFiles(targetPath, fileExtension);
+				string[] fileSourceStrArray = Directory.GetFiles(settings.TargetPath, FileExtension);
 
 				if (fileSourceStrArray.Length <= 0) continue;
 
@@ -90,15 +85,13 @@ namespace Push
 		{
 			
 			// Fetch all of the files in the source filder...
-			string sourcePath = @"S:\";
-			
-			if (!Directory.Exists(sourcePath))
+			if (!Directory.Exists(settings.SourcePath))
 			{
 				listBox1.Items.Add("The Source path do not exist!");
 				return false;
 			}
-			
-			string[] filesStrArray = Directory.GetFiles(sourcePath);
+
+			string[] filesStrArray = Directory.GetFiles(settings.SourcePath);
 
 			listView1.Items.Clear();
 
@@ -111,7 +104,7 @@ namespace Push
 			{
 				// Create extension...
 				string fileExtension = "*." + ext;
-				string[] fileSourceStrArray = Directory.GetFiles(sourcePath, fileExtension);
+				string[] fileSourceStrArray = Directory.GetFiles(settings.SourcePath, fileExtension);
 
 				if (fileSourceStrArray.Length <= 0) continue;
 				
@@ -146,12 +139,8 @@ namespace Push
 			// Decl...
 			ArrayList fileSourceArrayList = new ArrayList();
 			
-			// Paths...
-			string sourcePath = @"S:\";
-			string targetPath = @"T:\";
-
 			// Validation..
-			if (!Directory.Exists(sourcePath) || !Directory.Exists(targetPath) )
+			if (!Directory.Exists(settings.SourcePath) || !Directory.Exists(settings.TargetPath))
 			{
 				listBox1.Items.Add("The Source or Target path do not exist!");
 				return;
@@ -168,7 +157,7 @@ namespace Push
 			{
 				// Create extension...
 				string fileExtension = "*." + ext;
-				string[] fileSourceStrArray = Directory.GetFiles(sourcePath, fileExtension);
+				string[] fileSourceStrArray = Directory.GetFiles(settings.SourcePath, fileExtension);
 
 				if (fileSourceStrArray.Length <= 0) 
 					continue;
@@ -178,7 +167,7 @@ namespace Push
 			} // END_FOREACH
 
 			// Build a list of files on the target folder...
-			string[] fileTargetStrArray = System.IO.Directory.GetFiles(targetPath);
+			string[] fileTargetStrArray = System.IO.Directory.GetFiles(settings.TargetPath);
 			int dupeFileCount = 0;
 			// OUTER LOOP -- Iterate over each file in the target list...
 			foreach (string t in fileTargetStrArray)
@@ -203,7 +192,7 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				CopyOverwrite(fileSourceArrayList, targetPath);
+				CopyOverwrite(fileSourceArrayList, settings.TargetPath);
 			}
 			else
 			{
@@ -237,16 +226,16 @@ namespace Push
 				switch ((commandResult)cTaskDialog.CommandButtonResult)
 				{
 					case commandResult.Rename:
-						RenameDulpicates(fileSourceArrayList, fileTargetStrArray, targetPath, sourcePath);
+						RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath , settings.SourcePath);
 						break;
 					case commandResult.Skip:
-						fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, targetPath, sourcePath);
+						fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath , settings.SourcePath);
 						break;
 					case commandResult.Cancel:
 						return;
 					case commandResult.Overwrite:
 					default:
-						CopyOverwrite(fileSourceArrayList, targetPath);
+						CopyOverwrite(fileSourceArrayList, settings.TargetPath);
 						break;
 
 				} // END SWITCH
@@ -261,7 +250,7 @@ namespace Push
 			 *----------------------------------------------------------------*/
 
 			// Rebuild the Target file list with the new files that have been copied...
-			fileTargetStrArray = System.IO.Directory.GetFiles(targetPath);
+			fileTargetStrArray = System.IO.Directory.GetFiles(settings.TargetPath);
 
 			#region [ DELETE COPIED FILES ]
 			// OUTER LOOP -- Iterate over each file in the target list...
@@ -485,33 +474,27 @@ namespace Push
 			//-----------------------------------------------------------------
 			//  Clear the Target Folder
 			
-			//... NOTE: This value MUST be fetched from the configuration data...
-			string targetPath = @"T:\";
-			
-			string[] filesStrArray = Directory.GetFiles(targetPath);
+			string[] filesStrArray = Directory.GetFiles(settings.TargetPath);
 			foreach (string s in filesStrArray) 
 				File.Delete(s);
 
 			//-----------------------------------------------------------------
 			//  Clear the Source Folder
 
-			//... NOTE: This value MUST be fetched from the configuration data...
-			string sourcePath = @"S:\";
-
-			filesStrArray = Directory.GetFiles(sourcePath);
+			filesStrArray = Directory.GetFiles(settings.SourcePath);
 			foreach (string t in filesStrArray) 
 				File.Delete(t);
 
 			//-----------------------------------------------------------------
 			//  Initialize the Source Folder with Test Data
 
-			string testSourcePicturesDataPath = @"C:\DEV_TESTDATA\Pictures";
-			string testTargetPicturesDataPath = @"C:\DEV_TESTDATA\TargetPictures";
+			string DEBUG_testSourcePicturesDataPath = @"C:\DEV_TESTDATA\Pictures";
+			string DEBUG_testTargetPicturesDataPath = @"C:\DEV_TESTDATA\TargetPictures";
 
 			// File extension types
 			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
 
-			if (!Directory.Exists(sourcePath) || !Directory.Exists(targetPath))
+			if (!Directory.Exists(settings.SourcePath) || !Directory.Exists(settings.TargetPath))
 			{
 				listBox1.Items.Add("The Source or Target path do not exist!");
 				return;
@@ -525,7 +508,7 @@ namespace Push
 			{
 				// Create extension...
 				string fileExtension = "*." + ext;
-				string[] fileTestDataStrArray = Directory.GetFiles(testSourcePicturesDataPath, fileExtension);
+				string[] fileTestDataStrArray = Directory.GetFiles(DEBUG_testSourcePicturesDataPath, fileExtension);
 
 				if (fileTestDataStrArray.Length <= 0) 
 					continue;
@@ -540,7 +523,7 @@ namespace Push
 			{
 				// Use static Path methods to extract only the file name from the path.
 				testDataFileName = Path.GetFileName(s);
-				destFileName = Path.Combine(sourcePath, testDataFileName);
+				destFileName = Path.Combine(settings.SourcePath, testDataFileName);
 				File.Copy(s, destFileName, true);
 			}
 
@@ -551,7 +534,7 @@ namespace Push
 			{
 				// Create extension...
 				string fileExtension = "*." + ext;
-				string[] fileTestDataStrArray = Directory.GetFiles(testTargetPicturesDataPath, fileExtension);
+				string[] fileTestDataStrArray = Directory.GetFiles(DEBUG_testTargetPicturesDataPath, fileExtension);
 
 				if (fileTestDataStrArray.Length <= 0)
 					continue;
@@ -566,7 +549,7 @@ namespace Push
 			{
 				// Use static Path methods to extract only the file name from the path.
 				testDataFileName = Path.GetFileName(s);
-				destFileName = Path.Combine(targetPath, testDataFileName);
+				destFileName = Path.Combine(settings.TargetPath, testDataFileName);
 				File.Copy(s, destFileName, true);
 			}
 
@@ -589,6 +572,10 @@ namespace Push
 			string pushSettingsJSON = System.IO.File.ReadAllText(@"C:\SRC\PushApp\PushSettings");
 			// Convert to object...
 			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
+
+			// Hydrate the Source and Target Listboxes
+			LoadSource();
+			LoadTarget();
 
 		} // END_METHOD
 
