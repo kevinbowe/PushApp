@@ -9,6 +9,11 @@ The user needs to be able to configure various settings such as source and targe
 
 DEVELOPMENT STATUS
 
+October 8, 2015 - Work-In-Progress
+Completed work on settings related to source and target paths. This includes validation, failure notification, clear values and load saved values.
+Completed work on file extension filtering. This includes load saved values, parsing, hydrating file extension array.
+Did a lot of code clean up and some refactoring.
+
 October 5, 2015 - Work-In-Progress:
 Add Button Bar with Run, Refresh, and Configure buttons to Form1 (main application form).
 Add Form2 (configuration form).
