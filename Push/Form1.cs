@@ -28,13 +28,44 @@ namespace Push
 		} // END_METHOD
 
 
+		// Empty... 
+		private void Form1_Load(object sender, EventArgs e)
+		{
+			// Open and read PushSettings file...
+
+			// Fetch the path where the application is running...
+			FileInfo sourceFileInfo = new FileInfo("Push.exe");
+			string exePath = sourceFileInfo.DirectoryName;
+
+			string pushSettingsJSON;
+			try
+			{
+				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettings");
+			}
+			catch
+			{
+				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettingsDefault");
+				File.Copy(exePath + @"\Config\PushSettingsDefault", exePath + @"\Config\PushSettings", true);
+			}
+
+			settings = new PushSettings();
+			// Convert to object...
+			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
+			settings.ExePath = exePath;
+
+			// Hydrate the Source and Target Listboxes
+			LoadSource();
+			LoadTarget();
+
+		} // END_METHOD
+
+
 		// Load Target ListView...
 		private bool LoadTarget()
 		{
 			// Fetch all of the files in the source filder...
 			if (!Directory.Exists(settings.TargetPath))
 			{
-				//listBox1.Items.Add("The Target path does not exist!");
 				return false;
 			}
 
@@ -627,38 +658,6 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadSource();
 
-			LoadTarget();
-
-		} // END_METHOD
-
-
-		// Empty... 
-		private void Form1_Load(object sender, EventArgs e)
-		{
-			// Open and read PushSettings file...
-
-			// Fetch the path where the application is running...
-			FileInfo sourceFileInfo = new FileInfo("Push.exe");
-			string exePath = sourceFileInfo.DirectoryName;
-
-			string pushSettingsJSON;
-			try
-			{
-				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\PushSettings");
-			}
-			catch
-			{
-				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\PushSettingsDefault");
-				File.Copy(exePath + @"\PushAppConfig", exePath + @"\PushSettings", true);
-			}
-
-			settings = new PushSettings();
-			// Convert to object...
-			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
-			settings.ExePath = exePath;
-
-			// Hydrate the Source and Target Listboxes
-			LoadSource();
 			LoadTarget();
 
 		} // END_METHOD

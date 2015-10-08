@@ -80,7 +80,7 @@ namespace Push
 				return;
 
 			string json = new JavaScriptSerializer().Serialize(settings);
-			string path = settings.ExePath + @"\PushSettings";
+			string path = settings.ExePath + @"\Config\PushSettings";
 			File.WriteAllText(path, json, System.Text.Encoding.ASCII);
 
 		} // END_METHOD
@@ -199,7 +199,13 @@ namespace Push
 
 		#region [ SOURCE PATH ]
 
-		// Source Path...
+		// Source Path - Changed
+		private void textBox1_TextChanged(object sender, EventArgs e)
+		{
+			settings.SourcePath = textBox1.Text;
+		} // END_METHOD
+
+		// Source Path - Validating...
 		private void textBox1_Validating(object sender, CancelEventArgs e)
 		{
 			if (!ValidatePath(textBox1.Text))
@@ -210,7 +216,7 @@ namespace Push
 			}
 		} // END_METHOD
 
-		// Source Path...
+		// Source Path - Validated...
 		private void textBox1_Validated(object sender, EventArgs e)
 		{
 			errorProvider1.SetError(textBox1, "");
@@ -242,7 +248,13 @@ namespace Push
 
 		#region [ TARGET PATH ]
 
-		// Target Path..
+		// Target Path - Changed
+		private void textBox2_TextChanged(object sender, EventArgs e)
+		{
+			settings.TargetPath = textBox2.Text;
+		} // END_METHOD
+
+		// Target Path - Validating...
 		private void textBox2_Validating(object sender, CancelEventArgs e)
 		{
 			if (!ValidatePath(textBox2.Text))
@@ -254,7 +266,7 @@ namespace Push
 
 		} // END_METHOD
 
-		// Target Path...
+		// Target Path - Validated...
 		private void textBox2_Validated(object sender, EventArgs e)
 		{
 			errorProvider2.SetError(textBox1, "");
@@ -279,9 +291,13 @@ namespace Push
 				errorProvider2.SetError(textBox2, "");
 				errorProvider2.Dispose();
 			}
-		} // END_METHOD
+		}
+
+
 		
 		#endregion
+
+
 
 
 	} // END_CLASS

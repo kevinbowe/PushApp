@@ -32,8 +32,10 @@
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.radioButton4 = new System.Windows.Forms.RadioButton();
 			this.radioButton3 = new System.Windows.Forms.RadioButton();
 			this.radioButton2 = new System.Windows.Forms.RadioButton();
+			this.radioButton1 = new System.Windows.Forms.RadioButton();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
@@ -52,8 +54,6 @@
 			this.button8 = new System.Windows.Forms.Button();
 			this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
 			this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
-			this.radioButton1 = new System.Windows.Forms.RadioButton();
-			this.radioButton4 = new System.Windows.Forms.RadioButton();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -95,6 +95,18 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Duplicate Handling";
 			// 
+			// radioButton4
+			// 
+			this.radioButton4.AutoSize = true;
+			this.radioButton4.Enabled = false;
+			this.radioButton4.Location = new System.Drawing.Point(289, 19);
+			this.radioButton4.Name = "radioButton4";
+			this.radioButton4.Size = new System.Drawing.Size(58, 17);
+			this.radioButton4.TabIndex = 6;
+			this.radioButton4.TabStop = true;
+			this.radioButton4.Text = "Cancel";
+			this.radioButton4.UseVisualStyleBackColor = true;
+			// 
 			// radioButton3
 			// 
 			this.radioButton3.AutoSize = true;
@@ -121,6 +133,19 @@
 			this.radioButton2.UseVisualStyleBackColor = true;
 			this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
 			// 
+			// radioButton1
+			// 
+			this.radioButton1.AutoSize = true;
+			this.radioButton1.Enabled = false;
+			this.radioButton1.Location = new System.Drawing.Point(6, 19);
+			this.radioButton1.Name = "radioButton1";
+			this.radioButton1.Size = new System.Drawing.Size(70, 17);
+			this.radioButton1.TabIndex = 3;
+			this.radioButton1.TabStop = true;
+			this.radioButton1.Text = "Overwrite";
+			this.radioButton1.UseVisualStyleBackColor = true;
+			this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+			// 
 			// checkBox1
 			// 
 			this.checkBox1.AutoSize = true;
@@ -138,6 +163,7 @@
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(191, 20);
 			this.textBox1.TabIndex = 3;
+			this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
 			this.textBox1.Validating += new System.ComponentModel.CancelEventHandler(this.textBox1_Validating);
 			this.textBox1.Validated += new System.EventHandler(this.textBox1_Validated);
 			// 
@@ -185,6 +211,7 @@
 			this.textBox2.Name = "textBox2";
 			this.textBox2.Size = new System.Drawing.Size(191, 20);
 			this.textBox2.TabIndex = 6;
+			this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
 			this.textBox2.Validating += new System.ComponentModel.CancelEventHandler(this.textBox2_Validating);
 			this.textBox2.Validated += new System.EventHandler(this.textBox2_Validated);
 			// 
@@ -285,31 +312,6 @@
 			// errorProvider2
 			// 
 			this.errorProvider2.ContainerControl = this;
-			// 
-			// radioButton1
-			// 
-			this.radioButton1.AutoSize = true;
-			this.radioButton1.Enabled = false;
-			this.radioButton1.Location = new System.Drawing.Point(6, 19);
-			this.radioButton1.Name = "radioButton1";
-			this.radioButton1.Size = new System.Drawing.Size(70, 17);
-			this.radioButton1.TabIndex = 3;
-			this.radioButton1.TabStop = true;
-			this.radioButton1.Text = "Overwrite";
-			this.radioButton1.UseVisualStyleBackColor = true;
-			this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-			// 
-			// radioButton4
-			// 
-			this.radioButton4.AutoSize = true;
-			this.radioButton4.Enabled = false;
-			this.radioButton4.Location = new System.Drawing.Point(289, 19);
-			this.radioButton4.Name = "radioButton4";
-			this.radioButton4.Size = new System.Drawing.Size(58, 17);
-			this.radioButton4.TabIndex = 6;
-			this.radioButton4.TabStop = true;
-			this.radioButton4.Text = "Cancel";
-			this.radioButton4.UseVisualStyleBackColor = true;
 			// 
 			// Form2
 			// 
