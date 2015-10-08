@@ -13,7 +13,7 @@ namespace Push
 {
 	public partial class Form2 : Form
 	{
-		public enum DuplicateFileActionState { OverWrite, Rename, Skip, Cancel };
+		public enum DuplicateFileActionState { Overwrite, Rename, Skip, Cancel };
 		public PushSettings settings { get; set; }
 		
 		public Form2()
@@ -27,7 +27,7 @@ namespace Push
 		private void Form2_Load(object sender, EventArgs e)
 		{
 			// Hydrate the controls with the current settings...
-			checkBox1.Checked = settings.DisplayDupeMessage;
+			checkBox1.Checked = settings.HideDupeMessage;
 			textBox1.Text = settings.SourcePath;
 			textBox2.Text = settings.TargetPath;
 			textBox3.Text = settings.FileExtensionFilter;
@@ -36,7 +36,7 @@ namespace Push
 
 			switch (settings.DuplicateFileAction)
 			{
-				case "OverWrite":   radioButton1.Checked = true; break;
+				case "Overwrite":   radioButton1.Checked = true; break;
 				case "Rename":      radioButton2.Checked = true; break;
 				case "Skip":        radioButton3.Checked = true; break;
 				case "Cancel":      
@@ -80,8 +80,9 @@ namespace Push
 				return;
 
 			string json = new JavaScriptSerializer().Serialize(settings);
-			string path = @"C:\SRC\PushApp\PushSettings";
+			string path = settings.ExePath + @"\PushSettings";
 			File.WriteAllText(path, json, System.Text.Encoding.ASCII);
+
 		} // END_METHOD
 		
 
@@ -89,7 +90,7 @@ namespace Push
 
 		private void radioButton1_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DuplicateFileAction = DuplicateFileActionState.OverWrite.ToString("G");
+			settings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
 		} // END_METHOD
 
 		private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -142,7 +143,31 @@ namespace Push
 		// Duplicate Message Checkbox...
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DisplayDupeMessage = checkBox1.Checked;
+			settings.HideDupeMessage = checkBox1.Checked;
+
+			if (checkBox1.Checked)
+			{
+				
+				
+				// Enable Duplicate Action radio buttons...
+				groupBox1.Enabled = true;
+				radioButton1.Enabled = true;
+				radioButton2.Enabled = true;
+				radioButton3.Enabled = true;
+				radioButton4.Enabled = true;
+			}
+			else
+			{
+				groupBox1.Enabled = false;
+				// Disable Duplicate Action radio buttons...
+				radioButton1.Enabled = false;
+				radioButton2.Enabled = false;
+				radioButton3.Enabled = false;
+				radioButton4.Enabled = false;
+			}
+
+
+
 		} // END_METHOD		
 		
 		// Splash Screen...

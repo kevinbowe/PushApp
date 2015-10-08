@@ -19,6 +19,7 @@ namespace Push
 	{
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
 		PushSettings settings;
+
 	
 		public Form1()
 		{
@@ -26,13 +27,14 @@ namespace Push
 
 		} // END_METHOD
 
+
 		// Load Target ListView...
 		private bool LoadTarget()
 		{
 			// Fetch all of the files in the source filder...
 			if (!Directory.Exists(settings.TargetPath))
 			{
-				listBox1.Items.Add("The Target path does not exist!");
+				//listBox1.Items.Add("The Target path does not exist!");
 				return false;
 			}
 
@@ -74,6 +76,7 @@ namespace Push
 			return true;
 		} // END_METHOD
 
+
 		private ArrayList LoadFileExtensions()
 		{
 			ArrayList FileExtensionArrayList;
@@ -83,15 +86,15 @@ namespace Push
 			FileExtensionArrayList = new ArrayList(fefArray);
 			return FileExtensionArrayList;
 		}
+
 		
 		// Load Source ListView...
 		private bool LoadSource()
 		{
-			
 			// Fetch all of the files in the source filder...
 			if (!Directory.Exists(settings.SourcePath))
 			{
-				listBox1.Items.Add("The Source path do not exist!");
+				//listBox1.Items.Add("The Source path do not exist!");
 				return false;
 			}
 
@@ -132,17 +135,29 @@ namespace Push
 		} // END_METHOD
 
 
-
 		// Copy Files from Source folder to Target folder...
 		private void button1_Click(object sender, EventArgs e)
 		{
-			// Decl...
 			ArrayList fileSourceArrayList = new ArrayList();
 			
-			// Validation..
+			// Validation...
 			if (!Directory.Exists(settings.SourcePath) || !Directory.Exists(settings.TargetPath))
 			{
-				listBox1.Items.Add("The Source or Target path do not exist!");
+				LoadConfigurationDialog();
+				return;
+			}
+
+			// Validation...
+			if (settings.SourcePath.Equals(settings.TargetPath))
+			{
+				LoadConfigurationDialog();
+				return;
+			}
+
+			// Validation...
+			if (string.IsNullOrEmpty(settings.SourcePath) || string.IsNullOrEmpty(settings.TargetPath))
+			{
+				LoadConfigurationDialog();
 				return;
 			}
 
@@ -194,49 +209,83 @@ namespace Push
 			}
 			else
 			{
-				cTaskDialog.ForceEmulationMode = true; 
-				cTaskDialog.EmulatedFormWidth = 450;
-				
-				DialogResult res =
-						cTaskDialog.ShowTaskDialogBox(
-						this,
-						"Duplicate Files Found",
-						string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
-						"What would you like to do?",
-						"Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value. " +
-							"When multiple copies exist the latest duplicate will always have the highest value.\n\n" +
-							"These settings may be modified in the Configuration Dialog.",
-						string.Empty,
-						"Don't show me this message again",
-						string.Empty,
-						"Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
-						eTaskDialogButtons.None,
-						eSysIcons.Information,
-						eSysIcons.Warning);
-
-
-				//-------------------------------------------------------------
-				// Based on the configuration above, DialogResult and RadioButtonResult is ignored...
-
-				// Use this value to prevent the TaskDialog from displaying...
-				bool verify = cTaskDialog.VerificationChecked;
-
-				switch ((commandResult)cTaskDialog.CommandButtonResult)
+				// Check Display Dupe Message...
+				//TODO: Flip the IF/ELSE code blocks and remove the '!'...
+				if (!settings.HideDupeMessage)
 				{
-					case commandResult.Rename:
-						RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath , settings.SourcePath);
-						break;
-					case commandResult.Skip:
-						fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath , settings.SourcePath);
-						break;
-					case commandResult.Cancel:
-						return;
-					case commandResult.Overwrite:
-					default:
-						CopyOverwrite(fileSourceArrayList, settings.TargetPath);
-						break;
 
-				} // END SWITCH
+					cTaskDialog.ForceEmulationMode = true;
+					cTaskDialog.EmulatedFormWidth = 450;
+
+					DialogResult res =
+							cTaskDialog.ShowTaskDialogBox(
+							this,
+							"Duplicate Files Found",
+							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
+							"What would you like to do?",
+							"Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value. " +
+								"When multiple copies exist the latest duplicate will always have the highest value.\n\n" +
+								"These settings may be modified in the Configuration Dialog.",
+							string.Empty,
+							"Don't show me this message again",
+							string.Empty,
+							"Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
+							eTaskDialogButtons.None,
+							eSysIcons.Information,
+							eSysIcons.Warning);
+
+					//-------------------------------------------------------------
+					// Based on the configuration above, DialogResult and RadioButtonResult is ignored...
+
+					if (cTaskDialog.VerificationChecked)
+					{
+						// If we get here, the Display Dupe Message checkbox 
+						//		has been deselected. Save the currently selected 
+						//		action to settings...
+						settings.HideDupeMessage = cTaskDialog.VerificationChecked;
+						settings.DuplicateFileAction = Enum.GetName(typeof(commandResult), cTaskDialog.CommandButtonResult);
+					}
+
+					switch ((commandResult)cTaskDialog.CommandButtonResult)
+					{
+						case commandResult.Rename:
+							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Skip:
+							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Cancel:
+							return;
+						case commandResult.Overwrite:
+						default:
+							CopyOverwrite(fileSourceArrayList, settings.TargetPath);
+							break;
+
+					} // END SWITCH
+				}
+				else
+				{
+					//---------------------------------------------------------
+					// If we get here, Display dupe message is false.
+					// Perform whatever Duplicate File Action is set...
+
+					switch ((commandResult)Enum.Parse(typeof(commandResult), settings.DuplicateFileAction))
+					{
+						case commandResult.Rename:
+							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Skip:
+							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Cancel:
+							return;
+						case commandResult.Overwrite:
+						default:
+							CopyOverwrite(fileSourceArrayList, settings.TargetPath);
+							break;
+					} // END SWITCH
+
+				} // END_IF_ELSE
 
 			}
 
@@ -291,7 +340,26 @@ namespace Push
 			// Update Source & Target Listboxes...
 			LoadSource();
 			LoadTarget();
-		}
+
+		} // END_METHOD
+
+
+		private void LoadConfigurationDialog()
+		{
+			string s = string.Empty;
+			Form2 dlg = new Form2();
+			// Copy the current settings into the Configuration form...
+			dlg.settings = settings;
+			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
+			else s = "Cancel";
+
+			// Copy settings...
+			settings = dlg.settings;
+
+			dlg.Dispose();
+
+		} // END_METHOD
+
 
 		private void RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
 		{
@@ -394,6 +462,7 @@ namespace Push
 
 		} // END_METHOD
 
+
 		private ArrayList SkipDuplicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
 		{
 			/*  
@@ -448,7 +517,9 @@ namespace Push
 			} // END_FOREACH_OUTER
 
 			return deleteSourceArrayList;
+
 		} // END_METHOD
+
 
 		private void CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
 		{
@@ -464,7 +535,9 @@ namespace Push
 				listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
 				listBox1.Update();
 			}
+
 		} // END_METHOD
+
 
 		// DEVELOPMENT ONLY -- Reset Application...
 		private void button2_Click(object sender, EventArgs e){
@@ -494,7 +567,7 @@ namespace Push
 
 			if (!Directory.Exists(settings.SourcePath) || !Directory.Exists(settings.TargetPath))
 			{
-				listBox1.Items.Add("The Source or Target path do not exist!");
+				//listBox1.Items.Add("The Source or Target path do not exist!");
 				return;
 			}
 
@@ -555,23 +628,41 @@ namespace Push
 			LoadSource();
 
 			LoadTarget();
+
 		} // END_METHOD
+
 
 		// Empty... 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			// Load settings...
-			settings = new PushSettings();
 			// Open and read PushSettings file...
-			string pushSettingsJSON = System.IO.File.ReadAllText(@"C:\SRC\PushApp\PushSettings");
+
+			// Fetch the path where the application is running...
+			FileInfo sourceFileInfo = new FileInfo("Push.exe");
+			string exePath = sourceFileInfo.DirectoryName;
+
+			string pushSettingsJSON;
+			try
+			{
+				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\PushSettings");
+			}
+			catch
+			{
+				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\PushSettingsDefault");
+				File.Copy(exePath + @"\PushAppConfig", exePath + @"\PushSettings", true);
+			}
+
+			settings = new PushSettings();
 			// Convert to object...
 			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
+			settings.ExePath = exePath;
 
 			// Hydrate the Source and Target Listboxes
 			LoadSource();
 			LoadTarget();
 
 		} // END_METHOD
+
 
 		#region [ CONSTANTS ]
 
@@ -610,6 +701,7 @@ namespace Push
 
 		#endregion
 
+
 		public static string GetFileTypeDescription(string fileNameOrExtension)
 		{
 			SHFILEINFO shfi;
@@ -623,10 +715,12 @@ namespace Push
 				return shfi.szTypeName;
 			}
 			return null;
-		}
+		} // END_METHOD
+
 
 		[DllImport("shell32")]
 		private static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, out SHFILEINFO psfi, uint cbFileInfo, uint flags);
+
 
 		#region [ STRUCT ]
 		[StructLayout(LayoutKind.Sequential)]
@@ -641,9 +735,11 @@ namespace Push
 			public string szTypeName;
 		} // END_STRUCT
 		#endregion
+
 		
 		[DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
 		public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
+
 
 		/// <summary>
 		/// Converts a numeric value into a string that represents the number expressed as a size value in bytes, kilobytes, megabytes, or gigabytes, depending on the size.
@@ -655,7 +751,8 @@ namespace Push
 			StringBuilder sb = new StringBuilder(11);
 			StrFormatByteSize(filesize, sb, sb.Capacity);
 			return sb.ToString();
-		}
+
+		} // END_METHOD
 
 
 		// Refresh Form...
@@ -663,39 +760,35 @@ namespace Push
 		{
 			LoadSource();
 			LoadTarget();
-		}
+
+		} // END_METHOD
+
+
+		#region [ TOOL STRIP ]
 
 		private void toolStripButton1_Click(object sender, EventArgs e)
 		{
 			button1_Click(sender, e);
-		}
+		} // END_METHOD
 
 		private void toolStripButton2_Click(object sender, EventArgs e)
 		{
 			button3_Click(sender, e);
-		}
+		} // END_METHOD
 
 		private void toolStripButton3_Click(object sender, EventArgs e)
 		{
-			string s = string.Empty;
-			Form2 dlg = new Form2();
-			// Copy the current settings into the Configuration form...
-			dlg.settings = settings;
-			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
-			else s = "Cancel";
-
-			// Copy settings...
-			settings = dlg.settings;
-
-			dlg.Dispose();
-
+			LoadConfigurationDialog();
 		} // END_METHOD
+		
+		#endregion
+
 
 	} // END_CLASS
 
 	public class PushSettings
 	{
-		public bool DisplayDupeMessage;
+		public bool HideDupeMessage;
 		public string SourcePath;
 		public string TargetPath;
 		public string FileExtensionFilter;
@@ -704,8 +797,8 @@ namespace Push
 		public bool DisableSplashScreen;
 		public bool DisableXMLOptions;
 
+		public string ExePath;
+
 	} // END_CLASS
-
-
 
 } // END_NAMESPACE
