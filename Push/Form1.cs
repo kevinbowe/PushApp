@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,150 +8,126 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
-
+//---
 using PSTaskDialog;
 using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
 
 namespace Push
 {
 	public partial class Form1 : Form
 	{
+		enum commandResult { Overwrite, Rename, Skip, Cancel };
+		PushSettings settings;
+
+	
 		public Form1()
 		{
 			InitializeComponent();
 
+		} // END_METHOD
+
+
+		// Load data...
+		private void Form1_Load(object sender, EventArgs e)
+		{
+			// Open and read PushSettings file...
+
+			// Fetch the path where the application is running...
+			FileInfo sourceFileInfo = new FileInfo("Push.exe");
+			string exePath = sourceFileInfo.DirectoryName;
+
+			string pushSettingsJSON;
+			try
+			{
+				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettings");
+			}
+			catch
+			{
+				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettingsDefault");
+				File.Copy(exePath + @"\Config\PushSettingsDefault", exePath + @"\Config\PushSettings", true);
+			}
+
+			settings = new PushSettings();
+			// Convert to object...
+			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
+			settings.ExePath = exePath;
+
 			// Hydrate the Source and Target Listboxes
-			LoadSource();
-			LoadTarget();
+			LoadListView(listView1, settings.SourcePath);
+			LoadListView(listView2, settings.TargetPath);
 		} // END_METHOD
 
-		// Load Target ListView...
-		private bool LoadTarget()
+
+		// Load Source or Target ListView...
+		private bool LoadListView(ListView DestinationListView, string DestinationPath)
 		{
 			// Fetch all of the files in the source filder...
-			string targetPath = @"T:\";  //string targetPath = @"C:\DEV_TARGET";
+			if (!Directory.Exists(DestinationPath)) return false;
 
-			if (!Directory.Exists(targetPath))
+			DestinationListView.Items.Clear();
+
+			List<string> fileExtensionList = new List<string>();
+			fileExtensionList.AddRange(LoadFileExtensions());
+
+			List<string> fileSourceArrayList = new List<string>();
+			foreach (string FileExtension in fileExtensionList)
 			{
-				listBox1.Items.Add("The Target path do not exist!");
-				return false;
+				fileSourceArrayList.AddRange(Directory.GetFiles(DestinationPath, FileExtension));
 			}
 
-			string[] filesStrArray = Directory.GetFiles(targetPath);
-
-			listView2.Items.Clear();
-
-			// File extension types
-			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
-
-			ArrayList fileSourceArrayList = new ArrayList();
-
-			foreach (string ext in FileExtensionArrayList)
+			foreach (string file in fileSourceArrayList)
 			{
-				// Create extension...
-				string fileExtension = "*." + ext;
-				string[] fileSourceStrArray = Directory.GetFiles(targetPath, fileExtension);
+				FileInfo fileInfo = new FileInfo(file);
+				//
+				string fileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
+				string friendlyFileType = GetFileTypeDescription(file);
+				string friendlyFileSize = StrFormatByteSize(fileInfo.Length);
+				string fileDate = File.GetCreationTime(file).ToString("MM/dd/yyyy h:mm tt");
 
-				if (fileSourceStrArray.Length <= 0) continue;
-
-				foreach (string s in fileSourceStrArray) fileSourceArrayList.Add(s);
+				ListViewItem itemArray = new ListViewItem(new string[] 
+						{ fileName, friendlyFileType, friendlyFileSize, fileDate });
+				DestinationListView.Items.Add(itemArray);
 
 			} // END_FOREACH
 
-			foreach (string s in fileSourceArrayList)
-			{
-
-				FileInfo targetFileInfo = new FileInfo(s);
-
-				string friendlyFileSize = StrFormatByteSize(targetFileInfo.Length);
-				DateTime fileDate = File.GetCreationTime(s);
-				string friendlyFileType = GetFileTypeDescription(s);
-				string fileName = Path.GetFileNameWithoutExtension(targetFileInfo.Name);
-
-				ListViewItem item = new ListViewItem(fileName);
-				item.SubItems.Add(friendlyFileType);
-				item.SubItems.Add(friendlyFileSize);
-				item.SubItems.Add(fileDate.ToString("MM/dd/yyyy h:mm tt"));
-				// 
-				ListViewItem[] itemArray = new ListViewItem[] { item };
-				listView2.Items.Add(item);
-			}
-
 			return true;
+
 		} // END_METHOD
-		
-		// Load Source ListView...
-		private bool LoadSource()
+
+
+		private List<string> LoadFileExtensions()
 		{
-			
-			// Fetch all of the files in the source filder...
-			string sourcePath = @"S:\";
-			
-			if (!Directory.Exists(sourcePath))
-			{
-				listBox1.Items.Add("The Source path do not exist!");
-				return false;
-			}
-			
-			string[] filesStrArray = Directory.GetFiles(sourcePath);
-
-			//listBox2.Items.Clear();
-
-			listView1.Items.Clear();
-
 			// File extension types
-			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
-
-			ArrayList fileSourceArrayList = new ArrayList();
-
-			foreach (string ext in FileExtensionArrayList)
-			{
-				// Create extension...
-				string fileExtension = "*." + ext;
-				string[] fileSourceStrArray = Directory.GetFiles(sourcePath, fileExtension);
-
-				if (fileSourceStrArray.Length <= 0) continue;
-				
-				foreach (string s in fileSourceStrArray) fileSourceArrayList.Add(s);
-			} // END_FOREACH
-
-			foreach (string s in fileSourceArrayList/*filesStrArray*/)
-			{
-				FileInfo sourceFileInfo = new FileInfo(s);
-				string friendlyFileSize = StrFormatByteSize(sourceFileInfo.Length);
-				DateTime fileDate = File.GetCreationTime(s);
-				string friendlyFileType = GetFileTypeDescription(s);
-				string fileName = Path.GetFileNameWithoutExtension(sourceFileInfo.Name);
-
-				ListViewItem item = new ListViewItem(fileName);
-				item.SubItems.Add(friendlyFileType); 
-				item.SubItems.Add(friendlyFileSize);
-				item.SubItems.Add(fileDate.ToString("MM/dd/yyyy h:mm tt"));
-				// 
-				ListViewItem[] itemArray = new ListViewItem[] {item};
-				listView1.Items.Add(item);
-			}
-
-			return true;
+			string[] delimiters = new string[] { ";", "; ", "|", "| ", " |", " | ", ":", ": ", " " };
+			string[] fefArray = settings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
+			return new List<string>(fefArray);
 		} // END_METHOD
 
-		enum commandResult { Overwrite, Rename, Skip, Cancel }; 
 
 		// Copy Files from Source folder to Target folder...
 		private void button1_Click(object sender, EventArgs e)
 		{
-			// Decl...
 			ArrayList fileSourceArrayList = new ArrayList();
 			
-			// Paths...
-			string sourcePath = @"S:\";
-			string targetPath = @"T:\";
-			//string targetPath = @"\\Ml\XP_TARGET";
-
-			// Validation..
-			if (!Directory.Exists(sourcePath) || !Directory.Exists(targetPath) )
+			// Validation...
+			if (!Directory.Exists(settings.SourcePath) || !Directory.Exists(settings.TargetPath))
 			{
-				listBox1.Items.Add("The Source or Target path do not exist!");
+				LoadConfigurationDialog();
+				return;
+			}
+
+			// Validation...
+			if (settings.SourcePath.Equals(settings.TargetPath))
+			{
+				LoadConfigurationDialog();
+				return;
+			}
+
+			// Validation...
+			if (string.IsNullOrEmpty(settings.SourcePath) || string.IsNullOrEmpty(settings.TargetPath))
+			{
+				LoadConfigurationDialog();
 				return;
 			}
 
@@ -159,14 +135,12 @@ namespace Push
 			listBox1.Items.Clear();
 
 			// File extension types...
-			ArrayList FileExtensionArrayList = new ArrayList() {"TIFF","TIF","JPGE","JPG"};
+			List<string> FileExtensionArrayList = LoadFileExtensions();
 			
 			// Build list of file to copy... 
-			foreach(string ext in FileExtensionArrayList)
+			foreach (string fileExtension in FileExtensionArrayList)
 			{
-				// Create extension...
-				string fileExtension = "*." + ext;
-				string[] fileSourceStrArray = Directory.GetFiles(sourcePath, fileExtension);
+				string[] fileSourceStrArray = Directory.GetFiles(settings.SourcePath, fileExtension);
 
 				if (fileSourceStrArray.Length <= 0) 
 					continue;
@@ -176,7 +150,7 @@ namespace Push
 			} // END_FOREACH
 
 			// Build a list of files on the target folder...
-			string[] fileTargetStrArray = System.IO.Directory.GetFiles(targetPath);
+			string[] fileTargetStrArray = System.IO.Directory.GetFiles(settings.TargetPath);
 			int dupeFileCount = 0;
 			// OUTER LOOP -- Iterate over each file in the target list...
 			foreach (string t in fileTargetStrArray)
@@ -201,55 +175,90 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				CopyOverwrite(fileSourceArrayList, targetPath);
+				CopyOverwrite(fileSourceArrayList, settings.TargetPath);
 			}
 			else
 			{
-				cTaskDialog.ForceEmulationMode = true; 
-				cTaskDialog.EmulatedFormWidth = 450;
-				
-				DialogResult res =
-						cTaskDialog.ShowTaskDialogBox(
-						this,
-						"Duplicate Files Found",
-						string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
-						"What would you like to do?",
-						"Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value. " +
-							"When multiple copies exist the latest duplicate will always have the highest value.\n\n" +
-							"These settings may be modified in the Configuration Dialog.",
-						string.Empty,
-						"Don't show me this message again",
-						string.Empty,
-						"Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
-						eTaskDialogButtons.None,
-						eSysIcons.Information,
-						eSysIcons.Warning);
 
-
-				//-------------------------------------------------------------
-				// Based on the configuration above, DialogResult and RadioButtonResult is ignored...
-
-				// Use this value to prevent the TaskDialog from displaying...
-				bool verify = cTaskDialog.VerificationChecked;
-
-				switch ((commandResult)cTaskDialog.CommandButtonResult)
+				if (settings.HideDupeMessage)
 				{
-					case commandResult.Rename:
-						RenameDulpicates(fileSourceArrayList, fileTargetStrArray, targetPath, sourcePath);
-						break;
-					case commandResult.Skip:
-						fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, targetPath, sourcePath);
-						break;
-					case commandResult.Cancel:
-						return;
-					case commandResult.Overwrite:
-					default:
-						CopyOverwrite(fileSourceArrayList, targetPath);
-						break;
+					//---------------------------------------------------------
+					// If we get here, perform whatever Dupe File Action has been configured...
 
-				} // END SWITCH
+					switch ((commandResult)Enum.Parse(typeof(commandResult), settings.DuplicateFileAction))
+					{
+						case commandResult.Rename:
+							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Skip:
+							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Cancel:
+							return;
+						case commandResult.Overwrite:
+						default:
+							CopyOverwrite(fileSourceArrayList, settings.TargetPath);
+							break;
+					} // END SWITCH
 
-			}
+				}
+				else
+				{
+					//---------------------------------------------------------
+					// If we get here, Hide Dupe Message checkbox is false.
+
+					cTaskDialog.ForceEmulationMode = true;
+					cTaskDialog.EmulatedFormWidth = 450;
+
+					DialogResult res =
+							cTaskDialog.ShowTaskDialogBox(
+							this,
+							"Duplicate Files Found",
+							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
+							"What would you like to do?",
+							"Renamed files will have the format: original_File_Name(n).ext, where (n) is a numeric value. " +
+								"When multiple copies exist the latest duplicate will always have the highest value.\n\n" +
+								"These settings may be modified in the Configuration Dialog.",
+							string.Empty,
+							"Don't show me this message again",
+							string.Empty,
+							"Overwrite All Duplicates|Copy/Rename All Duplicates|Skip All Duplicates|Cancel Copy",
+							eTaskDialogButtons.None,
+							eSysIcons.Information,
+							eSysIcons.Warning);
+
+					//-------------------------------------------------------------
+					// Based on the configuration above, DialogResult and RadioButtonResult is ignored...
+
+					if (cTaskDialog.VerificationChecked)
+					{
+						// If we get here, the Display Dupe Message checkbox 
+						//		has been deselected. Save the currently selected 
+						//		action to settings...
+						settings.HideDupeMessage = cTaskDialog.VerificationChecked;
+						settings.DuplicateFileAction = Enum.GetName(typeof(commandResult), cTaskDialog.CommandButtonResult);
+					}
+
+					switch ((commandResult)cTaskDialog.CommandButtonResult)
+					{
+						case commandResult.Rename:
+							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Skip:
+							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							break;
+						case commandResult.Cancel:
+							return;
+						case commandResult.Overwrite:
+						default:
+							CopyOverwrite(fileSourceArrayList, settings.TargetPath);
+							break;
+
+					} // END SWITCH
+
+				} // END_IF_ELSE HideDupeMessage
+
+			} // END_IF_ELSE DupeFileCount
 
 			/*----------------------------------------------------------------- 
 			 * If we get here, all of the files have been copied from the source folder to 
@@ -259,7 +268,7 @@ namespace Push
 			 *----------------------------------------------------------------*/
 
 			// Rebuild the Target file list with the new files that have been copied...
-			fileTargetStrArray = System.IO.Directory.GetFiles(targetPath);
+			fileTargetStrArray = System.IO.Directory.GetFiles(settings.TargetPath);
 
 			#region [ DELETE COPIED FILES ]
 			// OUTER LOOP -- Iterate over each file in the target list...
@@ -300,9 +309,28 @@ namespace Push
 			listBox1.Update();
 
 			// Update Source & Target Listboxes...
-			LoadSource();
-			LoadTarget();
-		}
+			LoadListView(listView1, settings.SourcePath);
+			LoadListView(listView2, settings.TargetPath);
+
+		} // END_METHOD
+
+
+		private void LoadConfigurationDialog()
+		{
+			string s = string.Empty;
+			Form2 dlg = new Form2();
+			// Copy the current settings into the Configuration form...
+			dlg.settings = settings;
+			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
+			else s = "Cancel";
+
+			// Copy settings...
+			settings = dlg.settings;
+
+			dlg.Dispose();
+
+		} // END_METHOD
+
 
 		private void RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
 		{
@@ -405,6 +433,7 @@ namespace Push
 
 		} // END_METHOD
 
+
 		private ArrayList SkipDuplicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
 		{
 			/*  
@@ -423,8 +452,6 @@ namespace Push
 				// INNER_LOOP -- Iterate over each file in the source list...
 				foreach (string t in fileTargetStrArray)
 				{
-					//FileInfo sourceFileInfo = new FileInfo(s);
-					//if (targetFileInfo.Name.Equals(sourceFileInfo.Name, StringComparison.Ordinal))
 					FileInfo targetFileInfo = new FileInfo(t);
 					if (sourceFileInfo.Name.Equals(targetFileInfo.Name, StringComparison.Ordinal))
 					{
@@ -443,18 +470,12 @@ namespace Push
 					// Copy the source file to the target folder...
 					string sourcefileName = Path.GetFileName(s);
 					string destFileName = Path.Combine(targetPath, sourcefileName);
-	
-
 
 					File.Copy(s, destFileName, true);
 
-					
-					
 					// Update the lisst of files that should be deleted from the source folder...
 					//      Verify that 't' is the correct file name...
 					deleteSourceArrayList.Add(s);
-
-
 
 					// Update UI...
 					listBox1.Items.Add("Copying " + s + " to " + destFileName);
@@ -466,16 +487,10 @@ namespace Push
 
 			} // END_FOREACH_OUTER
 
-
-
-
-
-
-
-
 			return deleteSourceArrayList;
-			//...throw new NotImplementedException();
+
 		} // END_METHOD
+
 
 		private void CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
 		{
@@ -491,116 +506,9 @@ namespace Push
 				listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
 				listBox1.Update();
 			}
-		} // END_METHOD
-
-		// DEVELOPMENT ONLY -- Reset Application...
-		private void button2_Click(object sender, EventArgs e){
-
-			//-----------------------------------------------------------------
-			//  Clear the Target Folder
-			
-			//... NOTE: This value MUST be fetched from the configuration data...
-			string targetPath = @"T:\";
-			
-			string[] filesStrArray = Directory.GetFiles(targetPath);
-			foreach (string s in filesStrArray) 
-				File.Delete(s);
-
-			//-----------------------------------------------------------------
-			//  Clear the Source Folder
-
-			//... NOTE: This value MUST be fetched from the configuration data...
-			string sourcePath = @"S:\";
-
-			filesStrArray = Directory.GetFiles(sourcePath);
-			foreach (string t in filesStrArray) 
-				File.Delete(t);
-
-
-			//-----------------------------------------------------------------
-			//  Initialize the Source Folder with Test Data
-
-			string testSourcePicturesDataPath = @"C:\DEV_TESTDATA\Pictures";
-			string testTargetPicturesDataPath = @"C:\DEV_TESTDATA\TargetPictures";
-
-
-			// File extension types
-			ArrayList FileExtensionArrayList = new ArrayList() { "TIFF", "TIF", "JPGE", "JPG" };
-
-			if (!Directory.Exists(sourcePath) || !Directory.Exists(targetPath))
-			{
-				listBox1.Items.Add("The Source or Target path do not exist!");
-				return;
-			}
-
-			ArrayList fileTestDataArrayList = new ArrayList();
-
-			//-----------------------------------------------------------------
-			// Load the Source folder with test data...
-			foreach (string ext in FileExtensionArrayList)
-			{
-				// Create extension...
-				string fileExtension = "*." + ext;
-				string[] fileTestDataStrArray = Directory.GetFiles(testSourcePicturesDataPath, fileExtension);
-
-				if (fileTestDataStrArray.Length <= 0) 
-					continue;
-
-				foreach (string s in fileTestDataStrArray) 
-					fileTestDataArrayList.Add(s);
-			} // END_FOREACH
-
-			string testDataFileName;
-			string destFileName;
-			foreach (string s in fileTestDataArrayList)
-			{
-				// Use static Path methods to extract only the file name from the path.
-				testDataFileName = Path.GetFileName(s);
-				destFileName = Path.Combine(sourcePath, testDataFileName);
-				File.Copy(s, destFileName, true);
-			}
-
-			//-----------------------------------------------------------------
-			// Load the Target folder with test data...
-			fileTestDataArrayList.Clear();
-			foreach (string ext in FileExtensionArrayList)
-			{
-				// Create extension...
-				string fileExtension = "*." + ext;
-				string[] fileTestDataStrArray = Directory.GetFiles(testTargetPicturesDataPath, fileExtension);
-
-				if (fileTestDataStrArray.Length <= 0)
-					continue;
-
-				foreach (string s in fileTestDataStrArray)
-					fileTestDataArrayList.Add(s);
-			} // END_FOREACH
-
-			testDataFileName = string.Empty;
-			destFileName = string.Empty;
-			foreach (string s in fileTestDataArrayList)
-			{
-				// Use static Path methods to extract only the file name from the path.
-				testDataFileName = Path.GetFileName(s);
-				destFileName = Path.Combine(targetPath, testDataFileName);
-				File.Copy(s, destFileName, true);
-			}
-
-			//-----------------------------------------------------------------
-			// Clear the status list box...
-			listBox1.Items.Clear();
-
-			// Hydrate the Source and Target Listboxes
-			LoadSource();
-
-			LoadTarget();
-		} // END_METHOD
-
-		// Empty... 
-		private void Form1_Load(object sender, EventArgs e)
-		{
 
 		} // END_METHOD
+
 
 		#region [ CONSTANTS ]
 
@@ -639,6 +547,7 @@ namespace Push
 
 		#endregion
 
+
 		public static string GetFileTypeDescription(string fileNameOrExtension)
 		{
 			SHFILEINFO shfi;
@@ -652,10 +561,12 @@ namespace Push
 				return shfi.szTypeName;
 			}
 			return null;
-		}
+		} // END_METHOD
+
 
 		[DllImport("shell32")]
 		private static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, out SHFILEINFO psfi, uint cbFileInfo, uint flags);
+
 
 		#region [ STRUCT ]
 		[StructLayout(LayoutKind.Sequential)]
@@ -670,9 +581,11 @@ namespace Push
 			public string szTypeName;
 		} // END_STRUCT
 		#endregion
+
 		
 		[DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
 		public static extern long StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
+
 
 		/// <summary>
 		/// Converts a numeric value into a string that represents the number expressed as a size value in bytes, kilobytes, megabytes, or gigabytes, depending on the size.
@@ -684,15 +597,209 @@ namespace Push
 			StringBuilder sb = new StringBuilder(11);
 			StrFormatByteSize(filesize, sb, sb.Capacity);
 			return sb.ToString();
-		}
 
-
-		// Refresh Form...
-		private void button3_Click(object sender, EventArgs e)
-		{
-			LoadSource();
-			LoadTarget();
 		} // END_METHOD
 
+
+		#region [ TOOL STRIP ]
+
+		private void toolStripButton1_Click(object sender, EventArgs e)
+		{
+			button1_Click(sender, e);
+		} // END_METHOD
+
+		private void toolStripButton2_Click(object sender, EventArgs e)
+		{
+			LoadListView(listView1, settings.SourcePath);
+			LoadListView(listView2, settings.TargetPath);
+			//button3_Click(sender, e);
+		} // END_METHOD
+
+		private void toolStripButton3_Click(object sender, EventArgs e)
+		{
+			LoadConfigurationDialog();
+		}
+
+		#endregion
+
+
+		#region [ DEBUG BUTTONS ]
+
+		// DEBUG Button - MistyRose -- Reset source and target data...
+		private void button2_Click(object sender, EventArgs e)
+		{
+			DEBUG_MistyRose();
+		} // END_METHOD
+
+		private void DEBUG_MistyRose()
+		{
+			DEBUG_InitFolders();
+
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", settings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\TargetPictures", settings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+			listBox1.Items.Clear();
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(listView1, settings.SourcePath);
+			LoadListView(listView2, settings.TargetPath);
+		}
+
+		private void DEBUG_InitFolders()
+		{
+			// Generate a collection of ALL files, source and target, that must be deleted...
+			List<string> fileList = new List<string>(Directory.GetFiles(settings.SourcePath) );
+			fileList.AddRange( new List<string>(Directory.GetFiles(settings.TargetPath)) );
+			
+			foreach (string file in fileList) 
+				File.Delete(file);
+
+		} // END_METHOD
+		
+		private void DEBUG_LoadFolderTestData(string TestDataPath, string destinationPath)
+		{
+
+			List<string> fileExtensionList = new List<string>();
+			// This nasty cast & converstion is required because LoadFileExtensions( ) returns <ArrayList>...
+			//		TODO: Update this code after revising LoadFileExtensions( ) to return List<string> collection...
+			//...fileExtensionList.AddRange((String[])LoadFileExtensions().ToArray(typeof(string)));
+			fileExtensionList.AddRange(LoadFileExtensions());
+
+			List<string> fileTestDataList = new List<string>();
+			foreach (string fileExtension in fileExtensionList)
+			{
+				fileTestDataList.AddRange(Directory.GetFiles(TestDataPath, fileExtension));
+			} // END_FOREACH
+
+			foreach (string s in fileTestDataList)
+			{
+				File.Copy(s, Path.Combine(destinationPath, Path.GetFileName(s)), true);
+			}
+
+		} // END_METHOD
+		
+		// DEBUG Button - Pale Green -- Reset source and target data...
+		private void button4_Click(object sender, EventArgs e)
+		{
+			DEBUG_PaleGreen();
+		} // END_METHOD
+
+		private void DEBUG_PaleGreen()
+		{
+			DEBUG_InitFolders();
+
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", settings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_2", settings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+			listBox1.Items.Clear();
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(listView1, settings.SourcePath);
+			LoadListView(listView2, settings.TargetPath);
+		}
+
+		// DEBUG Button - Powder Blue -- Reset source and target data...
+		private void button5_Click(object sender, EventArgs e)
+		{
+			DEBUG_PowderBlue();
+		} // END_METHOD
+
+		private void DEBUG_PowderBlue()
+		{
+			DEBUG_InitFolders();
+
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", settings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_1", settings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+			listBox1.Items.Clear();
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(listView1, settings.SourcePath);
+			LoadListView(listView2, settings.TargetPath);
+		}
+		
+		#endregion		
+
+
+		#region [ HOT-KEY // SHORT-CUTS ]
+
+		private bool prefixSeen;
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (prefixSeen)
+			{
+				//-------------------------------------------------------------
+				// If we get here, we are processing the second character of the cord...
+
+				switch (keyData)
+				{
+					// Enter 1 (ONE)...
+					case (Keys.LButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_MistyRose();
+						break;
+					// Enter 2 (TWO)
+					case (Keys.RButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_PaleGreen();
+						break;
+					// ENTER 3 (THREE)
+					case (Keys.LButton | Keys.RButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_PowderBlue();
+						break;
+					default:
+						break;
+				} // END_SWITCH
+
+				prefixSeen = false;
+				return true;
+			}
+
+			// Enter Ctrl+D // Debug prefix...
+			if (keyData == (Keys.Control | Keys.D))
+			{
+				prefixSeen = true;
+				return true;
+			}
+
+			// Enter Ctrl+R // Refresh...
+			if (keyData == (Keys.Control | Keys.R))
+			{
+				LoadListView(listView1, settings.SourcePath);
+				LoadListView(listView2, settings.TargetPath);
+				return true;
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		} // END_METHOD
+		
+		#endregion
+
+
 	} // END_CLASS
+
+
+	public class PushSettings
+	{
+		public bool HideDupeMessage;
+		public string SourcePath;
+		public string TargetPath;
+		public string FileExtensionFilter;
+		public string DuplicateFileAction;
+
+		public bool DisableSplashScreen;
+		public bool DisableXMLOptions;
+
+		public string ExePath;
+
+	} // END_CLASS
+
+
+
+
 } // END_NAMESPACE

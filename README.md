@@ -20,8 +20,42 @@ EDIT WORKSTATION
 The edit workstation is a Win 7/10 PC.  A second Ethernet card provides a link to the scanning workstation.  This P2P network is in a different domain so the scanning workstation is protected.
 
 DEVELOPMENT STATUS
+October 10, 2015
+Merge Configuration Branch
+
+October 9, 2015 - Work-In-Progress: Add Debug Buttons & Re-factor code.
+1) Add two additional debugging button controls.  These controls will be removed later.
+2) Replace LoadSource( ) and LoadTarget( ) with LoadListView(<ListView> view, <string> path).
+3) Re-factored LoadFileExtensions( ) to return List<>.
+4) Replaced many occurrences of ArrayList<> with List<> for efficiency.
+5) Replaced Foreach() with simpler List<>.AddRange() where appropriate.
+6) Re-factored code that loads source & target ListView controls.
+7) Misc code clean up. 
+
+October 9, 2015 - Work-In-Progress: Continued to develop the functionality related to configuring the Push application.
+1) Created a default settings file when the user settings file does not exist. The file is used to create a 'seed' user settings file.  When the seed file is used, the user will be forced to add the required values like source and target folders.
+2) Created a new application folder for the default settings file, file extension filter file and application configuration file (future).
+3) Rearrange Configuration UI controls.
+4) Change how the Duplicate Action radio buttons are displayed when the "Hide Duplicate Message" check box is selected.
+5) Modified the Duplicate action model dialog so it would display in the middle of the main application windows. Previously, it was displaying in the center of the monitor.
+6) Redesign existing code to handle "Don't show this message again" check box.
+7) Rename files so code is easier to understand.
+8) Fixed bugs.
+9) Clean up code.
+
+October 8, 2015 - Work-In-Progress:
+Completed work on settings related to source and target paths. This includes validation, failure notification, clear values and load saved values.
+Completed work on file extension filtering. This includes load saved values, parsing, hydrating file extension array.
+Did a lot of code clean up and some refactoring.
+
+October 5, 2015 - Work-In-Progress:
+Add Button Bar with Run, Refresh, and Configure buttons to Form1 (main application form).
+Add Form2 (configuration form).
+Add radio buttons, check boxes, text boxes to form2.
+Add FolderBrowserDialog control for choosing source & target path to form2.
+Add OpenFileDialog control for loading external file extension filter to form2. 
+
 October 5, 2015 - Work-In-Progress:
 The Master branch contains the complete functionality.  There is no configuration feature.  See Configuration-Feature branch.
 
-Comments:  This is un-factored code.  There are many duplicate blocks of code that will be refactored before release.  There are many constant values related to configuration that will be removed.  This code has not been heavy tested but does work properly in XP.  This code is available to review and comment.  This code is not ready for release.
-
+Comments:  This is un-factored code.  There are many duplicate blocks of code that will be re-factored before release.  There are many constant values related to configuration that will be removed.  This code has not been heavy tested but does work properly in XP.  This code is available to review and comment.  This code is not ready for release.
