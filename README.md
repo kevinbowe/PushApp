@@ -33,7 +33,10 @@ October 10, 2015 - Merge Configuration-Feature branch
 
 See Configuration-Feature\README.MD for change history...
 
-October 9, 2015 - Work-In-Progress: Add Debug Buttons & Re-factor code.
+
+October 9, 2015 - Work-In-Progress: 
+
+Add Debug Buttons & Re-factor code.
 
 1) Add two additional debugging button controls.  These controls will be removed later.
 
@@ -50,7 +53,9 @@ October 9, 2015 - Work-In-Progress: Add Debug Buttons & Re-factor code.
 7) Misc code clean up. 
 
 
-October 9, 2015 - Work-In-Progress: Continued to develop the functionality related to configuring the Push application.
+October 9, 2015 - Work-In-Progress: 
+
+Continued to develop the functionality related to configuring the Push application.
 
 1) Created a default settings file when the user settings file does not exist. The file is used to create a 'seed' user settings file.  When the seed file is used, the user will be forced to add the required values like source and target folders.
 
