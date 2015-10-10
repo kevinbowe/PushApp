@@ -28,7 +28,7 @@ namespace Push
 		} // END_METHOD
 
 
-		// Empty... 
+		// Load data...
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			// Open and read PushSettings file...
@@ -216,7 +216,7 @@ namespace Push
 							"Duplicate Files Found",
 							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
 							"What would you like to do?",
-							"Renamed files will have the format: original_File_Name(n).ext, where (n) is a nemeric value. " +
+							"Renamed files will have the format: original_File_Name(n).ext, where (n) is a numeric value. " +
 								"When multiple copies exist the latest duplicate will always have the highest value.\n\n" +
 								"These settings may be modified in the Configuration Dialog.",
 							string.Empty,
@@ -601,15 +601,6 @@ namespace Push
 		} // END_METHOD
 
 
-		// Refresh Form...
-		private void button3_Click(object sender, EventArgs e)
-		{
-			LoadListView(listView1, settings.SourcePath);
-			LoadListView(listView2, settings.TargetPath);
-
-		} // END_METHOD
-
-
 		#region [ TOOL STRIP ]
 
 		private void toolStripButton1_Click(object sender, EventArgs e)
@@ -619,7 +610,9 @@ namespace Push
 
 		private void toolStripButton2_Click(object sender, EventArgs e)
 		{
-			button3_Click(sender, e);
+			LoadListView(listView1, settings.SourcePath);
+			LoadListView(listView2, settings.TargetPath);
+			//button3_Click(sender, e);
 		} // END_METHOD
 
 		private void toolStripButton3_Click(object sender, EventArgs e)
@@ -635,6 +628,11 @@ namespace Push
 		// DEBUG Button - MistyRose -- Reset source and target data...
 		private void button2_Click(object sender, EventArgs e)
 		{
+			DEBUG_MistyRose();
+		} // END_METHOD
+
+		private void DEBUG_MistyRose()
+		{
 			DEBUG_InitFolders();
 
 			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", settings.SourcePath);
@@ -647,7 +645,7 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, settings.SourcePath);
 			LoadListView(listView2, settings.TargetPath);
-		} // END_METHOD
+		}
 
 		private void DEBUG_InitFolders()
 		{
@@ -681,11 +679,14 @@ namespace Push
 			}
 
 		} // END_METHOD
-
-		
 		
 		// DEBUG Button - Pale Green -- Reset source and target data...
 		private void button4_Click(object sender, EventArgs e)
+		{
+			DEBUG_PaleGreen();
+		} // END_METHOD
+
+		private void DEBUG_PaleGreen()
 		{
 			DEBUG_InitFolders();
 
@@ -699,10 +700,15 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, settings.SourcePath);
 			LoadListView(listView2, settings.TargetPath);
-		} // END_METHOD
+		}
 
 		// DEBUG Button - Powder Blue -- Reset source and target data...
 		private void button5_Click(object sender, EventArgs e)
+		{
+			DEBUG_PowderBlue();
+		} // END_METHOD
+
+		private void DEBUG_PowderBlue()
 		{
 			DEBUG_InitFolders();
 
@@ -716,12 +722,67 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, settings.SourcePath);
 			LoadListView(listView2, settings.TargetPath);
-		} // END_METHOD
+		}
 		
 		#endregion		
 
 
+		#region [ HOT-KEY // SHORT-CUTS ]
+
+		private bool prefixSeen;
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (prefixSeen)
+			{
+				//-------------------------------------------------------------
+				// If we get here, we are processing the second character of the cord...
+
+				switch (keyData)
+				{
+					// Enter 1 (ONE)...
+					case (Keys.LButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_MistyRose();
+						break;
+					// Enter 2 (TWO)
+					case (Keys.RButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_PaleGreen();
+						break;
+					// ENTER 3 (THREE)
+					case (Keys.LButton | Keys.RButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_PowderBlue();
+						break;
+					default:
+						break;
+				} // END_SWITCH
+
+				prefixSeen = false;
+				return true;
+			}
+
+			// Enter Ctrl+D // Debug prefix...
+			if (keyData == (Keys.Control | Keys.D))
+			{
+				prefixSeen = true;
+				return true;
+			}
+
+			// Enter Ctrl+R // Refresh...
+			if (keyData == (Keys.Control | Keys.R))
+			{
+				LoadListView(listView1, settings.SourcePath);
+				LoadListView(listView2, settings.TargetPath);
+				return true;
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		} // END_METHOD
+		
+		#endregion
+
+
 	} // END_CLASS
+
 
 	public class PushSettings
 	{
@@ -737,5 +798,8 @@ namespace Push
 		public string ExePath;
 
 	} // END_CLASS
+
+
+
 
 } // END_NAMESPACE

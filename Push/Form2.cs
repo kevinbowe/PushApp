@@ -147,8 +147,6 @@ namespace Push
 
 			if (checkBox1.Checked)
 			{
-				
-				
 				// Enable Duplicate Action radio buttons...
 				groupBox1.Enabled = true;
 				radioButton1.Enabled = true;
@@ -165,8 +163,6 @@ namespace Push
 				radioButton3.Enabled = false;
 				radioButton4.Enabled = false;
 			}
-
-
 
 		} // END_METHOD		
 		
