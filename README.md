@@ -20,8 +20,9 @@ EDIT WORKSTATION
 The edit workstation is a Win 7/10 PC.  A second Ethernet card provides a link to the scanning workstation.  This P2P network is in a different domain so the scanning workstation is protected.
 
 DEVELOPMENT STATUS
-October 10, 2015
-Merge Configuration Branch
+
+October 10, 2015 - Merge Configuration-Feature branch
+See Configuration-Feature\README.MD for change history...
 
 October 9, 2015 - Work-In-Progress: Add Debug Buttons & Re-factor code.
 1) Add two additional debugging button controls.  These controls will be removed later.
