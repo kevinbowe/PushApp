@@ -91,7 +91,6 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)\Config\
 copy $(ProjectDir)\Config\FileExtensions.txt   $(TargetDir)\Config\FileExtensions.txt
-copy $(ProjectDir)\Config\PushAppConfig   $(TargetDir)\Config\PushAppConfig
 copy $(ProjectDir)\Config\PushSettingsDefault  $(TargetDir)\Config\PushSettingsDefault</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
