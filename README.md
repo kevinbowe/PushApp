@@ -9,7 +9,17 @@ The user needs to be able to configure various settings such as source and targe
 
 DEVELOPMENT STATUS
 
-October 9, 2015 - Work-InProgress: Continued to develop the functionality related to configuring the Push application.
+October 9, 2015 - Work-In-Progress: Add Debug Buttons & Re-factor code.
+1) Add two additional debugging button controls.  These controls will be removed later.
+2) Replace LoadSource( ) and LoadTarget( ) with LoadListView(<ListView> view, <string> path).
+3) Re-factored LoadFileExtensions( ) to return List<>.
+4) Replaced many occurrences of ArrayList<> with List<> for efficiency.
+5) Replaced Foreach() with simpler List<>.AddRange() where appropriate.
+6) Re-factored code that loads source & target ListView controls.
+7) Misc code clean up. 
+
+
+October 9, 2015 - Work-In-Progress: Continued to develop the functionality related to configuring the Push application.
 1) Created a default settings file when the user settings file does not exist. The file is used to create a 'seed' user settings file.  When the seed file is used, the user will be forced to add the required values like source and target folders.
 2) Created a new application folder for the default settings file, file extension filter file and application configuration file (future).
 3) Rearrange Configuration UI controls.
