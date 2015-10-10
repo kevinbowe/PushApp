@@ -29,10 +29,14 @@ The edit workstation is a Win 7/10 PC.  A second Ethernet card provides a link t
 DEVELOPMENT STATUS
 
 
+-----------------------------------
+
 October 10, 2015 - Merge Configuration-Feature branch
 
 See Configuration-Feature\README.MD for change history...
 
+
+-----------------------------------
 
 October 9, 2015 - Work-In-Progress: 
 
@@ -52,6 +56,8 @@ Add Debug Buttons & Re-factor code.
 
 7) Misc code clean up. 
 
+
+-----------------------------------
 
 October 9, 2015 - Work-In-Progress: 
 
@@ -76,6 +82,8 @@ Continued to develop the functionality related to configuring the Push applicati
 9) Clean up code.
 
 
+-----------------------------------
+
 October 8, 2015 - Work-In-Progress:
 
 Completed work on settings related to source and target paths. This includes validation, failure notification, clear values and load saved values.
@@ -83,6 +91,8 @@ Completed work on settings related to source and target paths. This includes val
 Completed work on file extension filtering. This includes load saved values, parsing, hydrating file extension array.
 Did a lot of code clean up and some refactoring.
 
+
+-----------------------------------
 
 October 5, 2015 - Work-In-Progress:
 
@@ -96,6 +106,8 @@ Add FolderBrowserDialog control for choosing source & target path to form2.
 
 Add OpenFileDialog control for loading external file extension filter to form2. 
 
+
+-----------------------------------
 
 October 5, 2015 - Work-In-Progress:
 
