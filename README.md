@@ -9,11 +9,15 @@ USE CASE
 
 -----------------------------------
 
-Enhance the Main UI, Form1.  The user should be able to resize the whole UI and the Source and Target ListView controls.
+Enhance the Main UI, Form1.  The user should be able to modify the size the whole UI and the Source and Target ListView controls.  The user should be able to hide the Source and Target ListView.
 
 If the user expands or shrinks the main window frame, the controls will resize appropriately. See: ListBox1, ListView1 and ListView2.
 
+The application will limit the minimum and maximum size of the MMain UI (Form1).
+
 The user should be able to see more of the Source or Target ListViews by 'grabbing' a splitter control and dragging it horizontally.  
+
+The user should be able to expand/show or collapse/hide the KistBox1 and ListBox2 controls.  This should work like the "Show details" feature in the Duplicate Files Found modal dialog.
 
 Technical Note:
 
