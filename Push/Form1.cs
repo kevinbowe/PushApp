@@ -19,9 +19,6 @@ namespace Push
 	{
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
 		PushSettings settings;
-
-		int frmHeight;
-		int pnlHeight;
 		Size frmSize;
 	
 		public Form1()
@@ -56,16 +53,43 @@ namespace Push
 			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
 			settings.ExePath = exePath;
 
-
-			this.MinimumSize = new Size(764, 161);
-			this.Size = new Size(764, 494);
+			// Disable the Maximize control on the form...
 			this.MaximizeBox = false;
-
-
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, settings.SourcePath);
 			LoadListView(listView2, settings.TargetPath);
+		} // END_METHOD
+
+
+		// Show-Hide ListViews...
+		private void button3_Click(object sender, EventArgs e)
+		{
+			if (splitContainer1.Visible)
+			{
+				// If we get here, hide the source and target ListViews...
+				
+				// Save the current window size...
+				frmSize = this.Size;
+
+				// Set the minimum window size which will hide the source and target and shrink the status listbox...
+				MinimumSize = new Size(400, 161);
+				MaximumSize = MinimumSize;
+				Size = MinimumSize;
+				panel1.Visible = false;
+			}
+			else
+			{
+				// If we get here,	restore the original windows size...
+
+				// Reset the minimum size so the source and target can not be hidden when resizing the window...
+				MinimumSize = new Size(764, 286);
+				// Clear the maximum size so the user can resize the window...
+				MaximumSize = new Size();
+				// Restore the previous window size...
+				Size = frmSize;
+				panel1.Visible = true;
+			}
 		} // END_METHOD
 
 
@@ -672,9 +696,6 @@ namespace Push
 		{
 
 			List<string> fileExtensionList = new List<string>();
-			// This nasty cast & converstion is required because LoadFileExtensions( ) returns <ArrayList>...
-			//		TODO: Update this code after revising LoadFileExtensions( ) to return List<string> collection...
-			//...fileExtensionList.AddRange((String[])LoadFileExtensions().ToArray(typeof(string)));
 			fileExtensionList.AddRange(LoadFileExtensions());
 
 			List<string> fileTestDataList = new List<string>();
@@ -786,34 +807,9 @@ namespace Push
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
-		}
-
-		private void button3_Click(object sender, EventArgs e)
-		{
-			if (splitContainer1.Visible)
-			{
-				frmSize = this.Size;
-				this.Size = new Size(frmSize.Width, (frmHeight - pnlHeight));
-				//splitContainer1.Visible = false;
-				panel1.Visible = false;
-			}
-			else
-			{ 
-				this.Size = frmSize;
-				//splitContainer1.Visible = true;			
-				panel1.Visible = true;
-			}
-		}
-
-		private void button6_Click(object sender, EventArgs e)
-		{
-			this.Size = frmSize;
-			//splitContainer1.Visible = true;
-			panel1.Visible = true;
 		} // END_METHOD
-		
+	
 		#endregion
-
 
 	} // END_CLASS
 
