@@ -20,6 +20,9 @@ namespace Push
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
 		PushSettings settings;
 
+		int frmHeight;
+		int pnlHeight;
+		Size frmSize;
 	
 		public Form1()
 		{
@@ -52,6 +55,13 @@ namespace Push
 			// Convert to object...
 			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
 			settings.ExePath = exePath;
+
+
+			this.MinimumSize = new Size(764, 161);
+			this.Size = new Size(764, 494);
+			this.MaximizeBox = false;
+
+
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, settings.SourcePath);
@@ -776,6 +786,30 @@ namespace Push
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
+		}
+
+		private void button3_Click(object sender, EventArgs e)
+		{
+			if (splitContainer1.Visible)
+			{
+				frmSize = this.Size;
+				this.Size = new Size(frmSize.Width, (frmHeight - pnlHeight));
+				//splitContainer1.Visible = false;
+				panel1.Visible = false;
+			}
+			else
+			{ 
+				this.Size = frmSize;
+				//splitContainer1.Visible = true;			
+				panel1.Visible = true;
+			}
+		}
+
+		private void button6_Click(object sender, EventArgs e)
+		{
+			this.Size = frmSize;
+			//splitContainer1.Visible = true;
+			panel1.Visible = true;
 		} // END_METHOD
 		
 		#endregion

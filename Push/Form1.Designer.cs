@@ -32,6 +32,16 @@
 			this.button1 = new System.Windows.Forms.Button();
 			this.listBox1 = new System.Windows.Forms.ListBox();
 			this.button2 = new System.Windows.Forms.Button();
+			this.label3 = new System.Windows.Forms.Label();
+			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+			this.button4 = new System.Windows.Forms.Button();
+			this.button5 = new System.Windows.Forms.Button();
+			this.button3 = new System.Windows.Forms.Button();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.FName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,14 +54,12 @@
 			this.DateTarget = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
-			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-			this.button4 = new System.Windows.Forms.Button();
-			this.button5 = new System.Windows.Forms.Button();
 			this.toolStrip1.SuspendLayout();
+			this.panel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+			this.splitContainer1.Panel1.SuspendLayout();
+			this.splitContainer1.Panel2.SuspendLayout();
+			this.splitContainer1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -67,11 +75,13 @@
 			// 
 			// listBox1
 			// 
+			this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.listBox1.FormattingEnabled = true;
 			this.listBox1.Location = new System.Drawing.Point(132, 25);
 			this.listBox1.Name = "listBox1";
 			this.listBox1.ScrollAlwaysVisible = true;
-			this.listBox1.Size = new System.Drawing.Size(592, 69);
+			this.listBox1.Size = new System.Drawing.Size(618, 69);
 			this.listBox1.TabIndex = 1;
 			// 
 			// button2
@@ -89,91 +99,6 @@
 			this.button2.UseVisualStyleBackColor = false;
 			this.button2.Visible = false;
 			this.button2.Click += new System.EventHandler(this.button2_Click);
-			// 
-			// listView1
-			// 
-			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.FName,
-            this.Type,
-            this.FSize,
-            this.Date});
-			this.listView1.FullRowSelect = true;
-			this.listView1.Location = new System.Drawing.Point(12, 117);
-			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(365, 300);
-			this.listView1.TabIndex = 5;
-			this.listView1.UseCompatibleStateImageBehavior = false;
-			this.listView1.View = System.Windows.Forms.View.Details;
-			// 
-			// FName
-			// 
-			this.FName.Text = "Name";
-			this.FName.Width = 73;
-			// 
-			// Type
-			// 
-			this.Type.Text = "Type";
-			this.Type.Width = 74;
-			// 
-			// FSize
-			// 
-			this.FSize.Text = "Size";
-			// 
-			// Date
-			// 
-			this.Date.Text = "Date";
-			this.Date.Width = 118;
-			// 
-			// listView2
-			// 
-			this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.FNameTarget,
-            this.TypeTarget,
-            this.SizeTarget,
-            this.DateTarget});
-			this.listView2.Location = new System.Drawing.Point(395, 117);
-			this.listView2.Name = "listView2";
-			this.listView2.Size = new System.Drawing.Size(356, 300);
-			this.listView2.TabIndex = 6;
-			this.listView2.UseCompatibleStateImageBehavior = false;
-			this.listView2.View = System.Windows.Forms.View.Details;
-			// 
-			// FNameTarget
-			// 
-			this.FNameTarget.Text = "Name";
-			this.FNameTarget.Width = 73;
-			// 
-			// TypeTarget
-			// 
-			this.TypeTarget.Text = "Type";
-			this.TypeTarget.Width = 74;
-			// 
-			// SizeTarget
-			// 
-			this.SizeTarget.Text = "Size";
-			// 
-			// DateTarget
-			// 
-			this.DateTarget.Text = "Date";
-			this.DateTarget.Width = 118;
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 101);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(73, 13);
-			this.label1.TabIndex = 7;
-			this.label1.Text = "Source Folder";
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(392, 101);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(70, 13);
-			this.label2.TabIndex = 8;
-			this.label2.Text = "Target Folder";
 			// 
 			// label3
 			// 
@@ -260,19 +185,146 @@
 			this.button5.Visible = false;
 			this.button5.Click += new System.EventHandler(this.button5_Click);
 			// 
+			// button3
+			// 
+			this.button3.Location = new System.Drawing.Point(15, 97);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(70, 19);
+			this.button3.TabIndex = 15;
+			this.button3.Text = "Show/Hide";
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.button3_Click);
+			// 
+			// panel1
+			// 
+			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.panel1.Controls.Add(this.splitContainer1);
+			this.panel1.Location = new System.Drawing.Point(16, 139);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(733, 279);
+			this.panel1.TabIndex = 16;
+			// 
+			// splitContainer1
+			// 
+			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+			this.splitContainer1.Name = "splitContainer1";
+			// 
+			// splitContainer1.Panel1
+			// 
+			this.splitContainer1.Panel1.Controls.Add(this.listView1);
+			// 
+			// splitContainer1.Panel2
+			// 
+			this.splitContainer1.Panel2.Controls.Add(this.listView2);
+			this.splitContainer1.Size = new System.Drawing.Size(733, 279);
+			this.splitContainer1.SplitterDistance = 355;
+			this.splitContainer1.TabIndex = 0;
+			// 
+			// listView1
+			// 
+			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.FName,
+            this.Type,
+            this.FSize,
+            this.Date});
+			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView1.FullRowSelect = true;
+			this.listView1.Location = new System.Drawing.Point(0, 0);
+			this.listView1.Name = "listView1";
+			this.listView1.Size = new System.Drawing.Size(355, 279);
+			this.listView1.TabIndex = 7;
+			this.listView1.UseCompatibleStateImageBehavior = false;
+			this.listView1.View = System.Windows.Forms.View.Details;
+			// 
+			// FName
+			// 
+			this.FName.Text = "Name";
+			this.FName.Width = 73;
+			// 
+			// Type
+			// 
+			this.Type.Text = "Type";
+			this.Type.Width = 74;
+			// 
+			// FSize
+			// 
+			this.FSize.Text = "Size";
+			// 
+			// Date
+			// 
+			this.Date.Text = "Date";
+			this.Date.Width = 118;
+			// 
+			// listView2
+			// 
+			this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.FNameTarget,
+            this.TypeTarget,
+            this.SizeTarget,
+            this.DateTarget});
+			this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView2.Location = new System.Drawing.Point(0, 0);
+			this.listView2.Name = "listView2";
+			this.listView2.Size = new System.Drawing.Size(374, 279);
+			this.listView2.TabIndex = 8;
+			this.listView2.UseCompatibleStateImageBehavior = false;
+			this.listView2.View = System.Windows.Forms.View.Details;
+			// 
+			// FNameTarget
+			// 
+			this.FNameTarget.Text = "Name";
+			this.FNameTarget.Width = 73;
+			// 
+			// TypeTarget
+			// 
+			this.TypeTarget.Text = "Type";
+			this.TypeTarget.Width = 74;
+			// 
+			// SizeTarget
+			// 
+			this.SizeTarget.Text = "Size";
+			// 
+			// DateTarget
+			// 
+			this.DateTarget.Text = "Date";
+			this.DateTarget.Width = 118;
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(16, 120);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(73, 13);
+			this.label1.TabIndex = 17;
+			this.label1.Text = "Source Folder";
+			// 
+			// label2
+			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(679, 120);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(70, 13);
+			this.label2.TabIndex = 18;
+			this.label2.Text = "Target Folder";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(763, 430);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.panel1);
+			this.Controls.Add(this.button3);
 			this.Controls.Add(this.button5);
 			this.Controls.Add(this.button4);
 			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.listView2);
-			this.Controls.Add(this.listView1);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.listBox1);
 			this.Controls.Add(this.button1);
@@ -281,6 +333,11 @@
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.toolStrip1.ResumeLayout(false);
 			this.toolStrip1.PerformLayout();
+			this.panel1.ResumeLayout(false);
+			this.splitContainer1.Panel1.ResumeLayout(false);
+			this.splitContainer1.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+			this.splitContainer1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -290,19 +347,7 @@
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.ColumnHeader FName;
-        private System.Windows.Forms.ColumnHeader Date;
-        private System.Windows.Forms.ColumnHeader Type;
-        private System.Windows.Forms.ColumnHeader FSize;
-        private System.Windows.Forms.ColumnHeader FNameTarget;
-        private System.Windows.Forms.ColumnHeader TypeTarget;
-        private System.Windows.Forms.ColumnHeader SizeTarget;
-		private System.Windows.Forms.ColumnHeader DateTarget;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
@@ -310,6 +355,21 @@
 		private System.Windows.Forms.ToolStripButton toolStripButton3;
 		private System.Windows.Forms.Button button4;
 		private System.Windows.Forms.Button button5;
+		private System.Windows.Forms.Button button3;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.SplitContainer splitContainer1;
+		private System.Windows.Forms.ListView listView1;
+		private System.Windows.Forms.ColumnHeader FName;
+		private System.Windows.Forms.ColumnHeader Type;
+		private System.Windows.Forms.ColumnHeader FSize;
+		private System.Windows.Forms.ColumnHeader Date;
+		private System.Windows.Forms.ListView listView2;
+		private System.Windows.Forms.ColumnHeader FNameTarget;
+		private System.Windows.Forms.ColumnHeader TypeTarget;
+		private System.Windows.Forms.ColumnHeader SizeTarget;
+		private System.Windows.Forms.ColumnHeader DateTarget;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label2;
     }
 }
 
