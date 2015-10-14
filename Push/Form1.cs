@@ -63,12 +63,15 @@ namespace Push
 
 
 		// Show-Hide ListViews...
-		private void button3_Click(object sender, EventArgs e)
+		private void pictureBox1_Click(object sender, EventArgs e)
 		{
 			if (splitContainer1.Visible)
 			{
 				// If we get here, hide the source and target ListViews...
-				
+
+				pictureBox1.Image = global::Push.Properties.Resources.Control_Expander1;
+				label4.Text = "Show Details";
+
 				// Save the current window size...
 				frmSize = this.Size;
 
@@ -81,6 +84,9 @@ namespace Push
 			else
 			{
 				// If we get here,	restore the original windows size...
+
+				pictureBox1.Image = global::Push.Properties.Resources.Control_Collapser1;
+				label4.Text = "Hide Details";
 
 				// Reset the minimum size so the source and target can not be hidden when resizing the window...
 				MinimumSize = new Size(764, 286);
@@ -138,6 +144,11 @@ namespace Push
 			return new List<string>(fefArray);
 		} // END_METHOD
 
+
+		private void pictureBox2_Click(object sender, EventArgs e)
+		{
+			button1_Click(sender, e);
+		}
 
 		// Copy Files from Source folder to Target folder...
 		private void button1_Click(object sender, EventArgs e)
@@ -807,7 +818,7 @@ namespace Push
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
-		} // END_METHOD
+		}
 	
 		#endregion
 
