@@ -18,43 +18,101 @@ using System.Globalization;
 
 namespace Push
 {
+
+	public class PushSettings
+	{
+		public bool HideDupeMessage;
+		public string SourcePath;
+		public string TargetPath;
+		public string FileExtensionFilter;
+		public string DuplicateFileAction;
+
+		public bool DisableSplashScreen;
+		public bool DisableXMLOptions;
+
+		public string ExePath;
+
+	} // END_CLASS
+
+
 	public partial class Form1 : Form
 	{
 		private readonly FormSettings formSettings;
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
 		public PushSettings pushSettings;
 		Size frmSize;
-		
 
-		public Form1()
+		public Form1(MyApplicationSettings appSettings)
 		{
 			InitializeComponent();
 
 			// Create settings group...
+			//		FormSettings contains all of the Window properties...
+			//		It does NOT contain the controls or the app configuration data...
 			formSettings = new FormSettings(this);
 
 			// Enable Auto-Save...
 			formSettings.SaveOnClose = true;
 
-			//formSettings.Settings.Add(
-			//	new PropertySetting("SplitContainer.SplitterPosition", splitContainer1, "SplitPosition", 100));
-
-			// TODO: Move this to somewhere where pushSettings are insstiantiated...
-			//formSettings.Settings.Add(new PropertySetting("PushSettings", pushSettings, "SourcePath", pushSettings.SourcePath));
-
-
-
+			// Set the default form properties and then update them with the last used properties...
 			InitControls();
 
+			// Hydrate the PushSettings object...
+			//pushSettings.DisableSplashScreen = true;
+			//pushSettings.DisableXMLOptions = ;
+			//pushSettings.DuplicateFileAction = ;
+			//pushSettings.ExePath = ;
+			//pushSettings.FileExtensionFilter = ;
+			//pushSettings.HideDupeMessage = ;
+			//pushSettings.SourcePath = appSettings.SourcePath;
+			//pushSettings.TargetPath = appSettings.TargetPath;
 
-		}
+			//pushSettings = new PushSettings()
+			//{
+			//	SourcePath = appSettings.SourcePath,
+			//	TargetPath = appSettings.TargetPath,
+			//	FileExtensionFilter = appSettings.FileExtensionFilter
+			//};
+
+			pushSettings = new PushSettings()
+			{
+				DisableSplashScreen = appSettings.DisableSplashScreen,
+				DisableXMLOptions = appSettings.DisableXMLOptions,
+				DuplicateFileAction = appSettings.DuplicateFileAction,
+				ExePath = appSettings.ExePath,
+				FileExtensionFilter = appSettings.FileExtensionFilter,
+				HideDupeMessage = appSettings.HideDupeMessage,
+				SourcePath = appSettings.SourcePath,
+				TargetPath = appSettings.TargetPath
+			};
+
+
+
+
+			
+
+
+		} // END_CTR
+
+
+
 
 		//	TODO: Re-factor... Necessary?
 		private void InitControls()
 		{
+			/** The PushSettings object properties are in scope... **/ 
+			
+			
+			// TODO:  Set the default form properties here...
+
 			string ucfp = ApplicationSettings.UserConfigurationFilePath;
+
+			// Update the form properties to the last used...
 			UpdateControls();
 		}
+
+
+
 
 		// TODO: Re-factor... Necessary?
 		private void UpdateControls()
@@ -70,37 +128,13 @@ namespace Push
 		} // END_METHOD
 
 
+
+
+
+
 		// Load data...
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			// Open and read PushSettings file...
-
-			// Fetch the path where the application is running...
-			FileInfo sourceFileInfo = new FileInfo("Push.exe");
-			string exePath = sourceFileInfo.DirectoryName;
-
-			string pushSettingsJSON;
-			try
-			{
-				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettings");
-			}
-			catch
-			{
-				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettingsDefault");
-				File.Copy(exePath + @"\Config\PushSettingsDefault", exePath + @"\Config\PushSettings", true);
-			}
-
-			pushSettings = new PushSettings();
-			// Convert to object...
-			pushSettings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
-			pushSettings.ExePath = exePath;
-
-			// TODO: Move this to somewhere where pushSettings are insstiantiated...
-			//formSettings.Settings.Add(new PropertySetting("PushSettings", this.pushSettings, "SourcePath", ((PushSettings)pushSettings).SourcePath));
-			//formSettings.Settings.Add(new PropertySetting("PushSettings", this, "SourcePath", pushSettings.SourcePath));
-
-
-
 			// Disable the Maximize control on the form...
 			this.MaximizeBox = false;
 
@@ -412,8 +446,10 @@ namespace Push
 		{
 			string s = string.Empty;
 			Form2 dlg = new Form2();
+
 			// Copy the current settings into the Configuration form...
 			dlg.settings = pushSettings;
+			
 			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
 			else s = "Cancel";
 
@@ -705,7 +741,6 @@ namespace Push
 		{
 			LoadListView(listView1, pushSettings.SourcePath);
 			LoadListView(listView2, pushSettings.TargetPath);
-			//button3_Click(sender, e);
 		} // END_METHOD
 
 		private void toolStripButton6_Click(object sender, EventArgs e)
@@ -876,26 +911,6 @@ namespace Push
 			formSettings.Save();
 		}
 
-
 	} // END_CLASS
-
-
-	public class PushSettings
-	{
-		public bool HideDupeMessage;
-		public string SourcePath;
-		public string TargetPath;
-		public string FileExtensionFilter;
-		public string DuplicateFileAction;
-
-		public bool DisableSplashScreen;
-		public bool DisableXMLOptions;
-
-		public string ExePath;
-
-	} // END_CLASS
-
-
-
 
 } // END_NAMESPACE

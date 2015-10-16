@@ -26,6 +26,14 @@ namespace Push
 		// Form Load..
 		private void Form2_Load(object sender, EventArgs e)
 		{
+			//checkBox1.Checked = ((Form1)sender).pushSettings.HideDupeMessage;
+			//textBox1.Text = ((Form1)sender).pushSettings.SourcePath;
+			//textBox2.Text = ((Form1)sender).pushSettings.TargetPath;
+			//textBox3.Text = ((Form1)sender).pushSettings.FileExtensionFilter;
+			//checkBox2.Checked = ((Form1)sender).pushSettings.DisableSplashScreen;
+			//checkBox3.Checked = ((Form1)sender).pushSettings.DisableXMLOptions;
+
+
 			// Hydrate the controls with the current settings...
 			checkBox1.Checked = settings.HideDupeMessage;
 			textBox1.Text = settings.SourcePath;
@@ -34,6 +42,7 @@ namespace Push
 			checkBox2.Checked = settings.DisableSplashScreen;
 			checkBox3.Checked = settings.DisableXMLOptions;
 
+			//switch (((Form1)sender).pushSettings.DuplicateFileAction)			
 			switch (settings.DuplicateFileAction)
 			{
 				case "Overwrite":   radioButton1.Checked = true; break;
@@ -79,9 +88,14 @@ namespace Push
 			if (DialogResult == DialogResult.None)
 				return;
 
-			string json = new JavaScriptSerializer().Serialize(settings);
-			string path = settings.ExePath + @"\Config\PushSettings";
-			File.WriteAllText(path, json, System.Text.Encoding.ASCII);
+			////string json = new JavaScriptSerializer().Serialize(((Form1)sender).pushSettings);
+			////string path = ((Form1)sender).pushSettings.ExePath + @"\Config\PushSettings";
+			////File.WriteAllText(path, json, System.Text.Encoding.ASCII);
+
+
+			//string json = new JavaScriptSerializer().Serialize(settings);
+			//string path = settings.ExePath + @"\Config\PushSettings";
+			//File.WriteAllText(path, json, System.Text.Encoding.ASCII);
 
 		} // END_METHOD
 		
@@ -91,11 +105,13 @@ namespace Push
 		private void radioButton1_CheckedChanged(object sender, EventArgs e)
 		{
 			settings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
+			//((Form1)sender).pushSettings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
 		} // END_METHOD
 
 		private void radioButton2_CheckedChanged(object sender, EventArgs e)
 		{
 			settings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
+			//((Form1)sender).pushSettings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
 		} // END_METHOD
 
 		private void radioButton3_CheckedChanged(object sender, EventArgs e)
