@@ -14,43 +14,57 @@ namespace Push
 	public partial class Form2 : Form
 	{
 		public enum DuplicateFileActionState { Overwrite, Rename, Skip, Cancel };
-		public PushSettings settings { get; set; }
-		
+		public MyApplicationSettings appSettings;
+
 		public Form2()
 		{
 			InitializeComponent();
 			this.AutoValidate  = AutoValidate.EnableAllowFocusChange;
+
 		} // END_METHOD
 
 
 		// Form Load..
 		private void Form2_Load(object sender, EventArgs e)
 		{
-			//checkBox1.Checked = ((Form1)sender).pushSettings.HideDupeMessage;
-			//textBox1.Text = ((Form1)sender).pushSettings.SourcePath;
-			//textBox2.Text = ((Form1)sender).pushSettings.TargetPath;
-			//textBox3.Text = ((Form1)sender).pushSettings.FileExtensionFilter;
-			//checkBox2.Checked = ((Form1)sender).pushSettings.DisableSplashScreen;
-			//checkBox3.Checked = ((Form1)sender).pushSettings.DisableXMLOptions;
-
-
 			// Hydrate the controls with the current settings...
-			checkBox1.Checked = settings.HideDupeMessage;
-			textBox1.Text = settings.SourcePath;
-			textBox2.Text = settings.TargetPath;
-			textBox3.Text = settings.FileExtensionFilter;
-			checkBox2.Checked = settings.DisableSplashScreen;
-			checkBox3.Checked = settings.DisableXMLOptions;
-
-			//switch (((Form1)sender).pushSettings.DuplicateFileAction)			
-			switch (settings.DuplicateFileAction)
+			checkBox1.Checked = appSettings.HideDupeMessage;
+			textBox1.Text = appSettings.SourcePath;
+			textBox2.Text = appSettings.TargetPath;
+			textBox3.Text = appSettings.FileExtensionFilter;
+			checkBox2.Checked = appSettings.DisableSplashScreen;
+			checkBox3.Checked = appSettings.DisableXMLOptions;
+		
+			switch (appSettings.DuplicateFileAction)
 			{
 				case "Overwrite":   radioButton1.Checked = true; break;
 				case "Rename":      radioButton2.Checked = true; break;
 				case "Skip":        radioButton3.Checked = true; break;
-				case "Cancel":      
-				default:            radioButton4.Checked = true; break;
+				case "Cancel":
+				default:
+					{
+						radioButton4.Checked = true;
+						appSettings.DuplicateFileAction = "Cancel";
+						break;
+					}
 			} // END_SWITCH
+
+			// Disable Cancel button and 'X' controlbox if the appSettings are not set...
+			//		Also set the applications exe path...
+			if (appSettings.FileExtensionFilter == null ||
+				appSettings.SourcePath == null ||
+				appSettings.TargetPath == null || 
+				appSettings.ExePath == null)
+			{
+				FileInfo exePath = new FileInfo("Push.exe");
+				appSettings.ExePath = exePath.DirectoryName;
+				
+				// Hide Cancel control...
+				button2.Visible = false;
+				// Hide 'X' control...
+				ControlBox = false;
+			}
+
 		} // END_METHOD
 
 
@@ -85,17 +99,15 @@ namespace Push
 				errorProvider2.Dispose();
 			}
 
+			if (String.IsNullOrEmpty(appSettings.FileExtensionFilter) ||
+				String.IsNullOrEmpty(appSettings.SourcePath) ||
+				String.IsNullOrEmpty(appSettings.TargetPath) )
+			{
+				DialogResult = DialogResult.None;
+			}
+
 			if (DialogResult == DialogResult.None)
 				return;
-
-			////string json = new JavaScriptSerializer().Serialize(((Form1)sender).pushSettings);
-			////string path = ((Form1)sender).pushSettings.ExePath + @"\Config\PushSettings";
-			////File.WriteAllText(path, json, System.Text.Encoding.ASCII);
-
-
-			//string json = new JavaScriptSerializer().Serialize(settings);
-			//string path = settings.ExePath + @"\Config\PushSettings";
-			//File.WriteAllText(path, json, System.Text.Encoding.ASCII);
 
 		} // END_METHOD
 		
@@ -104,24 +116,23 @@ namespace Push
 
 		private void radioButton1_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
-			//((Form1)sender).pushSettings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
+			appSettings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
+
 		} // END_METHOD
 
 		private void radioButton2_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
-			//((Form1)sender).pushSettings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
+			appSettings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
 		} // END_METHOD
 
 		private void radioButton3_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DuplicateFileAction = DuplicateFileActionState.Skip.ToString("G");
+			appSettings.DuplicateFileAction = DuplicateFileActionState.Skip.ToString("G");
 		} // END_METHOD
 
 		private void radioButton4_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DuplicateFileAction = DuplicateFileActionState.Cancel.ToString("G");
+			appSettings.DuplicateFileAction = DuplicateFileActionState.Cancel.ToString("G");
 		} // END_METHOD
 	
 		#endregion
@@ -132,7 +143,7 @@ namespace Push
 		// File Extension...
 		private void textBox3_TextChanged(object sender, EventArgs e)
 		{
-			settings.FileExtensionFilter = textBox3.Text;
+			appSettings.FileExtensionFilter = textBox3.Text;
 		} // END_METHOD
 
 		// Clear File Extension
@@ -145,6 +156,8 @@ namespace Push
 		private void button6_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
+
+			
 			if (ofd.ShowDialog() == DialogResult.OK)
 			{
 				System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
@@ -159,7 +172,7 @@ namespace Push
 		// Duplicate Message Checkbox...
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.HideDupeMessage = checkBox1.Checked;
+			appSettings.HideDupeMessage = checkBox1.Checked;
 
 			if (checkBox1.Checked)
 			{
@@ -185,13 +198,13 @@ namespace Push
 		// Splash Screen...
 		private void checkBox2_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DisableSplashScreen = checkBox2.Checked;
+			appSettings.DisableSplashScreen = checkBox2.Checked;
 		} // END_METHOD
 
 		// Disable XMP..
 		private void checkBox3_CheckedChanged(object sender, EventArgs e)
 		{
-			settings.DisableXMLOptions = checkBox3.Checked;
+			appSettings.DisableXMLOptions = checkBox3.Checked;
 		} // END_METHOD
 
 
@@ -214,7 +227,7 @@ namespace Push
 		// Source Path - Changed
 		private void textBox1_TextChanged(object sender, EventArgs e)
 		{
-			settings.SourcePath = textBox1.Text;
+			appSettings.SourcePath = textBox1.Text;
 		} // END_METHOD
 
 		// Source Path - Validating...
@@ -245,9 +258,10 @@ namespace Push
 		private void button3_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
+
 			if (fbd.ShowDialog() == DialogResult.OK)
 			{
-				textBox1.Text = settings.SourcePath = fbd.SelectedPath;
+				textBox1.Text = appSettings.SourcePath = fbd.SelectedPath;
 
 				// Clear the ErrorProvider of errors if present...
 				errorProvider1.SetError(textBox1, "");
@@ -263,7 +277,7 @@ namespace Push
 		// Target Path - Changed
 		private void textBox2_TextChanged(object sender, EventArgs e)
 		{
-			settings.TargetPath = textBox2.Text;
+			appSettings.TargetPath = textBox2.Text;
 		} // END_METHOD
 
 		// Target Path - Validating...
@@ -297,7 +311,7 @@ namespace Push
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
 			if (fbd.ShowDialog() == DialogResult.OK)
 			{
-				textBox2.Text = settings.TargetPath = fbd.SelectedPath;
+				textBox2.Text = appSettings.TargetPath = fbd.SelectedPath;
 
 				// Clear the ErrorProvider of errors if present...
 				errorProvider2.SetError(textBox2, "");
@@ -308,8 +322,6 @@ namespace Push
 
 		
 		#endregion
-
-
 
 
 	} // END_CLASS
