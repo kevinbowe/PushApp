@@ -100,14 +100,15 @@ namespace Push
 				label4.Text = "Hide Details";
 				panel1.Visible = true;
 				splitContainer1.Visible = true;
+				appSettings.ShowDetails = true;
 
 				// Load the default position for the application...
 				//Width = 764;
 				//Height = 286;
-				Size = new Size(764, 286);
-				MinimumSize = new Size(764, 286);
+				//Size = new Size(764, 286);
+				//MinimumSize = new Size(764, 286);
 
-				StartPosition = FormStartPosition.CenterScreen;
+				//StartPosition = FormStartPosition.CenterScreen;
 			}
 
 
