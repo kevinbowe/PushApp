@@ -15,6 +15,7 @@ namespace Push
 	{
 		public enum DuplicateFileActionState { Overwrite, Rename, Skip, Cancel };
 		public MyApplicationSettings appSettings;
+		public MyApplicationSettings originalAppSettings;
 
 		public Form2()
 		{
@@ -34,6 +35,20 @@ namespace Push
 			textBox3.Text = appSettings.FileExtensionFilter;
 			checkBox2.Checked = appSettings.DisableSplashScreen;
 			checkBox3.Checked = appSettings.DisableXMLOptions;
+			
+			// Save the original values in the appSettings...
+			originalAppSettings = new MyApplicationSettings
+			{
+				DisableSplashScreen = appSettings.DisableSplashScreen,
+				DisableXMLOptions = appSettings.DisableXMLOptions,
+				DuplicateFileAction = appSettings.DuplicateFileAction,
+				ExePath = appSettings.ExePath,
+				FileExtensionFilter = appSettings.FileExtensionFilter,
+				HideDupeMessage = appSettings.HideDupeMessage,
+				SourcePath = appSettings.SourcePath,
+				TargetPath = appSettings.TargetPath
+			};
+
 		
 			switch (appSettings.DuplicateFileAction)
 			{
@@ -67,6 +82,18 @@ namespace Push
 
 		} // END_METHOD
 
+		// OK, Cancel & 'X' 
+		private void Form2_FormClosing(Object sender, FormClosingEventArgs e)
+		{
+			if (DialogResult == DialogResult.Cancel)
+			{
+				// If we get here, the user wants to discard all entered values...
+
+				appSettings = originalAppSettings;
+			}
+				
+		} // END_METHOD
+
 
 		// OK...
 		private void button1_Click(object sender, EventArgs e)
@@ -88,7 +115,7 @@ namespace Push
 
 			if (!ValidatePath(textBox2.Text))
 			{
-				textBox1.Select(0, textBox1.Text.Length);
+				textBox1.Select(0, textBox2.Text.Length);
 				this.errorProvider2.SetError(textBox2, errorMsg);
 				DialogResult = DialogResult.None;
 			}
@@ -247,6 +274,12 @@ namespace Push
 			errorProvider1.SetError(textBox1, "");
 			errorProvider1.Dispose();
 		} // END_METHOD
+
+
+
+
+
+
 
 		// Source Path - Clear...
 		private void button8_Click(object sender, EventArgs e)

@@ -128,7 +128,6 @@ namespace Push
 
 			if (appSettings.ShowDetails)
 			{
-
 				pictureBox1.Image = global::Push.Properties.Resources.Control_Collapser1;
 				label4.Text = "Hide Details";
 				panel1.Visible = true;
