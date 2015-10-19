@@ -54,10 +54,12 @@
 			this.button8 = new System.Windows.Forms.Button();
 			this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
 			this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
+			this.errorProvider3 = new System.Windows.Forms.ErrorProvider(this.components);
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider3)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -313,6 +315,10 @@
 			// 
 			this.errorProvider2.ContainerControl = this;
 			// 
+			// errorProvider3
+			// 
+			this.errorProvider3.ContainerControl = this;
+			// 
 			// Form2
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -345,6 +351,7 @@
 			this.groupBox2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider3)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -377,5 +384,6 @@
 		private System.Windows.Forms.ErrorProvider errorProvider2;
 		private System.Windows.Forms.RadioButton radioButton4;
 		private System.Windows.Forms.RadioButton radioButton1;
+		private System.Windows.Forms.ErrorProvider errorProvider3;
 	}
 }

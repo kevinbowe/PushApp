@@ -49,20 +49,31 @@ namespace Push
 				TargetPath = appSettings.TargetPath
 			};
 
-		
-			switch (appSettings.DuplicateFileAction)
+			// Check to see if the Duplicate File Action has ever been set...
+			if (appSettings.DuplicateFileAction == null)
 			{
-				case "Overwrite":   radioButton1.Checked = true; break;
-				case "Rename":      radioButton2.Checked = true; break;
-				case "Skip":        radioButton3.Checked = true; break;
-				case "Cancel":
-				default:
-					{
-						radioButton4.Checked = true;
-						appSettings.DuplicateFileAction = "Cancel";
-						break;
-					}
-			} // END_SWITCH
+				// If we get here, the dupe action has never been set...
+
+				checkBox1.Visible = false;
+				groupBox1.Enabled = true;
+				radioButton1.Enabled = radioButton2.Enabled = radioButton3.Enabled = radioButton4.Enabled = true;
+			}
+			else
+			{
+				switch (appSettings.DuplicateFileAction)
+				{
+					case "Overwrite": radioButton1.Checked = true; break;
+					case "Rename": radioButton2.Checked = true; break;
+					case "Skip": radioButton3.Checked = true; break;
+					case "Cancel":
+					default:
+						{
+							radioButton4.Checked = true;
+							//...appSettings.DuplicateFileAction = "Cancel";
+							break;
+						}
+				} // END_SWITCH
+			}
 
 			// Disable Cancel button and 'X' controlbox if the appSettings are not set...
 			//		Also set the applications exe path...
@@ -100,10 +111,20 @@ namespace Push
 		{
 			// Validate ALL values before save...
 
+			if (!radioButton1.Checked && !radioButton2.Checked
+						&& !radioButton3.Checked && !radioButton4.Checked)
+			{
+				errorProvider3.SetError(radioButton1, "Please choose a Duplicate Action");
+				DialogResult = DialogResult.None;
+			}
+			else
+				errorProvider3.Clear();
+			
+			
 			if (!ValidatePath(textBox1.Text))
 			{
 				textBox1.Select(0, textBox1.Text.Length);
-				this.errorProvider1.SetError(textBox1, errorMsg);
+				errorProvider1.SetError(textBox1, errorMsg);
 				DialogResult = DialogResult.None;
 			}
 			else
@@ -116,7 +137,7 @@ namespace Push
 			if (!ValidatePath(textBox2.Text))
 			{
 				textBox1.Select(0, textBox2.Text.Length);
-				this.errorProvider2.SetError(textBox2, errorMsg);
+				errorProvider2.SetError(textBox2, errorMsg);
 				DialogResult = DialogResult.None;
 			}
 			else
