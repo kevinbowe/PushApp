@@ -102,6 +102,8 @@ namespace Push
 				splitContainer1.Visible = true;
 				appSettings.ShowDetails = true;
 
+				formSettings.Form.MinimumSize = new Size(764, 286);
+
 				// Load the default position for the application...
 				//Width = 764;
 				//Height = 286;
@@ -130,12 +132,17 @@ namespace Push
 				pictureBox1.Image = global::Push.Properties.Resources.Control_Collapser1;
 				label4.Text = "Hide Details";
 				panel1.Visible = true;
+				formSettings.Form.MinimumSize = new Size(764, 286);
+				MinimumSize = new Size(764, 286);
 			}
 			else
 			{
 				pictureBox1.Image = global::Push.Properties.Resources.Control_Expander1;
 				label4.Text = "Show Details";
 				panel1.Visible = false;
+				formSettings.Form.MinimumSize = new Size(400, 161);
+				MinimumSize = new Size(400, 161);
+				MaximumSize = MinimumSize;
 			}
 
 		} // END_METHOD
