@@ -21,7 +21,11 @@ namespace Push
 			
 			// Assign the FormClosed Event handler...
 			form1.FormClosed += FormClosed;
-			
+
+			// This handles the first-run + cancel scenario...
+			if (form1.IsDisposed)
+				return;
+
 			Application.Run(form1);
 
 			#region [ Comments ]

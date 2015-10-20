@@ -82,9 +82,11 @@ namespace Push
 				// Copy the current settings into the Configuration form...
 				dlg.appSettings = appSettings;
 				dlg.StartPosition = FormStartPosition.CenterParent;
+				dlg.Text = "Push Application Setup";
 
-				if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
-				else s = "Cancel";
+				if (dlg.ShowDialog(this) == DialogResult.Cancel)
+					// If we get here, exit the application imeadiatly...
+					this.Close();
 
 				// Copy settings...
 				appSettings = dlg.appSettings;

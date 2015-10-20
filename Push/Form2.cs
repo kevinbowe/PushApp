@@ -73,20 +73,11 @@ namespace Push
 				} // END_SWITCH
 			}
 
-			// Disable Cancel button and 'X' controlbox if the appSettings are not set...
-			//		Also set the applications exe path...
-			if (appSettings.FileExtensionFilter == null ||
-				appSettings.SourcePath == null ||
-				appSettings.TargetPath == null || 
-				appSettings.ExePath == null)
+			// Set the applications exe path...
+			if (IsAppSettingsEmptyOrNull())
 			{
 				FileInfo exePath = new FileInfo("Push.exe");
 				appSettings.ExePath = exePath.DirectoryName;
-				
-				// Hide Cancel control...
-				button2.Visible = false;
-				// Hide 'X' control...
-				ControlBox = false;
 			}
 		} // END_METHOD
 
@@ -98,11 +89,56 @@ namespace Push
 			{
 				// If we get here, the user wants to discard all entered values...
 
+				if (IsAppSettingsEmptyOrNull(originalAppSettings))
+				{
+					// If we get here, we are aborting the first-run, settings configuration...
+					DialogResult dialogResult = MessageBox.Show( 
+							this, 
+							"Select Cancel to abort Application Setup\n"+
+								"Select Retry to return to Application Setup", 
+							"Cancel Push Application Setup", 
+							MessageBoxButtons.RetryCancel);
+
+					if (dialogResult == DialogResult.Cancel)
+					{
+						return;
+					}
+					else
+					{
+						// If we get here, the user wants to finish configuration...
+						e.Cancel = true;
+						return;
+					}
+				} // END_IF_RESULT = CANCEL
+
+				// Restore the original appSettings
 				appSettings = originalAppSettings;
+				return;
 			}
+
+			//--------------------------------------------------------------------------
+			// If we get here, the user did not select Cancel...
+
 		} // END_METHOD
 
+	
+		private bool IsAppSettingsEmptyOrNull()
+		{
+			return IsAppSettingsEmptyOrNull(appSettings);
+		} // END_METHOD
 
+	
+		private bool IsAppSettingsEmptyOrNull(MyApplicationSettings setting)
+		{
+			bool result =	string.IsNullOrEmpty(setting.DuplicateFileAction) &&
+							string.IsNullOrEmpty(setting.ExePath) &&
+							string.IsNullOrEmpty(setting.FileExtensionFilter) &&
+							string.IsNullOrEmpty(setting.SourcePath) &&
+							string.IsNullOrEmpty(setting.TargetPath);
+			return result;
+		} // END_METHOD
+
+	
 		// OK...
 		private void button1_Click(object sender, EventArgs e)
 		{
