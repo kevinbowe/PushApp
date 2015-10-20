@@ -56,6 +56,7 @@ namespace Push
 				checkBox1.Visible = false;
 				groupBox1.Enabled = true;
 				radioButton1.Enabled = radioButton2.Enabled = radioButton3.Enabled = radioButton4.Enabled = true;
+				radioButton1.Checked = radioButton2.Checked = radioButton3.Checked = radioButton4.Checked = false;
 			}
 			else
 			{
@@ -94,10 +95,10 @@ namespace Push
 					// If we get here, we are aborting the first-run, settings configuration...
 					DialogResult dialogResult = MessageBox.Show( 
 							this, 
-							"Select Cancel to abort Application Setup\n"+
+							"Select Cancel to abort Application Setup\n\n"+
 								"Select Retry to return to Application Setup", 
 							"Cancel Push Application Setup", 
-							MessageBoxButtons.RetryCancel);
+							MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
 
 					if (dialogResult == DialogResult.Cancel)
 					{
