@@ -25,6 +25,7 @@ namespace Push
 		public MyApplicationSettings appSettings;
 		Size frmSize;
 
+
 		public Form1(MyApplicationSettings appSettings)
 		{
 			InitializeComponent();
@@ -41,7 +42,6 @@ namespace Push
 			
 			// Set the default form properties and then update them with the last used properties...
 			InitControls();
-
 		} // END_CTOR
 
 
@@ -69,7 +69,6 @@ namespace Push
 						TargetPath = sourceFileInfo.DirectoryName +  @"Target"
 					};
 			}
-
 
 			// Test to see if any of the required properties are missing...
 			if (appSettings.DuplicateFileAction == null ||
@@ -103,21 +102,10 @@ namespace Push
 				appSettings.ShowDetails = true;
 
 				formSettings.Form.MinimumSize = new Size(764, 286);
-
-				// Load the default position for the application...
-				//Width = 764;
-				//Height = 286;
-				//Size = new Size(764, 286);
-				//MinimumSize = new Size(764, 286);
-
-				//StartPosition = FormStartPosition.CenterScreen;
 			}
-
-
 
 			// Update the form properties to the last used...
 			UpdateControls();
-
 		} // END_METHOD
 
 
@@ -143,7 +131,6 @@ namespace Push
 				MinimumSize = new Size(400, 161);
 				MaximumSize = MinimumSize;
 			}
-
 		} // END_METHOD
 
 	
@@ -162,7 +149,6 @@ namespace Push
 		// Show-Hide ListViews...
 		private void pictureBox1_Click(object sender, EventArgs e)
 		{
-			//if (appSettings.ShowDetails)
 			if (splitContainer1.Visible)
 				{
 				// If we get here, hide the source and target ListViews...
@@ -179,7 +165,6 @@ namespace Push
 				MaximumSize = MinimumSize;
 				Size = MinimumSize;
 				panel1.Visible = false;
-				//splitContainer1.Visible = false;
 
 			}
 			else
@@ -197,7 +182,6 @@ namespace Push
 				// Restore the previous window size...
 				Size = frmSize;
 				panel1.Visible = true;
-				//splitContainer1.Visible = true;
 			}
 		} // END_METHOD
 
@@ -235,7 +219,6 @@ namespace Push
 			} // END_FOREACH
 
 			return true;
-
 		} // END_METHOD
 
 
@@ -251,7 +234,8 @@ namespace Push
 		private void pictureBox2_Click(object sender, EventArgs e)
 		{
 			button1_Click(sender, e);
-		}
+		} // END_METHOD
+
 
 		// Copy Files from Source folder to Target folder...
 		private void button1_Click(object sender, EventArgs e)
@@ -327,7 +311,6 @@ namespace Push
 			}
 			else
 			{
-
 				if (appSettings.HideDupeMessage)
 				{
 					//---------------------------------------------------------
@@ -348,7 +331,6 @@ namespace Push
 							CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
 							break;
 					} // END SWITCH
-
 				}
 				else
 				{
@@ -459,7 +441,6 @@ namespace Push
 			// Update Source & Target Listboxes...
 			LoadListView(listView1, appSettings.SourcePath);
 			LoadListView(listView2, appSettings.TargetPath);
-
 		} // END_METHOD
 
 
@@ -467,7 +448,6 @@ namespace Push
 		{
 			string s = string.Empty;
 			Form2 dlg = new Form2();
-			
 
 			// Copy the current settings into the Configuration form...
 			dlg.appSettings = appSettings;
@@ -480,7 +460,6 @@ namespace Push
 			appSettings = dlg.appSettings;
 
 			dlg.Dispose();
-
 		} // END_METHOD
 
 
@@ -499,7 +478,6 @@ namespace Push
 				string sourceFileNamePrefix = Path.GetFileNameWithoutExtension(s);
 				string sourceFileName = Path.GetFileName(s);
 				string sourceFileExtension = Path.GetExtension(s);
-
 				
 				// INNER LOOP
 				// Iterate over each file in the target folder...
@@ -508,7 +486,6 @@ namespace Push
 					// init...
 					matchInteger = 0;
 					
-					//string targetFileName = Path.GetFileNameWithoutExtension(t);
 					string targetFileExtension = Path.GetExtension(t);
 					string targetFileName = Path.GetFileName(t);
 
@@ -581,7 +558,6 @@ namespace Push
 				matchInteger = 0;
 
 			} // END_OUTER_LOOP
-
 		} // END_METHOD
 
 
@@ -639,7 +615,6 @@ namespace Push
 			} // END_FOREACH_OUTER
 
 			return deleteSourceArrayList;
-
 		} // END_METHOD
 
 
@@ -657,7 +632,6 @@ namespace Push
 				listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
 				listBox1.Update();
 			}
-
 		} // END_METHOD
 
 
@@ -720,6 +694,7 @@ namespace Push
 
 
 		#region [ STRUCT ]
+
 		[StructLayout(LayoutKind.Sequential)]
 		private struct SHFILEINFO
 		{
@@ -731,6 +706,7 @@ namespace Push
 			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
 			public string szTypeName;
 		} // END_STRUCT
+
 		#endregion
 
 		
@@ -748,7 +724,6 @@ namespace Push
 			StringBuilder sb = new StringBuilder(11);
 			StrFormatByteSize(filesize, sb, sb.Capacity);
 			return sb.ToString();
-
 		} // END_METHOD
 
 
@@ -759,16 +734,18 @@ namespace Push
 			button1_Click(sender, e);
 		} // END_METHOD
 
+
 		private void toolStripButton5_Click(object sender, EventArgs e)
 		{
 			LoadListView(listView1, appSettings.SourcePath);
 			LoadListView(listView2, appSettings.TargetPath);
 		} // END_METHOD
 
+
 		private void toolStripButton6_Click(object sender, EventArgs e)
 		{
 			LoadConfigurationDialog();
-		}
+		} // END_METHOD
 
 		#endregion
 
@@ -780,6 +757,7 @@ namespace Push
 		{
 			DEBUG_MistyRose();
 		} // END_METHOD
+
 
 		private void DEBUG_MistyRose()
 		{
@@ -795,7 +773,8 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, appSettings.SourcePath);
 			LoadListView(listView2, appSettings.TargetPath);
-		}
+		} // END_METHOD
+
 
 		private void DEBUG_InitFolders()
 		{
@@ -805,12 +784,11 @@ namespace Push
 			
 			foreach (string file in fileList) 
 				File.Delete(file);
-
 		} // END_METHOD
+
 		
 		private void DEBUG_LoadFolderTestData(string TestDataPath, string destinationPath)
 		{
-
 			List<string> fileExtensionList = new List<string>();
 			fileExtensionList.AddRange(LoadFileExtensions());
 
@@ -824,14 +802,15 @@ namespace Push
 			{
 				File.Copy(s, Path.Combine(destinationPath, Path.GetFileName(s)), true);
 			}
-
 		} // END_METHOD
+
 		
 		// DEBUG Button - Pale Green -- Reset source and target data...
 		private void button4_Click(object sender, EventArgs e)
 		{
 			DEBUG_PaleGreen();
 		} // END_METHOD
+
 
 		private void DEBUG_PaleGreen()
 		{
@@ -847,13 +826,15 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, appSettings.SourcePath);
 			LoadListView(listView2, appSettings.TargetPath);
-		}
+		} // END_METHOD
+
 
 		// DEBUG Button - Powder Blue -- Reset source and target data...
 		private void button5_Click(object sender, EventArgs e)
 		{
 			DEBUG_PowderBlue();
 		} // END_METHOD
+
 
 		private void DEBUG_PowderBlue()
 		{
@@ -869,7 +850,7 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(listView1, appSettings.SourcePath);
 			LoadListView(listView2, appSettings.TargetPath);
-		}
+		} // END_METHOD
 		
 		#endregion		
 
@@ -877,6 +858,7 @@ namespace Push
 		#region [ HOT-KEY // SHORT-CUTS ]
 
 		private bool prefixSeen;
+
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
@@ -923,15 +905,16 @@ namespace Push
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
-		}
+		} // END_METHOD
 	
 		#endregion
+
 
 		// Close...
 		private void Form1_Click(object sender, EventArgs e)
 		{
 			formSettings.Save();
-		}
+		} // END_METHOD
 
 	} // END_CLASS
 
@@ -950,4 +933,5 @@ namespace Push
 		public string ExePath;
 
 	} // END_CLASS
+
 } // END_NAMESPACE

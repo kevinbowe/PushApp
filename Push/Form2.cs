@@ -21,7 +21,6 @@ namespace Push
 		{
 			InitializeComponent();
 			this.AutoValidate  = AutoValidate.EnableAllowFocusChange;
-
 		} // END_METHOD
 
 
@@ -69,7 +68,6 @@ namespace Push
 					default:
 						{
 							radioButton4.Checked = true;
-							//...appSettings.DuplicateFileAction = "Cancel";
 							break;
 						}
 				} // END_SWITCH
@@ -90,10 +88,10 @@ namespace Push
 				// Hide 'X' control...
 				ControlBox = false;
 			}
-
 		} // END_METHOD
 
-		// OK, Cancel & 'X' 
+		
+		// OK, Cancel & 'X'...
 		private void Form2_FormClosing(Object sender, FormClosingEventArgs e)
 		{
 			if (DialogResult == DialogResult.Cancel)
@@ -102,7 +100,6 @@ namespace Push
 
 				appSettings = originalAppSettings;
 			}
-				
 		} // END_METHOD
 
 
@@ -156,28 +153,29 @@ namespace Push
 
 			if (DialogResult == DialogResult.None)
 				return;
-
 		} // END_METHOD
 		
 
 		#region [ DUPLICATE RADIO BUTTONS ]
-
+		
 		private void radioButton1_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
-
 		} // END_METHOD
 
+		
 		private void radioButton2_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
 		} // END_METHOD
 
+		
 		private void radioButton3_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Skip.ToString("G");
 		} // END_METHOD
 
+		
 		private void radioButton4_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Cancel.ToString("G");
@@ -194,11 +192,13 @@ namespace Push
 			appSettings.FileExtensionFilter = textBox3.Text;
 		} // END_METHOD
 
+
 		// Clear File Extension
 		private void button5_Click(object sender, EventArgs e)
 		{
 			textBox3.Clear();
 		} // END_METHOD
+
 
 		// Load File Extensions...
 		private void button6_Click(object sender, EventArgs e)
@@ -240,8 +240,8 @@ namespace Push
 				radioButton3.Enabled = false;
 				radioButton4.Enabled = false;
 			}
-
 		} // END_METHOD		
+		
 		
 		// Splash Screen...
 		private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -249,6 +249,7 @@ namespace Push
 			appSettings.DisableSplashScreen = checkBox2.Checked;
 		} // END_METHOD
 
+		
 		// Disable XMP..
 		private void checkBox3_CheckedChanged(object sender, EventArgs e)
 		{
@@ -262,6 +263,7 @@ namespace Push
 		// Add to resource file...
 		string errorMsg = "Invalid Path";
 
+		
 		private bool ValidatePath(string path)
 		{
 			return Directory.Exists(path);
@@ -278,6 +280,7 @@ namespace Push
 			appSettings.SourcePath = textBox1.Text;
 		} // END_METHOD
 
+		
 		// Source Path - Validating...
 		private void textBox1_Validating(object sender, CancelEventArgs e)
 		{
@@ -289,6 +292,7 @@ namespace Push
 			}
 		} // END_METHOD
 
+		
 		// Source Path - Validated...
 		private void textBox1_Validated(object sender, EventArgs e)
 		{
@@ -296,18 +300,14 @@ namespace Push
 			errorProvider1.Dispose();
 		} // END_METHOD
 
-
-
-
-
-
-
+	
 		// Source Path - Clear...
 		private void button8_Click(object sender, EventArgs e)
 		{
 			textBox1.Clear();
 		} // END_METHOD
 
+		
 		// Source Path Browser...
 		private void button3_Click(object sender, EventArgs e)
 		{
@@ -334,6 +334,7 @@ namespace Push
 			appSettings.TargetPath = textBox2.Text;
 		} // END_METHOD
 
+		
 		// Target Path - Validating...
 		private void textBox2_Validating(object sender, CancelEventArgs e)
 		{
@@ -343,9 +344,9 @@ namespace Push
 				textBox2.Select(0, textBox2.Text.Length);
 				this.errorProvider2.SetError(textBox2, errorMsg);
 			}
-
 		} // END_METHOD
 
+		
 		// Target Path - Validated...
 		private void textBox2_Validated(object sender, EventArgs e)
 		{
@@ -353,12 +354,14 @@ namespace Push
 			errorProvider2.Dispose();
 		} // END_METHOD
 
+		
 		// Target Path - Clear...
 		private void button7_Click(object sender, EventArgs e)
 		{
 			textBox2.Clear();
 		} // END_METHOD
 
+		
 		// Target Path Browser...
 		private void button4_Click(object sender, EventArgs e)
 		{
@@ -371,12 +374,9 @@ namespace Push
 				errorProvider2.SetError(textBox2, "");
 				errorProvider2.Dispose();
 			}
-		}
-
-
+		} // END_METHOD
 		
 		#endregion
-
 
 	} // END_CLASS
 

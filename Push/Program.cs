@@ -39,10 +39,9 @@ namespace Push
 			// Save the MyApplicationSettings to the same XML file that holds the form properties...
 			appSettings.Save();
 
-		} // Main
+		} // END_METHOD
 
 
-		// ----------------------------------------------------------------------
 		static void FormClosed(object sender, FormClosedEventArgs e)
 		{
 			appSettings.DisableSplashScreen = ((Form1)sender).appSettings.DisableSplashScreen;
@@ -54,8 +53,7 @@ namespace Push
 			appSettings.SourcePath = ((Form1)sender).appSettings.SourcePath;
 			appSettings.TargetPath = ((Form1)sender).appSettings.TargetPath;
 			appSettings.ShowDetails = ((Form1)sender).appSettings.ShowDetails;
-
-		} // FormClosed
+		} // END_METHOD
 
 
 		private static readonly MyApplicationSettings appSettings = new MyApplicationSettings();
@@ -64,14 +62,21 @@ namespace Push
     } // END_CLASS
 
 
-	// ------------------------------------------------------------------------
 	// TODO: Move this to a different source code file...
 	public class MyApplicationSettings : ApplicationSettings
 	{
+		public bool DisableSplashScreen { get; set; }
+		public bool DisableXMLOptions { get; set; }
+		public string DuplicateFileAction { get; set; }
+		public string ExePath { get; set; }
+		public string FileExtensionFilter { get; set; }
+		public bool HideDupeMessage { get; set; }
+		public string SourcePath { get; set; }
+		public string TargetPath { get; set; }
+		public bool ShowDetails { get; set; }
 
-		// --------------------------------------------------------------------
-		public MyApplicationSettings() :
-			base(typeof(MyApplicationSettings))
+		
+		public MyApplicationSettings() : base(typeof(MyApplicationSettings))
 		{
 			//-----------------------------------------------------------------
 			// At this point, the AutoUpgrade property has been added and setto true...
@@ -87,22 +92,8 @@ namespace Push
 			Settings.Add(new PropertySetting(this, "TargetPath"));
 			Settings.Add(new PropertySetting(this, "ShowDetails"));
 
-		} // MyApplicationSettings
+		} // END_METHOD
 
-		// --------------------------------------------------------------------
-		public bool DisableSplashScreen { get; set; }
-		public bool DisableXMLOptions  { get; set; }
-		public string DuplicateFileAction  { get; set; }
-		public string ExePath  { get; set; }
-		public string FileExtensionFilter  { get; set; }
-		public bool HideDupeMessage  { get; set; }
-		public string SourcePath  { get; set; }
-		public string TargetPath  { get; set; }
-		public bool ShowDetails { get; set; }
-
-	} // class MyApplicationSettings
-
-
-
+	} // END_CLASS
 
 }
