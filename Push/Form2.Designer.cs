@@ -55,11 +55,13 @@
 			this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
 			this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
 			this.errorProvider3 = new System.Windows.Forms.ErrorProvider(this.components);
+			this.errorProvider4 = new System.Windows.Forms.ErrorProvider(this.components);
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider3)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider4)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -233,6 +235,8 @@
 			this.textBox3.Size = new System.Drawing.Size(191, 20);
 			this.textBox3.TabIndex = 2;
 			this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+			this.textBox3.Validating += new System.ComponentModel.CancelEventHandler(this.textBox3_Validating);
+			this.textBox3.Validated += new System.EventHandler(this.textBox3_Validated);
 			// 
 			// button5
 			// 
@@ -319,6 +323,10 @@
 			// 
 			this.errorProvider3.ContainerControl = this;
 			// 
+			// errorProvider4
+			// 
+			this.errorProvider4.ContainerControl = this;
+			// 
 			// Form2
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -352,6 +360,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider3)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider4)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -385,5 +394,6 @@
 		private System.Windows.Forms.RadioButton radioButton4;
 		private System.Windows.Forms.RadioButton radioButton1;
 		private System.Windows.Forms.ErrorProvider errorProvider3;
+		private System.Windows.Forms.ErrorProvider errorProvider4;
 	}
 }

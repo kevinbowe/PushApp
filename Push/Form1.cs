@@ -197,7 +197,7 @@ namespace Push
 			DestinationListView.Items.Clear();
 
 			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(LoadFileExtensions());
+			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
 
 			List<string> fileSourceArrayList = new List<string>();
 			foreach (string FileExtension in fileExtensionList)
@@ -224,11 +224,18 @@ namespace Push
 		} // END_METHOD
 
 
-		private List<string> LoadFileExtensions()
+		public static List<string> LoadFileExtensions(MyApplicationSettings appSettings)
 		{
-			// File extension types
-			string[] delimiters = new string[] { ";", "; ", "|", "| ", " |", " | ", ":", ": ", " " };
+			string[] delimiters = new string[] { ";", "|", ":" };
 			string[] fefArray = appSettings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
+			
+			// Scan array and strip any leading or trailing spaces...
+			int length = fefArray.Length;
+			for(int i = 0; i < length; i++)
+			{
+				fefArray[i] = fefArray[i].Trim();
+			}
+
 			return new List<string>(fefArray);
 		} // END_METHOD
 
@@ -269,7 +276,7 @@ namespace Push
 			listBox1.Items.Clear();
 
 			// File extension types...
-			List<string> FileExtensionArrayList = LoadFileExtensions();
+			List<string> FileExtensionArrayList = LoadFileExtensions(appSettings);
 			
 			// Build list of file to copy... 
 			foreach (string fileExtension in FileExtensionArrayList)
@@ -471,7 +478,7 @@ namespace Push
 			int suffixInteger = 0;
 			int matchInteger = 0;
 
-			string pattern = @"(?<Prefix>(\w*))\((?<integer>\d*)\)";
+			string regExPattern = @"(?<Prefix>(\w*))\((?<integer>\d*)\)";
 
 			// OUTER LOOP
 			// Interate over each file in the source folder...
@@ -501,7 +508,7 @@ namespace Push
 					//------------------------------------------------------------------------
 					// If we get here, the source and target filenames are not the same...
 
-					Match match = Regex.Match(targetFileName, pattern);
+					Match match = Regex.Match(targetFileName, regExPattern);
 
 					if (!match.Success )
 					{
@@ -792,7 +799,7 @@ namespace Push
 		private void DEBUG_LoadFolderTestData(string TestDataPath, string destinationPath)
 		{
 			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(LoadFileExtensions());
+			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
 
 			List<string> fileTestDataList = new List<string>();
 			foreach (string fileExtension in fileExtensionList)

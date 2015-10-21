@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 //---
 using System.Web.Script.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Push
 {
@@ -145,6 +146,19 @@ namespace Push
 		{
 			// Validate ALL values before save...
 
+			if (!IsValidFileExtensionFilters())
+			{
+				textBox3.Select(0, textBox3.Text.Length);
+				errorProvider4.SetError(textBox3, "Valid file extension filter is required");
+				DialogResult = DialogResult.None;
+			}
+			else
+			{
+				// If all conditions have been met, clear the ErrorProvider of errors.
+				errorProvider4.SetError(textBox3, "");
+				errorProvider4.Dispose();
+			}
+			
 			if (!radioButton1.Checked && !radioButton2.Checked
 						&& !radioButton3.Checked && !radioButton4.Checked)
 			{
@@ -190,7 +204,8 @@ namespace Push
 
 			if (DialogResult == DialogResult.None)
 				return;
-		} // END_METHOD
+		}
+
 		
 
 		#region [ DUPLICATE RADIO BUTTONS ]
@@ -228,6 +243,25 @@ namespace Push
 		{
 			appSettings.FileExtensionFilter = textBox3.Text;
 		} // END_METHOD
+
+
+		private void textBox3_Validated(object sender, EventArgs e)
+		{
+			errorProvider4.SetError(textBox3, "");
+			errorProvider4.Dispose();
+		}
+
+
+		private void textBox3_Validating(object sender, CancelEventArgs e)
+		{
+			if (!ValidatePath(textBox3.Text))
+			{
+				e.Cancel = true;
+				textBox3.Select(0, textBox3.Text.Length);
+				this.errorProvider4.SetError(textBox3, errorMsg);
+			}
+		} // END_METHOD
+
 
 
 		// Clear File Extension
@@ -304,6 +338,70 @@ namespace Push
 		private bool ValidatePath(string path)
 		{
 			return Directory.Exists(path);
+		} // END_METHOD
+
+
+		private bool IsValidFileExtensionFilters()
+		{
+			// Parse the File Extension Filter string...
+			List<string> filterList = Form1.LoadFileExtensions(appSettings);
+
+			#region [ DEBUG STRINGS_SAVE ]
+			//// BAD_FILTERS
+			//filterList/*_BAD*/ =
+			//	new List<string>() { "", " ", "  ", ".*", "*.", "*.*text", "*.|*", "|",
+			//						 "#.*", "*.#", "IMG*.JPG", "**.*", "***.*", "*.**",
+			//						 "*.***", "**.*", "***.*", "*.**", "*.***", "IMG*.JPG",
+			//						 "IMAGE**.JPG", "IMAGE**.*JPG", "*.JP*" };
+			//// GOOD_FILTERS
+			//filterList/*_GOOD*/ =
+			//	new List<string>() { "*.*", "*.jpg", "*.JPEG", "*.tif", "*.TIFF", "*.BMP", 
+			//						 "*.DOC", "*.WORD", "*.txt", "*.now", "*.Jpg_Good" };
+			#endregion
+
+			// Iterate over each filter looking for poorly formed filters...
+			bool isValidFilExtensionFilters = true;
+			string regExPattern = @"\*\.\w+|\*\.\*";
+
+			foreach (string filter in filterList)
+			{
+				Match match = Regex.Match(filter, regExPattern);
+
+				isValidFilExtensionFilters = IsValidExtensionFilter(match, filter);
+				if (!isValidFilExtensionFilters)
+				{
+					// We would actually break here...
+					break;
+				}
+			} // END_FOREACH
+
+			return isValidFilExtensionFilters;
+		} // END_METHOD
+
+
+		private bool IsValidExtensionFilter(Match match, string filter)
+		{
+			if (match.Success)
+			{
+				// If we get here, a match was found...
+
+				// Perform a Equals test to make sure there isn't a false positive.
+				//		EG: *.JPG would match but the input is IMG*.JPG. == False Positive...
+				if (!filter.Equals(match.Value, StringComparison.CurrentCultureIgnoreCase))
+				{
+					// If we get here, the match and the actual string are NOT the same.
+					//		False Positive...
+					return false;
+				}
+			}
+			else
+			{
+				// If we get here, no match was found...
+				return false;
+			}
+
+			// If we get here, the filter is well formed / valid...
+			return true;
 		} // END_METHOD
 		
 		#endregion
@@ -411,7 +509,7 @@ namespace Push
 				errorProvider2.SetError(textBox2, "");
 				errorProvider2.Dispose();
 			}
-		} // END_METHOD
+		}
 		
 		#endregion
 
