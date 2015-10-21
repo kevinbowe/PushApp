@@ -343,6 +343,9 @@ namespace Push
 
 		private bool IsValidFileExtensionFilters()
 		{
+			if (string.IsNullOrEmpty(appSettings.FileExtensionFilter))
+				return false;
+
 			// Parse the File Extension Filter string...
 			List<string> filterList = Form1.LoadFileExtensions(appSettings);
 
