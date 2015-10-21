@@ -17,14 +17,19 @@ namespace Push
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			Form form1 = new Form1(appSettings);
+			Form1 form1 = new Form1(appSettings);
+			
 			// Assign the FormClosed Event handler...
 			form1.FormClosed += FormClosed;
 
+			// This handles the first-run + cancel scenario...
+			if (form1.IsDisposed)
+				return;
+
 			Application.Run(form1);
-			
-			/* 
-			 *  When the form is closed, the Form.OnClosing and Form.OnFormClosed 
+
+			#region [ Comments ]
+			/* When the form is closed, the Form.OnClosing and Form.OnFormClosed 
 			 *		events is executed.
 			 * 
 			 *	The Form.OnClosing event calls Itenso.Configuration.FormSettings.FormClosing( ). 
@@ -32,52 +37,55 @@ namespace Push
 			 * 
 			 *	Next the Form.OnFormClosed event calls Program.FormClosed( ).
 			 *	This method copies the PushSettings properties into the 
-			 *		MyApplicatinSettings collection.   
-			 */
-
+			 *		MyApplicatinSettings collection.   */
+			#endregion			
+			
 			// Save the MyApplicationSettings to the same XML file that holds the form properties...
 			appSettings.Save();
 
-		} // Main
+		} // END_METHOD
 
 
-		// ----------------------------------------------------------------------
 		static void FormClosed(object sender, FormClosedEventArgs e)
 		{
-			appSettings.DisableSplashScreen = ((Form1)sender).pushSettings.DisableSplashScreen;
-			appSettings.DisableXMLOptions = ((Form1)sender).pushSettings.DisableXMLOptions;
-			appSettings.DuplicateFileAction = ((Form1)sender).pushSettings.DuplicateFileAction;
-			appSettings.ExePath = ((Form1)sender).pushSettings.ExePath;
-			appSettings.FileExtensionFilter = ((Form1)sender).pushSettings.FileExtensionFilter;
-			appSettings.HideDupeMessage = ((Form1)sender).pushSettings.HideDupeMessage;
-			appSettings.SourcePath = ((Form1)sender).pushSettings.SourcePath;
-			appSettings.TargetPath = ((Form1)sender).pushSettings.TargetPath;
-		
-		} // FormClosed
+			appSettings.DisableSplashScreen = ((Form1)sender).appSettings.DisableSplashScreen;
+			appSettings.DisableXMLOptions = ((Form1)sender).appSettings.DisableXMLOptions;
+			appSettings.DuplicateFileAction = ((Form1)sender).appSettings.DuplicateFileAction;
+			appSettings.ExePath = ((Form1)sender).appSettings.ExePath;
+			appSettings.FileExtensionFilter = ((Form1)sender).appSettings.FileExtensionFilter;
+			appSettings.HideDupeMessage = ((Form1)sender).appSettings.HideDupeMessage;
+			appSettings.SourcePath = ((Form1)sender).appSettings.SourcePath;
+			appSettings.TargetPath = ((Form1)sender).appSettings.TargetPath;
+			appSettings.ShowDetails = ((Form1)sender).appSettings.ShowDetails;
+		} // END_METHOD
 
-		// --------------------------------------------------------------------
-		// members
+
 		private static readonly MyApplicationSettings appSettings = new MyApplicationSettings();
 
 
     } // END_CLASS
 
 
-	// ------------------------------------------------------------------------
 	// TODO: Move this to a different source code file...
 	public class MyApplicationSettings : ApplicationSettings
 	{
+		public bool DisableSplashScreen { get; set; }
+		public bool DisableXMLOptions { get; set; }
+		public string DuplicateFileAction { get; set; }
+		public string ExePath { get; set; }
+		public string FileExtensionFilter { get; set; }
+		public bool HideDupeMessage { get; set; }
+		public string SourcePath { get; set; }
+		public string TargetPath { get; set; }
+		public bool ShowDetails { get; set; }
 
-		// --------------------------------------------------------------------
-		public MyApplicationSettings() :
-			base(typeof(MyApplicationSettings))
+		
+		public MyApplicationSettings() : base(typeof(MyApplicationSettings))
 		{
 			//-----------------------------------------------------------------
 			// At this point, the AutoUpgrade property has been added and setto true...
-
 			
-			// IMPORTANT:  This DOES NOT add the value related to the property...
-
+			// IMPORTANT:  This code block DOES NOT add the value related to the property...
 			Settings.Add(new PropertySetting(this, "DisableSplashScreen"));
 			Settings.Add(new PropertySetting(this, "DisableXMLOptions"));
 			Settings.Add(new PropertySetting(this, "DuplicateFileAction"));
@@ -86,23 +94,10 @@ namespace Push
 			Settings.Add(new PropertySetting(this, "HideDupeMessage"));
 			Settings.Add(new PropertySetting(this, "SourcePath"));
 			Settings.Add(new PropertySetting(this, "TargetPath"));
+			Settings.Add(new PropertySetting(this, "ShowDetails"));
 
-		} // MyApplicationSettings
+		} // END_METHOD
 
-		// --------------------------------------------------------------------
-		public bool DisableSplashScreen { get; set; }
-		public bool DisableXMLOptions  { get; set; }
-		public string DuplicateFileAction  { get; set; }
-		public string ExePath  { get; set; }
-		public string FileExtensionFilter  { get; set; }
-		public bool HideDupeMessage  { get; set; }
-		public string SourcePath  { get; set; }
-		public string TargetPath  { get; set; }
-
-
-	} // class MyApplicationSettings
-
-
-
+	} // END_CLASS
 
 }

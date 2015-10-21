@@ -72,10 +72,10 @@
 			this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.listBox1.FormattingEnabled = true;
-			this.listBox1.Location = new System.Drawing.Point(95, 23);
+			this.listBox1.Location = new System.Drawing.Point(95, 26);
 			this.listBox1.Name = "listBox1";
 			this.listBox1.ScrollAlwaysVisible = true;
-			this.listBox1.Size = new System.Drawing.Size(654, 69);
+			this.listBox1.Size = new System.Drawing.Size(639, 69);
 			this.listBox1.TabIndex = 1;
 			// 
 			// button2
@@ -145,7 +145,7 @@
 			this.panel1.Controls.Add(this.splitContainer1);
 			this.panel1.Location = new System.Drawing.Point(16, 139);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(733, 279);
+			this.panel1.Size = new System.Drawing.Size(718, 96);
 			this.panel1.TabIndex = 16;
 			// 
 			// splitContainer1
@@ -161,8 +161,8 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.listView2);
-			this.splitContainer1.Size = new System.Drawing.Size(733, 279);
-			this.splitContainer1.SplitterDistance = 355;
+			this.splitContainer1.Size = new System.Drawing.Size(718, 96);
+			this.splitContainer1.SplitterDistance = 357;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// listView1
@@ -176,7 +176,7 @@
 			this.listView1.FullRowSelect = true;
 			this.listView1.Location = new System.Drawing.Point(0, 0);
 			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(355, 279);
+			this.listView1.Size = new System.Drawing.Size(357, 96);
 			this.listView1.TabIndex = 7;
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
@@ -210,7 +210,7 @@
 			this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.listView2.Location = new System.Drawing.Point(0, 0);
 			this.listView2.Name = "listView2";
-			this.listView2.Size = new System.Drawing.Size(374, 279);
+			this.listView2.Size = new System.Drawing.Size(357, 96);
 			this.listView2.TabIndex = 8;
 			this.listView2.UseCompatibleStateImageBehavior = false;
 			this.listView2.View = System.Windows.Forms.View.Details;
@@ -247,7 +247,7 @@
 			// 
 			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(679, 120);
+			this.label2.Location = new System.Drawing.Point(664, 120);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(70, 13);
 			this.label2.TabIndex = 18;
@@ -257,7 +257,7 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(34, 100);
+			this.label4.Location = new System.Drawing.Point(34, 103);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(64, 13);
 			this.label4.TabIndex = 20;
@@ -286,7 +286,7 @@
             this.toolStripButton6});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(763, 25);
+			this.toolStrip1.Size = new System.Drawing.Size(748, 25);
 			this.toolStrip1.TabIndex = 22;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -323,7 +323,7 @@
 			// pictureBox2
 			// 
 			this.pictureBox2.Image = global::Push.Properties.Resources.Green_Button1;
-			this.pictureBox2.Location = new System.Drawing.Point(16, 25);
+			this.pictureBox2.Location = new System.Drawing.Point(16, 28);
 			this.pictureBox2.Name = "pictureBox2";
 			this.pictureBox2.Size = new System.Drawing.Size(73, 67);
 			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -334,7 +334,7 @@
 			// pictureBox1
 			// 
 			this.pictureBox1.Image = global::Push.Properties.Resources.Control_Collapser1;
-			this.pictureBox1.Location = new System.Drawing.Point(15, 98);
+			this.pictureBox1.Location = new System.Drawing.Point(15, 101);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(17, 19);
 			this.pictureBox1.TabIndex = 19;
@@ -345,7 +345,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(763, 430);
+			this.ClientSize = new System.Drawing.Size(748, 247);
 			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.label4);
@@ -359,6 +359,7 @@
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.listBox1);
 			this.Name = "Form1";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Push Application";
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.Click += new System.EventHandler(this.Form1_Click);
