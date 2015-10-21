@@ -1,7 +1,7 @@
 # PushApp
 PUSHAPP
 
-Enhance Main UI
+Persist Settings
 
 -----------------------------------
 
@@ -9,25 +9,25 @@ USE CASE
 
 -----------------------------------
 
-Enhance the Main UI, Form1.  The user should be able to modify the size the whole UI and the Source and Target ListView controls.  The user should be able to hide the Source and Target ListView.
+Persist user settings and window properties.
 
-If the user expands or shrinks the main window frame, the controls will resize appropriately. See: ListBox1, ListView1 and ListView2.
+The user should be able to persist any window property from one session to the next, These properties include the app window size, position on the screen and control UI properties. Each time the app is run the previous window properties will be restored.
 
-The application will limit the minimum and maximum size of the MMain UI (Form1).
+The user should be able to persist any configuration setting from one session to the next. These settings include source and target folders, file extension filters, and duplicate file action.  Each time the app is run the previous settings will be restored.
 
-The user should be able to see more of the Source or Target ListViews by 'grabbing' a splitter control and dragging it horizontally.  
+Configuration and window property settings must be persisted in the same file. 
 
-The user should be able to expand/show or collapse/hide the KistBox1 and ListBox2 controls.  This should work like the "Show details" feature in the Duplicate Files Found modal dialog.
-
-Technical Note:
-
-Part of this story will include renaming all of the controls in this form to something meaningful.  This may have some impact on Form2 (configuration UI).
+The current configuration setting persistence must be upgraded to support window property persistence.
 
 -----------------------------------
 
 DEVELOPER COMMENT:
 
 -----------------------------------
+
+The current configuration settings code will be migrated to a more flexible "User Application Data Path" persistence.  This technique is built using Application.UserAppDataPath Property which is built into .NET.  See the link for more information: 
+
+https://msdn.microsoft.com/en-us/library/system.windows.forms.application.userappdatapath.aspx
 
 This code is actively under development.  Early check-ins may contain un-factored code and large blocks of commented-out code.  Early check-ins may contain undiscovered bugs, and constants that will eventually be removed.
 
@@ -39,15 +39,8 @@ DEVELOPMENT STATUS
 
 -----------------------------------
 
-October 10, 2015 - Work-In-Progress
+October 15, 2015 - Work-In-Progress
 
-Update README
-
-ADD - USE CASE 
+Create README
 
 -----------------------------------
-
-October 10, 2015 - Work-In-Progress
-
-Check-in README.MD
-
