@@ -12,50 +12,179 @@ using System.Runtime.InteropServices;
 using PSTaskDialog;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+//---
+using Itenso.Configuration;
+using System.Globalization;
 
 namespace Push
 {
-	public partial class Form1 : Form
+	public partial class MainForm : Form
 	{
+		private readonly FormSettings formSettings;
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
-		PushSettings settings;
+		public MyApplicationSettings appSettings;
+		Size frmSize;
 
-	
-		public Form1()
+
+		public MainForm(MyApplicationSettings appSettings)
 		{
 			InitializeComponent();
 
+			// Create settings group...
+			//		FormSettings contains all of the Window properties...
+			//		It does NOT contain the controls or the app configuration data...
+			formSettings = new FormSettings(this);
+
+			// Enable Auto-Save...
+			formSettings.SaveOnClose = true;
+
+			this.appSettings = appSettings;
+			
+			// Set the default form properties and then update them with the last used properties...
+			InitControls();
+		} // END_CTOR
+
+
+		//	TODO: Re-factor... Necessary?
+		private void InitControls()
+		{
+			// If we get here, Set the default values for the controls...
+
+			if (appSettings == null)
+			{
+				// We shoud NEVER get here...
+
+				// Fetch the path where the application is running...
+				FileInfo sourceFileInfo = new FileInfo("Push.exe");
+				
+				appSettings = new MyApplicationSettings()
+					{
+						DisableSplashScreen = false,
+						DisableXMLOptions = false,
+						DuplicateFileAction = "Overwrite",
+						ExePath = sourceFileInfo.DirectoryName,
+						FileExtensionFilter = "*.*",
+						HideDupeMessage = false,
+						SourcePath = sourceFileInfo.DirectoryName +  @"Source",
+						TargetPath = sourceFileInfo.DirectoryName +  @"Target"
+					};
+			}
+
+			// Test to see if any of the required properties are missing...
+			if (appSettings.DuplicateFileAction == null ||
+				appSettings.FileExtensionFilter == null ||
+				appSettings.SourcePath == null ||
+				appSettings.TargetPath == null)
+			{
+				string s = string.Empty;
+				Form2 dlg = new Form2();
+
+				// Copy the current settings into the Configuration form...
+				dlg.appSettings = appSettings;
+				dlg.StartPosition = FormStartPosition.CenterParent;
+				dlg.Text = "Push Application Setup";
+
+				if (dlg.ShowDialog(this) == DialogResult.Cancel)
+					// If we get here, exit the application imeadiatly...
+					this.Close();
+
+				// Copy settings...
+				appSettings = dlg.appSettings;
+
+				dlg.Dispose();
+
+				LoadListView(lvSource, appSettings.SourcePath);
+				LoadListView(lvTarget, appSettings.TargetPath);
+
+				// Buy default, assume the details are visible...
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
+				lblShowHide.Text = "Hide Details";
+				pnlDetails.Visible = true;
+				splitContainerDetails.Visible = true;
+				appSettings.ShowDetails = true;
+
+				formSettings.Form.MinimumSize = new Size(764, 286);
+			}
+
+			// Update the form properties to the last used...
+			UpdateControls();
 		} // END_METHOD
 
 
+		// TODO: Re-factor... Or Delete... Necessary?
+		private void UpdateControls()
+		{
+			// If we get here, update the controls to the last used settings...
+
+			if (appSettings.ShowDetails)
+			{
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
+				lblShowHide.Text = "Hide Details";
+				pnlDetails.Visible = true;
+				formSettings.Form.MinimumSize = new Size(764, 286);
+				MinimumSize = new Size(764, 286);
+			}
+			else
+			{
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Expander1;
+				lblShowHide.Text = "Show Details";
+				pnlDetails.Visible = false;
+				formSettings.Form.MinimumSize = new Size(400, 161);
+				MinimumSize = new Size(400, 161);
+				MaximumSize = MinimumSize;
+			}
+		} // END_METHOD
+
+	
 		// Load data...
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			// Open and read PushSettings file...
-
-			// Fetch the path where the application is running...
-			FileInfo sourceFileInfo = new FileInfo("Push.exe");
-			string exePath = sourceFileInfo.DirectoryName;
-
-			string pushSettingsJSON;
-			try
-			{
-				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettings");
-			}
-			catch
-			{
-				pushSettingsJSON = System.IO.File.ReadAllText(exePath + @"\Config\PushSettingsDefault");
-				File.Copy(exePath + @"\Config\PushSettingsDefault", exePath + @"\Config\PushSettings", true);
-			}
-
-			settings = new PushSettings();
-			// Convert to object...
-			settings = (PushSettings)new JavaScriptSerializer().Deserialize(pushSettingsJSON, typeof(PushSettings));
-			settings.ExePath = exePath;
+			// Disable the Maximize control on the form...
+			this.MaximizeBox = false;
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, settings.SourcePath);
-			LoadListView(listView2, settings.TargetPath);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
+
+		// Show-Hide ListViews...
+		private void pictureBox1_Click(object sender, EventArgs e)
+		{
+			if (splitContainerDetails.Visible)
+				{
+				// If we get here, hide the source and target ListViews...
+
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Expander1;
+				lblShowHide.Text = "Show Details";
+				appSettings.ShowDetails = false;
+
+				// Save the current window size...
+				frmSize = this.Size;
+
+				// Set the minimum window size which will hide the source and target and shrink the status listbox...
+				MinimumSize = new Size(400, 161);
+				MaximumSize = MinimumSize;
+				Size = MinimumSize;
+				pnlDetails.Visible = false;
+
+			}
+			else
+			{
+				// If we get here,	restore the original windows size...
+
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
+				lblShowHide.Text = "Hide Details";
+				appSettings.ShowDetails = true;
+
+				// Reset the minimum size so the source and target can not be hidden when resizing the window...
+				MinimumSize = new Size(764, 286);
+				// Clear the maximum size so the user can resize the window...
+				MaximumSize = new Size();
+				// Restore the previous window size...
+				Size = frmSize;
+				pnlDetails.Visible = true;
+			}
 		} // END_METHOD
 
 
@@ -68,7 +197,7 @@ namespace Push
 			DestinationListView.Items.Clear();
 
 			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(LoadFileExtensions());
+			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
 
 			List<string> fileSourceArrayList = new List<string>();
 			foreach (string FileExtension in fileExtensionList)
@@ -92,16 +221,28 @@ namespace Push
 			} // END_FOREACH
 
 			return true;
-
 		} // END_METHOD
 
 
-		private List<string> LoadFileExtensions()
+		public static List<string> LoadFileExtensions(MyApplicationSettings appSettings)
 		{
-			// File extension types
-			string[] delimiters = new string[] { ";", "; ", "|", "| ", " |", " | ", ":", ": ", " " };
-			string[] fefArray = settings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
+			string[] delimiters = new string[] { ";", "|", ":" };
+			string[] fefArray = appSettings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
+			
+			// Scan array and strip any leading or trailing spaces...
+			int length = fefArray.Length;
+			for(int i = 0; i < length; i++)
+			{
+				fefArray[i] = fefArray[i].Trim();
+			}
+
 			return new List<string>(fefArray);
+		} // END_METHOD
+
+
+		private void pictureBox2_Click(object sender, EventArgs e)
+		{
+			button1_Click(sender, e);
 		} // END_METHOD
 
 
@@ -111,36 +252,36 @@ namespace Push
 			ArrayList fileSourceArrayList = new ArrayList();
 			
 			// Validation...
-			if (!Directory.Exists(settings.SourcePath) || !Directory.Exists(settings.TargetPath))
+			if (!Directory.Exists(appSettings.SourcePath) || !Directory.Exists(appSettings.TargetPath))
 			{
 				LoadConfigurationDialog();
 				return;
 			}
 
 			// Validation...
-			if (settings.SourcePath.Equals(settings.TargetPath))
+			if (appSettings.SourcePath.Equals(appSettings.TargetPath))
 			{
 				LoadConfigurationDialog();
 				return;
 			}
 
 			// Validation...
-			if (string.IsNullOrEmpty(settings.SourcePath) || string.IsNullOrEmpty(settings.TargetPath))
+			if (string.IsNullOrEmpty(appSettings.SourcePath) || string.IsNullOrEmpty(appSettings.TargetPath))
 			{
 				LoadConfigurationDialog();
 				return;
 			}
 
 			// Init Controls...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// File extension types...
-			List<string> FileExtensionArrayList = LoadFileExtensions();
+			List<string> FileExtensionArrayList = LoadFileExtensions(appSettings);
 			
 			// Build list of file to copy... 
 			foreach (string fileExtension in FileExtensionArrayList)
 			{
-				string[] fileSourceStrArray = Directory.GetFiles(settings.SourcePath, fileExtension);
+				string[] fileSourceStrArray = Directory.GetFiles(appSettings.SourcePath, fileExtension);
 
 				if (fileSourceStrArray.Length <= 0) 
 					continue;
@@ -150,7 +291,7 @@ namespace Push
 			} // END_FOREACH
 
 			// Build a list of files on the target folder...
-			string[] fileTargetStrArray = System.IO.Directory.GetFiles(settings.TargetPath);
+			string[] fileTargetStrArray = System.IO.Directory.GetFiles(appSettings.TargetPath);
 			int dupeFileCount = 0;
 			// OUTER LOOP -- Iterate over each file in the target list...
 			foreach (string t in fileTargetStrArray)
@@ -175,32 +316,30 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				CopyOverwrite(fileSourceArrayList, settings.TargetPath);
+				CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
 			}
 			else
 			{
-
-				if (settings.HideDupeMessage)
+				if (appSettings.HideDupeMessage)
 				{
 					//---------------------------------------------------------
 					// If we get here, perform whatever Dupe File Action has been configured...
 
-					switch ((commandResult)Enum.Parse(typeof(commandResult), settings.DuplicateFileAction))
+					switch ((commandResult)Enum.Parse(typeof(commandResult), appSettings.DuplicateFileAction))
 					{
 						case commandResult.Rename:
-							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
 							break;
 						case commandResult.Skip:
-							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
 							break;
 						case commandResult.Cancel:
 							return;
 						case commandResult.Overwrite:
 						default:
-							CopyOverwrite(fileSourceArrayList, settings.TargetPath);
+							CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
 							break;
 					} // END SWITCH
-
 				}
 				else
 				{
@@ -235,23 +374,23 @@ namespace Push
 						// If we get here, the Display Dupe Message checkbox 
 						//		has been deselected. Save the currently selected 
 						//		action to settings...
-						settings.HideDupeMessage = cTaskDialog.VerificationChecked;
-						settings.DuplicateFileAction = Enum.GetName(typeof(commandResult), cTaskDialog.CommandButtonResult);
+						appSettings.HideDupeMessage = cTaskDialog.VerificationChecked;
+						appSettings.DuplicateFileAction = Enum.GetName(typeof(commandResult), cTaskDialog.CommandButtonResult);
 					}
 
 					switch ((commandResult)cTaskDialog.CommandButtonResult)
 					{
 						case commandResult.Rename:
-							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
 							break;
 						case commandResult.Skip:
-							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, settings.TargetPath, settings.SourcePath);
+							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
 							break;
 						case commandResult.Cancel:
 							return;
 						case commandResult.Overwrite:
 						default:
-							CopyOverwrite(fileSourceArrayList, settings.TargetPath);
+							CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
 							break;
 
 					} // END SWITCH
@@ -268,7 +407,7 @@ namespace Push
 			 *----------------------------------------------------------------*/
 
 			// Rebuild the Target file list with the new files that have been copied...
-			fileTargetStrArray = System.IO.Directory.GetFiles(settings.TargetPath);
+			fileTargetStrArray = System.IO.Directory.GetFiles(appSettings.TargetPath);
 
 			#region [ DELETE COPIED FILES ]
 			// OUTER LOOP -- Iterate over each file in the target list...
@@ -297,21 +436,20 @@ namespace Push
 					File.Delete(s);
 
 					// Update UI...
-					listBox1.Items.Add("CleanUp: Deleting " + s);
-					listBox1.Update();
+					lbStatus.Items.Add("CleanUp: Deleting " + s);
+					lbStatus.Update();
 					break; // Exit innter loop...
 
 				} // END_FOREACH_INNER
 			} // END_FOREACH_OUTER
 			#endregion
 
-			listBox1.Items.Add("Copy Complete");
-			listBox1.Update();
+			lbStatus.Items.Add("Copy Complete");
+			lbStatus.Update();
 
 			// Update Source & Target Listboxes...
-			LoadListView(listView1, settings.SourcePath);
-			LoadListView(listView2, settings.TargetPath);
-
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
 
@@ -319,16 +457,18 @@ namespace Push
 		{
 			string s = string.Empty;
 			Form2 dlg = new Form2();
+
 			// Copy the current settings into the Configuration form...
-			dlg.settings = settings;
+			dlg.appSettings = appSettings;
+			dlg.StartPosition = FormStartPosition.CenterParent;
+			
 			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
 			else s = "Cancel";
 
 			// Copy settings...
-			settings = dlg.settings;
+			appSettings = dlg.appSettings;
 
 			dlg.Dispose();
-
 		} // END_METHOD
 
 
@@ -338,7 +478,7 @@ namespace Push
 			int suffixInteger = 0;
 			int matchInteger = 0;
 
-			string pattern = @"(?<Prefix>(\w*))\((?<integer>\d*)\)";
+			string regExPattern = @"(?<Prefix>(\w*))\((?<integer>\d*)\)";
 
 			// OUTER LOOP
 			// Interate over each file in the source folder...
@@ -347,7 +487,6 @@ namespace Push
 				string sourceFileNamePrefix = Path.GetFileNameWithoutExtension(s);
 				string sourceFileName = Path.GetFileName(s);
 				string sourceFileExtension = Path.GetExtension(s);
-
 				
 				// INNER LOOP
 				// Iterate over each file in the target folder...
@@ -356,7 +495,6 @@ namespace Push
 					// init...
 					matchInteger = 0;
 					
-					//string targetFileName = Path.GetFileNameWithoutExtension(t);
 					string targetFileExtension = Path.GetExtension(t);
 					string targetFileName = Path.GetFileName(t);
 
@@ -370,7 +508,7 @@ namespace Push
 					//------------------------------------------------------------------------
 					// If we get here, the source and target filenames are not the same...
 
-					Match match = Regex.Match(targetFileName, pattern);
+					Match match = Regex.Match(targetFileName, regExPattern);
 
 					if (!match.Success )
 					{
@@ -391,7 +529,6 @@ namespace Push
 					// If we get here, we found a similar file name...
 
 					// Fetch the suffix-integer...
-					// suffixInteger 
 					string value = match.Groups["integer"].Value;
 					Int32.TryParse(value, out matchInteger);
 
@@ -430,7 +567,6 @@ namespace Push
 				matchInteger = 0;
 
 			} // END_OUTER_LOOP
-
 		} // END_METHOD
 
 
@@ -478,8 +614,8 @@ namespace Push
 					deleteSourceArrayList.Add(s);
 
 					// Update UI...
-					listBox1.Items.Add("Copying " + s + " to " + destFileName);
-					listBox1.Update();
+					lbStatus.Items.Add("Copying " + s + " to " + destFileName);
+					lbStatus.Update();
 				}
 
 				// Raise the okToCopy flag...
@@ -488,7 +624,6 @@ namespace Push
 			} // END_FOREACH_OUTER
 
 			return deleteSourceArrayList;
-
 		} // END_METHOD
 
 
@@ -503,10 +638,9 @@ namespace Push
 				File.Copy(s, destFileName, true);
 
 				// Update UI...
-				listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
-				listBox1.Update();
+				lbStatus.Items.Add("Copying " + srcfileName + " to " + destFileName);
+				lbStatus.Update();
 			}
-
 		} // END_METHOD
 
 
@@ -569,6 +703,7 @@ namespace Push
 
 
 		#region [ STRUCT ]
+
 		[StructLayout(LayoutKind.Sequential)]
 		private struct SHFILEINFO
 		{
@@ -580,6 +715,7 @@ namespace Push
 			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
 			public string szTypeName;
 		} // END_STRUCT
+
 		#endregion
 
 		
@@ -597,28 +733,28 @@ namespace Push
 			StringBuilder sb = new StringBuilder(11);
 			StrFormatByteSize(filesize, sb, sb.Capacity);
 			return sb.ToString();
-
 		} // END_METHOD
 
 
 		#region [ TOOL STRIP ]
 
-		private void toolStripButton1_Click(object sender, EventArgs e)
+		private void toolStripButton4_Click(object sender, EventArgs e)
 		{
 			button1_Click(sender, e);
 		} // END_METHOD
 
-		private void toolStripButton2_Click(object sender, EventArgs e)
+
+		private void toolStripButton5_Click(object sender, EventArgs e)
 		{
-			LoadListView(listView1, settings.SourcePath);
-			LoadListView(listView2, settings.TargetPath);
-			//button3_Click(sender, e);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
-		private void toolStripButton3_Click(object sender, EventArgs e)
+
+		private void toolStripButton6_Click(object sender, EventArgs e)
 		{
 			LoadConfigurationDialog();
-		}
+		} // END_METHOD
 
 		#endregion
 
@@ -631,41 +767,39 @@ namespace Push
 			DEBUG_MistyRose();
 		} // END_METHOD
 
+
 		private void DEBUG_MistyRose()
 		{
 			DEBUG_InitFolders();
 
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", settings.SourcePath);
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\TargetPictures", settings.TargetPath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\TargetPictures", appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, settings.SourcePath);
-			LoadListView(listView2, settings.TargetPath);
-		}
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
 
 		private void DEBUG_InitFolders()
 		{
 			// Generate a collection of ALL files, source and target, that must be deleted...
-			List<string> fileList = new List<string>(Directory.GetFiles(settings.SourcePath) );
-			fileList.AddRange( new List<string>(Directory.GetFiles(settings.TargetPath)) );
+			List<string> fileList = new List<string>(Directory.GetFiles(appSettings.SourcePath));
+			fileList.AddRange(new List<string>(Directory.GetFiles(appSettings.TargetPath)));
 			
 			foreach (string file in fileList) 
 				File.Delete(file);
-
 		} // END_METHOD
+
 		
 		private void DEBUG_LoadFolderTestData(string TestDataPath, string destinationPath)
 		{
-
 			List<string> fileExtensionList = new List<string>();
-			// This nasty cast & converstion is required because LoadFileExtensions( ) returns <ArrayList>...
-			//		TODO: Update this code after revising LoadFileExtensions( ) to return List<string> collection...
-			//...fileExtensionList.AddRange((String[])LoadFileExtensions().ToArray(typeof(string)));
-			fileExtensionList.AddRange(LoadFileExtensions());
+			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
 
 			List<string> fileTestDataList = new List<string>();
 			foreach (string fileExtension in fileExtensionList)
@@ -677,8 +811,8 @@ namespace Push
 			{
 				File.Copy(s, Path.Combine(destinationPath, Path.GetFileName(s)), true);
 			}
-
 		} // END_METHOD
+
 		
 		// DEBUG Button - Pale Green -- Reset source and target data...
 		private void button4_Click(object sender, EventArgs e)
@@ -686,21 +820,23 @@ namespace Push
 			DEBUG_PaleGreen();
 		} // END_METHOD
 
+
 		private void DEBUG_PaleGreen()
 		{
 			DEBUG_InitFolders();
 
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", settings.SourcePath);
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_2", settings.TargetPath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_2", appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, settings.SourcePath);
-			LoadListView(listView2, settings.TargetPath);
-		}
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
 
 		// DEBUG Button - Powder Blue -- Reset source and target data...
 		private void button5_Click(object sender, EventArgs e)
@@ -708,21 +844,22 @@ namespace Push
 			DEBUG_PowderBlue();
 		} // END_METHOD
 
+
 		private void DEBUG_PowderBlue()
 		{
 			DEBUG_InitFolders();
 
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", settings.SourcePath);
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_1", settings.TargetPath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_1", appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, settings.SourcePath);
-			LoadListView(listView2, settings.TargetPath);
-		}
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
 		
 		#endregion		
 
@@ -730,6 +867,7 @@ namespace Push
 		#region [ HOT-KEY // SHORT-CUTS ]
 
 		private bool prefixSeen;
+
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
@@ -770,16 +908,22 @@ namespace Push
 			// Enter Ctrl+R // Refresh...
 			if (keyData == (Keys.Control | Keys.R))
 			{
-				LoadListView(listView1, settings.SourcePath);
-				LoadListView(listView2, settings.TargetPath);
+				LoadListView(lvSource, appSettings.SourcePath);
+				LoadListView(lvTarget, appSettings.TargetPath);
 				return true;
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
 		} // END_METHOD
-		
+	
 		#endregion
 
+
+		// Close...
+		private void Form1_Click(object sender, EventArgs e)
+		{
+			formSettings.Save();
+		} // END_METHOD
 
 	} // END_CLASS
 
@@ -798,8 +942,5 @@ namespace Push
 		public string ExePath;
 
 	} // END_CLASS
-
-
-
 
 } // END_NAMESPACE
