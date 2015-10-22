@@ -205,7 +205,6 @@ namespace Push
 			if (DialogResult == DialogResult.None)
 				return;
 		}
-
 		
 
 		#region [ DUPLICATE RADIO BUTTONS ]
@@ -254,14 +253,13 @@ namespace Push
 
 		private void textBox3_Validating(object sender, CancelEventArgs e)
 		{
-			if (!ValidatePath(textBox3.Text))
+			if (!IsValidFileExtensionFilters())
 			{
 				e.Cancel = true;
 				textBox3.Select(0, textBox3.Text.Length);
 				this.errorProvider4.SetError(textBox3, errorMsg);
 			}
 		} // END_METHOD
-
 
 
 		// Clear File Extension
