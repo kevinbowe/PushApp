@@ -12,13 +12,13 @@ using System.Text.RegularExpressions;
 
 namespace Push
 {
-	public partial class Form2 : Form
+	public partial class ConfigForm : Form
 	{
 		public enum DuplicateFileActionState { Overwrite, Rename, Skip, Cancel };
 		public MyApplicationSettings appSettings;
 		public MyApplicationSettings originalAppSettings;
 
-		public Form2()
+		public ConfigForm()
 		{
 			InitializeComponent();
 			this.AutoValidate  = AutoValidate.EnableAllowFocusChange;
@@ -26,15 +26,15 @@ namespace Push
 
 
 		// Form Load..
-		private void Form2_Load(object sender, EventArgs e)
+		private void ConfigForm_Load(object sender, EventArgs e)
 		{
 			// Hydrate the controls with the current settings...
-			checkBox1.Checked = appSettings.HideDupeMessage;
-			textBox1.Text = appSettings.SourcePath;
-			textBox2.Text = appSettings.TargetPath;
-			textBox3.Text = appSettings.FileExtensionFilter;
-			checkBox2.Checked = appSettings.DisableSplashScreen;
-			checkBox3.Checked = appSettings.DisableXMLOptions;
+			cbHideDupeFileMessage.Checked = appSettings.HideDupeMessage;
+			tbSourceFolder.Text = appSettings.SourcePath;
+			tbTargetFolder.Text = appSettings.TargetPath;
+			tbFileExtensions.Text = appSettings.FileExtensionFilter;
+			cbDisableSplashScreen.Checked = appSettings.DisableSplashScreen;
+			cbDisableXMLOptions.Checked = appSettings.DisableXMLOptions;
 			
 			// Save the original values in the appSettings...
 			originalAppSettings = new MyApplicationSettings
@@ -54,22 +54,22 @@ namespace Push
 			{
 				// If we get here, the dupe action has never been set...
 
-				checkBox1.Visible = false;
-				groupBox1.Enabled = true;
-				radioButton1.Enabled = radioButton2.Enabled = radioButton3.Enabled = radioButton4.Enabled = true;
-				radioButton1.Checked = radioButton2.Checked = radioButton3.Checked = radioButton4.Checked = false;
+				cbHideDupeFileMessage.Visible = false;
+				grpDupeHandeling.Enabled = true;
+				rbOverwrite.Enabled = rbRename.Enabled = rbSkip.Enabled = rbCancel.Enabled = true;
+				rbOverwrite.Checked = rbRename.Checked = rbSkip.Checked = rbCancel.Checked = false;
 			}
 			else
 			{
 				switch (appSettings.DuplicateFileAction)
 				{
-					case "Overwrite": radioButton1.Checked = true; break;
-					case "Rename": radioButton2.Checked = true; break;
-					case "Skip": radioButton3.Checked = true; break;
+					case "Overwrite": rbOverwrite.Checked = true; break;
+					case "Rename": rbRename.Checked = true; break;
+					case "Skip": rbSkip.Checked = true; break;
 					case "Cancel":
 					default:
 						{
-							radioButton4.Checked = true;
+							rbCancel.Checked = true;
 							break;
 						}
 				} // END_SWITCH
@@ -85,7 +85,7 @@ namespace Push
 
 		
 		// OK, Cancel & 'X'...
-		private void Form2_FormClosing(Object sender, FormClosingEventArgs e)
+		private void ConfigForm_FormClosing(Object sender, FormClosingEventArgs e)
 		{
 			if (DialogResult == DialogResult.Cancel)
 			{
@@ -142,57 +142,57 @@ namespace Push
 
 	
 		// OK...
-		private void button1_Click(object sender, EventArgs e)
+		private void btnOK_Click(object sender, EventArgs e)
 		{
 			// Validate ALL values before save...
 
 			if (!IsValidFileExtensionFilters())
 			{
-				textBox3.Select(0, textBox3.Text.Length);
-				errorProvider4.SetError(textBox3, "Valid file extension filter is required");
+				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
+				errorProviderFileExtensions.SetError(tbFileExtensions, "Valid file extension filter is required");
 				DialogResult = DialogResult.None;
 			}
 			else
 			{
 				// If all conditions have been met, clear the ErrorProvider of errors.
-				errorProvider4.SetError(textBox3, "");
-				errorProvider4.Dispose();
+				errorProviderFileExtensions.SetError(tbFileExtensions, "");
+				errorProviderFileExtensions.Dispose();
 			}
 			
-			if (!radioButton1.Checked && !radioButton2.Checked
-						&& !radioButton3.Checked && !radioButton4.Checked)
+			if (!rbOverwrite.Checked && !rbRename.Checked
+						&& !rbSkip.Checked && !rbCancel.Checked)
 			{
-				errorProvider3.SetError(radioButton1, "Please choose a Duplicate Action");
+				errorProviderDuplicateHandeling.SetError(rbOverwrite, "Please choose a Duplicate Action");
 				DialogResult = DialogResult.None;
 			}
 			else
-				errorProvider3.Clear();
+				errorProviderDuplicateHandeling.Clear();
 			
 			
-			if (!ValidatePath(textBox1.Text))
+			if (!ValidatePath(tbSourceFolder.Text))
 			{
-				textBox1.Select(0, textBox1.Text.Length);
-				errorProvider1.SetError(textBox1, errorMsg);
+				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
+				errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
 				DialogResult = DialogResult.None;
 			}
 			else
 			{
 				// If all conditions have been met, clear the ErrorProvider of errors.
-				errorProvider1.SetError(textBox1, "");
-				errorProvider1.Dispose();
+				errorProviderSourceFolder.SetError(tbSourceFolder, "");
+				errorProviderSourceFolder.Dispose();
 			}
 
-			if (!ValidatePath(textBox2.Text))
+			if (!ValidatePath(tbTargetFolder.Text))
 			{
-				textBox1.Select(0, textBox2.Text.Length);
-				errorProvider2.SetError(textBox2, errorMsg);
+				tbSourceFolder.Select(0, tbTargetFolder.Text.Length);
+				errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
 				DialogResult = DialogResult.None;
 			}
 			else
 			{
 				// If all conditions have been met, clear the ErrorProvider of errors.
-				errorProvider2.SetError(textBox2, "");
-				errorProvider2.Dispose();
+				errorProviderTargetFolder.SetError(tbTargetFolder, "");
+				errorProviderTargetFolder.Dispose();
 			}
 
 			if (String.IsNullOrEmpty(appSettings.FileExtensionFilter) ||
@@ -204,24 +204,24 @@ namespace Push
 
 			if (DialogResult == DialogResult.None)
 				return;
-		}
+		} // END_METHOD
 		
 
 		#region [ DUPLICATE RADIO BUTTONS ]
-		
-		private void radioButton1_CheckedChanged(object sender, EventArgs e)
+
+		private void rbOverwrite_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Overwrite.ToString("G");
 		} // END_METHOD
 
-		
-		private void radioButton2_CheckedChanged(object sender, EventArgs e)
+
+		private void rbRename_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Rename.ToString("G");
 		} // END_METHOD
 
-		
-		private void radioButton3_CheckedChanged(object sender, EventArgs e)
+
+		private void rbSkip_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Skip.ToString("G");
 		} // END_METHOD
@@ -238,39 +238,39 @@ namespace Push
 		#region [ FILE EXTENSION FILTER ]
 
 		// File Extension...
-		private void textBox3_TextChanged(object sender, EventArgs e)
+		private void tbFileExtensions_TextChanged(object sender, EventArgs e)
 		{
-			appSettings.FileExtensionFilter = textBox3.Text;
+			appSettings.FileExtensionFilter = tbFileExtensions.Text;
 		} // END_METHOD
 
 
-		private void textBox3_Validated(object sender, EventArgs e)
+		private void tbFileExtensions_Validated(object sender, EventArgs e)
 		{
-			errorProvider4.SetError(textBox3, "");
-			errorProvider4.Dispose();
+			errorProviderFileExtensions.SetError(tbFileExtensions, "");
+			errorProviderFileExtensions.Dispose();
 		}
 
 
-		private void textBox3_Validating(object sender, CancelEventArgs e)
+		private void tbFileExtensions_Validating(object sender, CancelEventArgs e)
 		{
 			if (!IsValidFileExtensionFilters())
 			{
 				e.Cancel = true;
-				textBox3.Select(0, textBox3.Text.Length);
-				this.errorProvider4.SetError(textBox3, errorMsg);
+				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
+				this.errorProviderFileExtensions.SetError(tbFileExtensions, errorMsg);
 			}
 		} // END_METHOD
 
 
 		// Clear File Extension
-		private void button5_Click(object sender, EventArgs e)
+		private void btnFileExtensionsClear_Click(object sender, EventArgs e)
 		{
-			textBox3.Clear();
+			tbFileExtensions.Clear();
 		} // END_METHOD
 
 
 		// Load File Extensions...
-		private void button6_Click(object sender, EventArgs e)
+		private void btnFileExtensionsFileSelect_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 
@@ -278,7 +278,7 @@ namespace Push
 			if (ofd.ShowDialog() == DialogResult.OK)
 			{
 				System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
-				textBox3.Text = sr.ReadToEnd();
+				tbFileExtensions.Text = sr.ReadToEnd();
 				sr.Close();
 			}
 		} // END_METHOD
@@ -287,42 +287,42 @@ namespace Push
 
 		
 		// Duplicate Message Checkbox...
-		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		private void cbHideDupeFileMessage_CheckedChanged(object sender, EventArgs e)
 		{
-			appSettings.HideDupeMessage = checkBox1.Checked;
+			appSettings.HideDupeMessage = cbHideDupeFileMessage.Checked;
 
-			if (checkBox1.Checked)
+			if (cbHideDupeFileMessage.Checked)
 			{
 				// Enable Duplicate Action radio buttons...
-				groupBox1.Enabled = true;
-				radioButton1.Enabled = true;
-				radioButton2.Enabled = true;
-				radioButton3.Enabled = true;
-				radioButton4.Enabled = true;
+				grpDupeHandeling.Enabled = true;
+				rbOverwrite.Enabled = true;
+				rbRename.Enabled = true;
+				rbSkip.Enabled = true;
+				rbCancel.Enabled = true;
 			}
 			else
 			{
-				groupBox1.Enabled = false;
+				grpDupeHandeling.Enabled = false;
 				// Disable Duplicate Action radio buttons...
-				radioButton1.Enabled = false;
-				radioButton2.Enabled = false;
-				radioButton3.Enabled = false;
-				radioButton4.Enabled = false;
+				rbOverwrite.Enabled = false;
+				rbRename.Enabled = false;
+				rbSkip.Enabled = false;
+				rbCancel.Enabled = false;
 			}
 		} // END_METHOD		
 		
 		
 		// Splash Screen...
-		private void checkBox2_CheckedChanged(object sender, EventArgs e)
+		private void cbDisableSplashScreen_CheckedChanged(object sender, EventArgs e)
 		{
-			appSettings.DisableSplashScreen = checkBox2.Checked;
+			appSettings.DisableSplashScreen = cbDisableSplashScreen.Checked;
 		} // END_METHOD
 
 		
 		// Disable XMP..
-		private void checkBox3_CheckedChanged(object sender, EventArgs e)
+		private void cbDisableXMLOptions_CheckedChanged(object sender, EventArgs e)
 		{
-			appSettings.DisableXMLOptions = checkBox3.Checked;
+			appSettings.DisableXMLOptions = cbDisableXMLOptions.Checked;
 		} // END_METHOD
 
 
@@ -411,51 +411,52 @@ namespace Push
 		#region [ SOURCE PATH ]
 
 		// Source Path - Changed
-		private void textBox1_TextChanged(object sender, EventArgs e)
+		private void tbSourceFolder_TextChanged(object sender, EventArgs e)
 		{
-			appSettings.SourcePath = textBox1.Text;
+			appSettings.SourcePath = tbSourceFolder.Text;
 		} // END_METHOD
 
 		
 		// Source Path - Validating...
-		private void textBox1_Validating(object sender, CancelEventArgs e)
+		private void tbSourceFolder_Validating(object sender, CancelEventArgs e)
 		{
-			if (!ValidatePath(textBox1.Text))
+			if (!ValidatePath(tbSourceFolder.Text))
 			{
 				e.Cancel = true;
-				textBox1.Select(0, textBox1.Text.Length);
-				this.errorProvider1.SetError(textBox1, errorMsg);
+				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
+				this.errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
 			}
 		} // END_METHOD
 
 		
 		// Source Path - Validated...
-		private void textBox1_Validated(object sender, EventArgs e)
+		private void tbSourceFolder_Validated(object sender, EventArgs e)
 		{
-			errorProvider1.SetError(textBox1, "");
-			errorProvider1.Dispose();
+			errorProviderSourceFolder.SetError(tbSourceFolder, "");
+			errorProviderSourceFolder.Dispose();
 		} // END_METHOD
 
 	
 		// Source Path - Clear...
-		private void button8_Click(object sender, EventArgs e)
+		//private void button8_Click(object sender, EventArgs e)
+		private void btnSourceFolderClear_Click(object sender, EventArgs e)
 		{
-			textBox1.Clear();
+			tbSourceFolder.Clear();
 		} // END_METHOD
 
 		
 		// Source Path Browser...
-		private void button3_Click(object sender, EventArgs e)
+		private void btnSourceFolderBrowse_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
 
 			if (fbd.ShowDialog() == DialogResult.OK)
 			{
-				textBox1.Text = appSettings.SourcePath = fbd.SelectedPath;
+				tbSourceFolder.Text = appSettings.SourcePath = fbd.SelectedPath;
 
 				// Clear the ErrorProvider of errors if present...
-				errorProvider1.SetError(textBox1, "");
-				errorProvider1.Dispose();
+				errorProviderSourceFolder.SetError(tbSourceFolder, "");
+				errorProviderSourceFolder.Dispose();
 			}
 		} // END_METHOD
 		
@@ -465,50 +466,50 @@ namespace Push
 		#region [ TARGET PATH ]
 
 		// Target Path - Changed
-		private void textBox2_TextChanged(object sender, EventArgs e)
+		private void tbTargetFolder_TextChanged(object sender, EventArgs e)
 		{
-			appSettings.TargetPath = textBox2.Text;
+			appSettings.TargetPath = tbTargetFolder.Text;
 		} // END_METHOD
 
 		
 		// Target Path - Validating...
-		private void textBox2_Validating(object sender, CancelEventArgs e)
+		private void tbTargetFolder_Validating(object sender, CancelEventArgs e)
 		{
-			if (!ValidatePath(textBox2.Text))
+			if (!ValidatePath(tbTargetFolder.Text))
 			{
 				e.Cancel = true;
-				textBox2.Select(0, textBox2.Text.Length);
-				this.errorProvider2.SetError(textBox2, errorMsg);
+				tbTargetFolder.Select(0, tbTargetFolder.Text.Length);
+				this.errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
 			}
 		} // END_METHOD
 
 		
 		// Target Path - Validated...
-		private void textBox2_Validated(object sender, EventArgs e)
+		private void tbTargetFolder_Validated(object sender, EventArgs e)
 		{
-			errorProvider2.SetError(textBox1, "");
-			errorProvider2.Dispose();
+			errorProviderTargetFolder.SetError(tbSourceFolder, "");
+			errorProviderTargetFolder.Dispose();
 		} // END_METHOD
 
 		
 		// Target Path - Clear...
-		private void button7_Click(object sender, EventArgs e)
+		private void btnTargetClear_Click(object sender, EventArgs e)
 		{
-			textBox2.Clear();
+			tbTargetFolder.Clear();
 		} // END_METHOD
 
 		
 		// Target Path Browser...
-		private void button4_Click(object sender, EventArgs e)
+		private void btnTargetFolderBrowse_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
 			if (fbd.ShowDialog() == DialogResult.OK)
 			{
-				textBox2.Text = appSettings.TargetPath = fbd.SelectedPath;
+				tbTargetFolder.Text = appSettings.TargetPath = fbd.SelectedPath;
 
 				// Clear the ErrorProvider of errors if present...
-				errorProvider2.SetError(textBox2, "");
-				errorProvider2.Dispose();
+				errorProviderTargetFolder.SetError(tbTargetFolder, "");
+				errorProviderTargetFolder.Dispose();
 			}
 		}
 		

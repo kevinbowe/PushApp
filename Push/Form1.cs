@@ -77,7 +77,7 @@ namespace Push
 				appSettings.TargetPath == null)
 			{
 				string s = string.Empty;
-				Form2 dlg = new Form2();
+				ConfigForm dlg = new ConfigForm();
 
 				// Copy the current settings into the Configuration form...
 				dlg.appSettings = appSettings;
@@ -456,7 +456,7 @@ namespace Push
 		private void LoadConfigurationDialog()
 		{
 			string s = string.Empty;
-			Form2 dlg = new Form2();
+			ConfigForm dlg = new ConfigForm();
 
 			// Copy the current settings into the Configuration form...
 			dlg.appSettings = appSettings;
