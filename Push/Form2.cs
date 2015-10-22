@@ -257,7 +257,7 @@ namespace Push
 			{
 				e.Cancel = true;
 				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
-				this.errorProviderFileExtensions.SetError(tbFileExtensions, errorMsg);
+				this.errorProviderFileExtensions.SetError(tbFileExtensions, "One or more extensions are not correct.");
 			}
 		} // END_METHOD
 
