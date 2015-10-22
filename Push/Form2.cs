@@ -345,7 +345,7 @@ namespace Push
 				return false;
 
 			// Parse the File Extension Filter string...
-			List<string> filterList = Form1.LoadFileExtensions(appSettings);
+			List<string> filterList = MainForm.LoadFileExtensions(appSettings);
 
 			#region [ DEBUG STRINGS_SAVE ]
 			//// BAD_FILTERS

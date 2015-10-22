@@ -18,7 +18,7 @@ using System.Globalization;
 
 namespace Push
 {
-	public partial class Form1 : Form
+	public partial class MainForm : Form
 	{
 		private readonly FormSettings formSettings;
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
@@ -26,7 +26,7 @@ namespace Push
 		Size frmSize;
 
 
-		public Form1(MyApplicationSettings appSettings)
+		public MainForm(MyApplicationSettings appSettings)
 		{
 			InitializeComponent();
 
@@ -93,14 +93,14 @@ namespace Push
 
 				dlg.Dispose();
 
-				LoadListView(listView1, appSettings.SourcePath);
-				LoadListView(listView2, appSettings.TargetPath);
+				LoadListView(lvSource, appSettings.SourcePath);
+				LoadListView(lvTarget, appSettings.TargetPath);
 
 				// Buy default, assume the details are visible...
-				pictureBox1.Image = global::Push.Properties.Resources.Control_Collapser1;
-				label4.Text = "Hide Details";
-				panel1.Visible = true;
-				splitContainer1.Visible = true;
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
+				lblShowHide.Text = "Hide Details";
+				pnlDetails.Visible = true;
+				splitContainerDetails.Visible = true;
 				appSettings.ShowDetails = true;
 
 				formSettings.Form.MinimumSize = new Size(764, 286);
@@ -118,17 +118,17 @@ namespace Push
 
 			if (appSettings.ShowDetails)
 			{
-				pictureBox1.Image = global::Push.Properties.Resources.Control_Collapser1;
-				label4.Text = "Hide Details";
-				panel1.Visible = true;
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
+				lblShowHide.Text = "Hide Details";
+				pnlDetails.Visible = true;
 				formSettings.Form.MinimumSize = new Size(764, 286);
 				MinimumSize = new Size(764, 286);
 			}
 			else
 			{
-				pictureBox1.Image = global::Push.Properties.Resources.Control_Expander1;
-				label4.Text = "Show Details";
-				panel1.Visible = false;
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Expander1;
+				lblShowHide.Text = "Show Details";
+				pnlDetails.Visible = false;
 				formSettings.Form.MinimumSize = new Size(400, 161);
 				MinimumSize = new Size(400, 161);
 				MaximumSize = MinimumSize;
@@ -143,20 +143,20 @@ namespace Push
 			this.MaximizeBox = false;
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, appSettings.SourcePath);
-			LoadListView(listView2, appSettings.TargetPath);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
 
 		// Show-Hide ListViews...
 		private void pictureBox1_Click(object sender, EventArgs e)
 		{
-			if (splitContainer1.Visible)
+			if (splitContainerDetails.Visible)
 				{
 				// If we get here, hide the source and target ListViews...
 
-				pictureBox1.Image = global::Push.Properties.Resources.Control_Expander1;
-				label4.Text = "Show Details";
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Expander1;
+				lblShowHide.Text = "Show Details";
 				appSettings.ShowDetails = false;
 
 				// Save the current window size...
@@ -166,15 +166,15 @@ namespace Push
 				MinimumSize = new Size(400, 161);
 				MaximumSize = MinimumSize;
 				Size = MinimumSize;
-				panel1.Visible = false;
+				pnlDetails.Visible = false;
 
 			}
 			else
 			{
 				// If we get here,	restore the original windows size...
 
-				pictureBox1.Image = global::Push.Properties.Resources.Control_Collapser1;
-				label4.Text = "Hide Details";
+				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
+				lblShowHide.Text = "Hide Details";
 				appSettings.ShowDetails = true;
 
 				// Reset the minimum size so the source and target can not be hidden when resizing the window...
@@ -183,7 +183,7 @@ namespace Push
 				MaximumSize = new Size();
 				// Restore the previous window size...
 				Size = frmSize;
-				panel1.Visible = true;
+				pnlDetails.Visible = true;
 			}
 		} // END_METHOD
 
@@ -273,7 +273,7 @@ namespace Push
 			}
 
 			// Init Controls...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// File extension types...
 			List<string> FileExtensionArrayList = LoadFileExtensions(appSettings);
@@ -436,20 +436,20 @@ namespace Push
 					File.Delete(s);
 
 					// Update UI...
-					listBox1.Items.Add("CleanUp: Deleting " + s);
-					listBox1.Update();
+					lbStatus.Items.Add("CleanUp: Deleting " + s);
+					lbStatus.Update();
 					break; // Exit innter loop...
 
 				} // END_FOREACH_INNER
 			} // END_FOREACH_OUTER
 			#endregion
 
-			listBox1.Items.Add("Copy Complete");
-			listBox1.Update();
+			lbStatus.Items.Add("Copy Complete");
+			lbStatus.Update();
 
 			// Update Source & Target Listboxes...
-			LoadListView(listView1, appSettings.SourcePath);
-			LoadListView(listView2, appSettings.TargetPath);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
 
@@ -614,8 +614,8 @@ namespace Push
 					deleteSourceArrayList.Add(s);
 
 					// Update UI...
-					listBox1.Items.Add("Copying " + s + " to " + destFileName);
-					listBox1.Update();
+					lbStatus.Items.Add("Copying " + s + " to " + destFileName);
+					lbStatus.Update();
 				}
 
 				// Raise the okToCopy flag...
@@ -638,8 +638,8 @@ namespace Push
 				File.Copy(s, destFileName, true);
 
 				// Update UI...
-				listBox1.Items.Add("Copying " + srcfileName + " to " + destFileName);
-				listBox1.Update();
+				lbStatus.Items.Add("Copying " + srcfileName + " to " + destFileName);
+				lbStatus.Update();
 			}
 		} // END_METHOD
 
@@ -746,8 +746,8 @@ namespace Push
 
 		private void toolStripButton5_Click(object sender, EventArgs e)
 		{
-			LoadListView(listView1, appSettings.SourcePath);
-			LoadListView(listView2, appSettings.TargetPath);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
 
@@ -777,11 +777,11 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, appSettings.SourcePath);
-			LoadListView(listView2, appSettings.TargetPath);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
 
@@ -830,11 +830,11 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, appSettings.SourcePath);
-			LoadListView(listView2, appSettings.TargetPath);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
 
@@ -854,11 +854,11 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			listBox1.Items.Clear();
+			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(listView1, appSettings.SourcePath);
-			LoadListView(listView2, appSettings.TargetPath);
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 		
 		#endregion		
@@ -908,8 +908,8 @@ namespace Push
 			// Enter Ctrl+R // Refresh...
 			if (keyData == (Keys.Control | Keys.R))
 			{
-				LoadListView(listView1, appSettings.SourcePath);
-				LoadListView(listView2, appSettings.TargetPath);
+				LoadListView(lvSource, appSettings.SourcePath);
+				LoadListView(lvTarget, appSettings.TargetPath);
 				return true;
 			}
 

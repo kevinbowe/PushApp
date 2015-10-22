@@ -17,7 +17,7 @@ namespace Push
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			Form1 form1 = new Form1(appSettings);
+			MainForm form1 = new MainForm(appSettings);
 			
 			// Assign the FormClosed Event handler...
 			form1.FormClosed += FormClosed;
@@ -48,15 +48,15 @@ namespace Push
 
 		static void FormClosed(object sender, FormClosedEventArgs e)
 		{
-			appSettings.DisableSplashScreen = ((Form1)sender).appSettings.DisableSplashScreen;
-			appSettings.DisableXMLOptions = ((Form1)sender).appSettings.DisableXMLOptions;
-			appSettings.DuplicateFileAction = ((Form1)sender).appSettings.DuplicateFileAction;
-			appSettings.ExePath = ((Form1)sender).appSettings.ExePath;
-			appSettings.FileExtensionFilter = ((Form1)sender).appSettings.FileExtensionFilter;
-			appSettings.HideDupeMessage = ((Form1)sender).appSettings.HideDupeMessage;
-			appSettings.SourcePath = ((Form1)sender).appSettings.SourcePath;
-			appSettings.TargetPath = ((Form1)sender).appSettings.TargetPath;
-			appSettings.ShowDetails = ((Form1)sender).appSettings.ShowDetails;
+			appSettings.DisableSplashScreen = ((MainForm)sender).appSettings.DisableSplashScreen;
+			appSettings.DisableXMLOptions = ((MainForm)sender).appSettings.DisableXMLOptions;
+			appSettings.DuplicateFileAction = ((MainForm)sender).appSettings.DuplicateFileAction;
+			appSettings.ExePath = ((MainForm)sender).appSettings.ExePath;
+			appSettings.FileExtensionFilter = ((MainForm)sender).appSettings.FileExtensionFilter;
+			appSettings.HideDupeMessage = ((MainForm)sender).appSettings.HideDupeMessage;
+			appSettings.SourcePath = ((MainForm)sender).appSettings.SourcePath;
+			appSettings.TargetPath = ((MainForm)sender).appSettings.TargetPath;
+			appSettings.ShowDetails = ((MainForm)sender).appSettings.ShowDetails;
 		} // END_METHOD
 
 
