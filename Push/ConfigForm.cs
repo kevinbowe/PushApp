@@ -29,12 +29,13 @@ namespace Push
 		private void ConfigForm_Load(object sender, EventArgs e)
 		{
 			// Hydrate the controls with the current settings...
-			cbHideDupeFileMessage.Checked = appSettings.HideDupeMessage;
+			cbHideDupeFileMessage.Checked = appSettings.HideDupeMessage.GetValueOrDefault(false);
+			
 			tbSourceFolder.Text = appSettings.SourcePath;
 			tbTargetFolder.Text = appSettings.TargetPath;
 			tbFileExtensions.Text = appSettings.FileExtensionFilter;
-			cbDisableSplashScreen.Checked = appSettings.DisableSplashScreen;
-			cbDisableXMLOptions.Checked = appSettings.DisableXMLOptions;
+			cbDisableSplashScreen.Checked = appSettings.DisableSplashScreen.GetValueOrDefault(false);
+			cbDisableXMLOptions.Checked = appSettings.DisableXMLOptions.GetValueOrDefault(false);
 			
 			// Save the original values in the appSettings...
 			originalAppSettings = new MyApplicationSettings
@@ -121,6 +122,12 @@ namespace Push
 			//--------------------------------------------------------------------------
 			// If we get here, the user did not select Cancel...
 
+			appSettings.DisableSplashScreen = cbDisableSplashScreen.Checked;
+			appSettings.DisableXMLOptions = cbDisableSplashScreen.Checked;
+			appSettings.HideDupeMessage = cbHideDupeFileMessage.Checked;
+			appSettings.ShowDetails = appSettings.ShowDetails.GetValueOrDefault(true);
+			//appSettings.DuplicateFileAction = "";
+
 		} // END_METHOD
 
 	
@@ -136,7 +143,12 @@ namespace Push
 							string.IsNullOrEmpty(setting.ExePath) &&
 							string.IsNullOrEmpty(setting.FileExtensionFilter) &&
 							string.IsNullOrEmpty(setting.SourcePath) &&
-							string.IsNullOrEmpty(setting.TargetPath);
+							string.IsNullOrEmpty(setting.TargetPath) &&
+							setting.DisableSplashScreen == null &&
+							setting.DisableXMLOptions == null &&
+							setting.HideDupeMessage == null &&
+							setting.ShowDetails == null 
+							;
 			return result;
 		} // END_METHOD
 
@@ -227,7 +239,7 @@ namespace Push
 		} // END_METHOD
 
 		
-		private void radioButton4_CheckedChanged(object sender, EventArgs e)
+		private void rbCancel_CheckedChanged(object sender, EventArgs e)
 		{
 			appSettings.DuplicateFileAction = DuplicateFileActionState.Cancel.ToString("G");
 		} // END_METHOD

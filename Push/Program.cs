@@ -17,16 +17,16 @@ namespace Push
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			MainForm form1 = new MainForm(appSettings);
+			MainForm mainForm = new MainForm(appSettings);
 			
 			// Assign the FormClosed Event handler...
-			form1.FormClosed += FormClosed;
+			mainForm.FormClosed += FormClosed;
 
 			// This handles the first-run + cancel scenario...
-			if (form1.IsDisposed)
+			if (mainForm.IsDisposed)
 				return;
 
-			Application.Run(form1);
+			Application.Run(mainForm);
 
 			#region [ Comments ]
 			/* When the form is closed, the Form.OnClosing and Form.OnFormClosed 
@@ -69,15 +69,15 @@ namespace Push
 	// TODO: Move this to a different source code file...
 	public class MyApplicationSettings : ApplicationSettings
 	{
-		public bool DisableSplashScreen { get; set; }
-		public bool DisableXMLOptions { get; set; }
+		public bool? DisableSplashScreen { get; set; }
+		public bool? DisableXMLOptions { get; set; }
 		public string DuplicateFileAction { get; set; }
 		public string ExePath { get; set; }
 		public string FileExtensionFilter { get; set; }
-		public bool HideDupeMessage { get; set; }
+		public bool? HideDupeMessage { get; set; }
 		public string SourcePath { get; set; }
 		public string TargetPath { get; set; }
-		public bool ShowDetails { get; set; }
+		public bool? ShowDetails { get; set; }
 
 		
 		public MyApplicationSettings() : base(typeof(MyApplicationSettings))

@@ -23,7 +23,13 @@ namespace Push
 		private readonly FormSettings formSettings;
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
 		public MyApplicationSettings appSettings;
-		Size frmSize;
+		Size savedMainFormSize;
+
+		// The minimum window size which will hide the source and target and shrink the status listbox...
+		private Size MinHideDetailSize = new Size(400, 161);
+		
+		// The minimum window size so the source and target can not be hidden when resizing the window...
+		private Size MinShowDetailSize = new Size(764, 286);
 
 
 		public MainForm(MyApplicationSettings appSettings)
@@ -48,35 +54,10 @@ namespace Push
 		//	TODO: Re-factor... Necessary?
 		private void InitControls()
 		{
-			// If we get here, Set the default values for the controls...
-
-			if (appSettings == null)
-			{
-				// We shoud NEVER get here...
-
-				// Fetch the path where the application is running...
-				FileInfo sourceFileInfo = new FileInfo("Push.exe");
-				
-				appSettings = new MyApplicationSettings()
-					{
-						DisableSplashScreen = false,
-						DisableXMLOptions = false,
-						DuplicateFileAction = "Overwrite",
-						ExePath = sourceFileInfo.DirectoryName,
-						FileExtensionFilter = "*.*",
-						HideDupeMessage = false,
-						SourcePath = sourceFileInfo.DirectoryName +  @"Source",
-						TargetPath = sourceFileInfo.DirectoryName +  @"Target"
-					};
-			}
 
 			// Test to see if any of the required properties are missing...
-			if (appSettings.DuplicateFileAction == null ||
-				appSettings.FileExtensionFilter == null ||
-				appSettings.SourcePath == null ||
-				appSettings.TargetPath == null)
+			if (IsAppSettingsEmptyOrNull(appSettings))
 			{
-				string s = string.Empty;
 				ConfigForm configFormDialog = new ConfigForm();
 
 				// Copy the current settings into the Configuration form...
@@ -92,18 +73,6 @@ namespace Push
 				appSettings = configFormDialog.appSettings;
 
 				configFormDialog.Dispose();
-
-				LoadListView(lvSource, appSettings.SourcePath);
-				LoadListView(lvTarget, appSettings.TargetPath);
-
-				// Buy default, assume the details are visible...
-				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
-				lblShowHide.Text = "Hide Details";
-				pnlDetails.Visible = true;
-				splitContainerDetails.Visible = true;
-				appSettings.ShowDetails = true;
-
-				formSettings.Form.MinimumSize = new Size(764, 286);
 			}
 
 			// Update the form properties to the last used...
@@ -114,27 +83,42 @@ namespace Push
 		// TODO: Re-factor... Or Delete... Necessary?
 		private void UpdateControls()
 		{
-			// If we get here, update the controls to the last used settings...
+			// Update the controls to the last used settings...
 
-			if (appSettings.ShowDetails)
+			if (appSettings.ShowDetails.GetValueOrDefault(true))
 			{
 				picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
 				lblShowHide.Text = "Hide Details";
 				pnlDetails.Visible = true;
-				formSettings.Form.MinimumSize = new Size(764, 286);
-				MinimumSize = new Size(764, 286);
+				formSettings.Form.MinimumSize = MinimumSize = MinShowDetailSize;
+
+				LoadListView(lvSource, appSettings.SourcePath);
+				LoadListView(lvTarget, appSettings.TargetPath);
 			}
 			else
 			{
 				picBxShowHide.Image = global::Push.Properties.Resources.Control_Expander1;
 				lblShowHide.Text = "Show Details";
 				pnlDetails.Visible = false;
-				formSettings.Form.MinimumSize = new Size(400, 161);
-				MinimumSize = new Size(400, 161);
-				MaximumSize = MinimumSize;
+				formSettings.Form.MinimumSize = MinimumSize = MaximumSize = MinHideDetailSize;
 			}
 		} // END_METHOD
 
+		// TODO: This Code is repeated in ConfigForm... Refactor...
+		private bool IsAppSettingsEmptyOrNull(MyApplicationSettings setting)
+		{
+			bool result = string.IsNullOrEmpty(setting.DuplicateFileAction) &&
+							string.IsNullOrEmpty(setting.ExePath) &&
+							string.IsNullOrEmpty(setting.FileExtensionFilter) &&
+							string.IsNullOrEmpty(setting.SourcePath) &&
+							string.IsNullOrEmpty(setting.TargetPath) &&
+							setting.DisableSplashScreen == null &&
+							setting.DisableXMLOptions == null &&
+							setting.HideDupeMessage == null &&
+							setting.ShowDetails == null
+							;
+			return result;
+		} // END_METHOD
 	
 		// Load data...
 		private void MainForm_Load(object sender, EventArgs e)
@@ -160,14 +144,12 @@ namespace Push
 				appSettings.ShowDetails = false;
 
 				// Save the current window size...
-				frmSize = this.Size;
+				savedMainFormSize = Size;
 
 				// Set the minimum window size which will hide the source and target and shrink the status listbox...
-				MinimumSize = new Size(400, 161);
-				MaximumSize = MinimumSize;
-				Size = MinimumSize;
+				//	This 'locks' the window so it can not be resized...
+				Size = MaximumSize = MinimumSize = MinHideDetailSize;
 				pnlDetails.Visible = false;
-
 			}
 			else
 			{
@@ -178,11 +160,11 @@ namespace Push
 				appSettings.ShowDetails = true;
 
 				// Reset the minimum size so the source and target can not be hidden when resizing the window...
-				MinimumSize = new Size(764, 286);
+				MinimumSize = MinShowDetailSize; 
 				// Clear the maximum size so the user can resize the window...
-				MaximumSize = new Size();
+				MaximumSize = new Size(); 
 				// Restore the previous window size...
-				Size = frmSize;
+				Size = savedMainFormSize;
 				pnlDetails.Visible = true;
 			}
 		} // END_METHOD

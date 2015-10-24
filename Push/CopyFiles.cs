@@ -74,7 +74,7 @@ namespace Push
 			}
 			else
 			{
-				if (appSettings.HideDupeMessage)
+				if (appSettings.HideDupeMessage.GetValueOrDefault(false))
 				{
 					//---------------------------------------------------------
 					// If we get here, perform whatever Dupe File Action has been configured...
