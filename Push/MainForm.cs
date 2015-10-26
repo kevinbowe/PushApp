@@ -22,7 +22,7 @@ namespace Push
 	{
 		private readonly FormSettings formSettings;
 		enum commandResult { Overwrite, Rename, Skip, Cancel };
-		public MyApplicationSettings appSettings;
+		public AppSettings appSettings;
 		Size savedMainFormSize;
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
@@ -32,7 +32,7 @@ namespace Push
 		private Size MinShowDetailSize = new Size(764, 286);
 
 
-		public MainForm(MyApplicationSettings appSettings)
+		public MainForm(AppSettings appSettings)
 		{
 			InitializeComponent();
 
@@ -44,6 +44,7 @@ namespace Push
 			// Enable Auto-Save...
 			formSettings.SaveOnClose = true;
 
+			// Copy the appSettings argument into this forms appSettings property...
 			this.appSettings = appSettings;
 			
 			// Set the default form properties and then update them with the last used properties...
@@ -56,7 +57,7 @@ namespace Push
 		{
 
 			// Test to see if any of the required properties are missing...
-			if (IsAppSettingsEmptyOrNull(appSettings))
+			if (Helper.IsAppSettingsEmptyOrNull(appSettings))
 			{
 				ConfigForm configFormDialog = new ConfigForm();
 
@@ -104,21 +105,6 @@ namespace Push
 			}
 		} // END_METHOD
 
-		// TODO: This Code is repeated in ConfigForm... Refactor...
-		private bool IsAppSettingsEmptyOrNull(MyApplicationSettings setting)
-		{
-			bool result = string.IsNullOrEmpty(setting.DuplicateFileAction) &&
-							string.IsNullOrEmpty(setting.ExePath) &&
-							string.IsNullOrEmpty(setting.FileExtensionFilter) &&
-							string.IsNullOrEmpty(setting.SourcePath) &&
-							string.IsNullOrEmpty(setting.TargetPath) &&
-							setting.DisableSplashScreen == null &&
-							setting.DisableXMLOptions == null &&
-							setting.HideDupeMessage == null &&
-							setting.ShowDetails == null
-							;
-			return result;
-		} // END_METHOD
 	
 		// Load data...
 		private void MainForm_Load(object sender, EventArgs e)
@@ -206,7 +192,7 @@ namespace Push
 		} // END_METHOD
 
 
-		public static List<string> LoadFileExtensions(MyApplicationSettings appSettings)
+		public static List<string> LoadFileExtensions(AppSettings appSettings)
 		{
 			string[] delimiters = new string[] { ";", "|", ":" };
 			string[] fefArray = appSettings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);

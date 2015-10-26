@@ -15,8 +15,8 @@ namespace Push
 	public partial class ConfigForm : Form
 	{
 		public enum DuplicateFileActionState { Overwrite, Rename, Skip, Cancel };
-		public MyApplicationSettings appSettings;
-		public MyApplicationSettings originalAppSettings;
+		public AppSettings appSettings;
+		public AppSettings originalAppSettings;
 
 		public ConfigForm()
 		{
@@ -38,7 +38,7 @@ namespace Push
 			cbDisableXMLOptions.Checked = appSettings.DisableXMLOptions.GetValueOrDefault(false);
 			
 			// Save the original values in the appSettings...
-			originalAppSettings = new MyApplicationSettings
+			originalAppSettings = new AppSettings
 			{
 				DisableSplashScreen = appSettings.DisableSplashScreen,
 				DisableXMLOptions = appSettings.DisableXMLOptions,
@@ -77,7 +77,7 @@ namespace Push
 			}
 
 			// Set the applications exe path...
-			if (IsAppSettingsEmptyOrNull())
+			if (Helper.IsAppSettingsEmptyOrNull(appSettings))
 			{
 				FileInfo exePath = new FileInfo("Push.exe");
 				appSettings.ExePath = exePath.DirectoryName;
@@ -92,7 +92,7 @@ namespace Push
 			{
 				// If we get here, the user wants to discard all entered values...
 
-				if (IsAppSettingsEmptyOrNull(originalAppSettings))
+				if (Helper.IsAppSettingsEmptyOrNull(originalAppSettings))
 				{
 					// If we get here, we are aborting the first-run, settings configuration...
 					DialogResult dialogResult = MessageBox.Show( 
@@ -129,29 +129,7 @@ namespace Push
 			//appSettings.DuplicateFileAction = "";
 
 		} // END_METHOD
-
 	
-		private bool IsAppSettingsEmptyOrNull()
-		{
-			return IsAppSettingsEmptyOrNull(appSettings);
-		} // END_METHOD
-
-	
-		private bool IsAppSettingsEmptyOrNull(MyApplicationSettings setting)
-		{
-			bool result =	string.IsNullOrEmpty(setting.DuplicateFileAction) &&
-							string.IsNullOrEmpty(setting.ExePath) &&
-							string.IsNullOrEmpty(setting.FileExtensionFilter) &&
-							string.IsNullOrEmpty(setting.SourcePath) &&
-							string.IsNullOrEmpty(setting.TargetPath) &&
-							setting.DisableSplashScreen == null &&
-							setting.DisableXMLOptions == null &&
-							setting.HideDupeMessage == null &&
-							setting.ShowDetails == null 
-							;
-			return result;
-		} // END_METHOD
-
 	
 		// OK...
 		private void btnOK_Click(object sender, EventArgs e)
@@ -249,28 +227,10 @@ namespace Push
 
 		#region [ FILE EXTENSION FILTER ]
 
-		// File Extension...
+		// File Extension Changed
 		private void tbFileExtensions_TextChanged(object sender, EventArgs e)
 		{
 			appSettings.FileExtensionFilter = tbFileExtensions.Text;
-		} // END_METHOD
-
-
-		private void tbFileExtensions_Validated(object sender, EventArgs e)
-		{
-			errorProviderFileExtensions.SetError(tbFileExtensions, "");
-			errorProviderFileExtensions.Dispose();
-		}
-
-
-		private void tbFileExtensions_Validating(object sender, CancelEventArgs e)
-		{
-			if (!IsValidFileExtensionFilters())
-			{
-				e.Cancel = true;
-				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
-				this.errorProviderFileExtensions.SetError(tbFileExtensions, "One or more extensions are not correct.");
-			}
 		} // END_METHOD
 
 
@@ -338,88 +298,6 @@ namespace Push
 		} // END_METHOD
 
 
-		#region [ VALIDATION ]
-
-		//TODO: FIX THIS...
-		// Add to resource file...
-		string errorMsg = "Invalid Path";
-
-		
-		private bool ValidatePath(string path)
-		{
-			return Directory.Exists(path);
-		} // END_METHOD
-
-
-		private bool IsValidFileExtensionFilters()
-		{
-			if (string.IsNullOrEmpty(appSettings.FileExtensionFilter))
-				return false;
-
-			// Parse the File Extension Filter string...
-			List<string> filterList = MainForm.LoadFileExtensions(appSettings);
-
-			#region [ DEBUG STRINGS_SAVE ]
-			//// BAD_FILTERS
-			//filterList/*_BAD*/ =
-			//	new List<string>() { "", " ", "  ", ".*", "*.", "*.*text", "*.|*", "|",
-			//						 "#.*", "*.#", "IMG*.JPG", "**.*", "***.*", "*.**",
-			//						 "*.***", "**.*", "***.*", "*.**", "*.***", "IMG*.JPG",
-			//						 "IMAGE**.JPG", "IMAGE**.*JPG", "*.JP*" };
-			//// GOOD_FILTERS
-			//filterList/*_GOOD*/ =
-			//	new List<string>() { "*.*", "*.jpg", "*.JPEG", "*.tif", "*.TIFF", "*.BMP", 
-			//						 "*.DOC", "*.WORD", "*.txt", "*.now", "*.Jpg_Good" };
-			#endregion
-
-			// Iterate over each filter looking for poorly formed filters...
-			bool isValidFilExtensionFilters = true;
-			string regExPattern = @"\*\.\w+|\*\.\*";
-
-			foreach (string filter in filterList)
-			{
-				Match match = Regex.Match(filter, regExPattern);
-
-				isValidFilExtensionFilters = IsValidExtensionFilter(match, filter);
-				if (!isValidFilExtensionFilters)
-				{
-					// We would actually break here...
-					break;
-				}
-			} // END_FOREACH
-
-			return isValidFilExtensionFilters;
-		} // END_METHOD
-
-
-		private bool IsValidExtensionFilter(Match match, string filter)
-		{
-			if (match.Success)
-			{
-				// If we get here, a match was found...
-
-				// Perform a Equals test to make sure there isn't a false positive.
-				//		EG: *.JPG would match but the input is IMG*.JPG. == False Positive...
-				if (!filter.Equals(match.Value, StringComparison.CurrentCultureIgnoreCase))
-				{
-					// If we get here, the match and the actual string are NOT the same.
-					//		False Positive...
-					return false;
-				}
-			}
-			else
-			{
-				// If we get here, no match was found...
-				return false;
-			}
-
-			// If we get here, the filter is well formed / valid...
-			return true;
-		} // END_METHOD
-		
-		#endregion
-
-
 		#region [ SOURCE PATH ]
 
 		// Source Path - Changed
@@ -429,28 +307,7 @@ namespace Push
 		} // END_METHOD
 
 		
-		// Source Path - Validating...
-		private void tbSourceFolder_Validating(object sender, CancelEventArgs e)
-		{
-			if (!ValidatePath(tbSourceFolder.Text))
-			{
-				e.Cancel = true;
-				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
-				this.errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
-			}
-		} // END_METHOD
-
-		
-		// Source Path - Validated...
-		private void tbSourceFolder_Validated(object sender, EventArgs e)
-		{
-			errorProviderSourceFolder.SetError(tbSourceFolder, "");
-			errorProviderSourceFolder.Dispose();
-		} // END_METHOD
-
-	
 		// Source Path - Clear...
-		//private void button8_Click(object sender, EventArgs e)
 		private void btnSourceFolderClear_Click(object sender, EventArgs e)
 		{
 			tbSourceFolder.Clear();
@@ -481,26 +338,6 @@ namespace Push
 		private void tbTargetFolder_TextChanged(object sender, EventArgs e)
 		{
 			appSettings.TargetPath = tbTargetFolder.Text;
-		} // END_METHOD
-
-		
-		// Target Path - Validating...
-		private void tbTargetFolder_Validating(object sender, CancelEventArgs e)
-		{
-			if (!ValidatePath(tbTargetFolder.Text))
-			{
-				e.Cancel = true;
-				tbTargetFolder.Select(0, tbTargetFolder.Text.Length);
-				this.errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
-			}
-		} // END_METHOD
-
-		
-		// Target Path - Validated...
-		private void tbTargetFolder_Validated(object sender, EventArgs e)
-		{
-			errorProviderTargetFolder.SetError(tbSourceFolder, "");
-			errorProviderTargetFolder.Dispose();
 		} // END_METHOD
 
 		
