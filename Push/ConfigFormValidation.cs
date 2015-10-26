@@ -16,6 +16,75 @@ namespace Push
 	public partial class ConfigForm : Form
 	{
 
+		private void ValidateConfigForm()
+		{
+			#region [ CHECK FILE EXTENSION FILTERS ]---------------------------
+			if (!IsValidFileExtensionFilters())
+			{
+				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
+				errorProviderFileExtensions.SetError(tbFileExtensions, "Valid file extension filter is required");
+				DialogResult = DialogResult.None;
+			}
+			else
+			{
+				// If all conditions have been met, clear the ErrorProvider of errors.
+				errorProviderFileExtensions.SetError(tbFileExtensions, "");
+				errorProviderFileExtensions.Dispose();
+			}
+			#endregion
+
+			#region [ CHECK DUPLICATE FILE ACTION ]----------------------------
+			if (!rbOverwrite.Checked && !rbRename.Checked
+						&& !rbSkip.Checked && !rbCancel.Checked)
+			{
+				errorProviderDuplicateHandeling.SetError(rbOverwrite, "Please choose a Duplicate Action");
+				DialogResult = DialogResult.None;
+			}
+			else
+			{
+				// If all conditions have been met, clear the ErrorProvider of errors.
+				errorProviderDuplicateHandeling.Clear();
+			}
+			#endregion
+
+			#region [ CHECK SOURCE FOLDER PATH ]-------------------------------
+			if (!ValidatePath(tbSourceFolder.Text))
+			{
+				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
+				errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
+				DialogResult = DialogResult.None;
+			}
+			else
+			{
+				// If all conditions have been met, clear the ErrorProvider of errors.
+				errorProviderSourceFolder.SetError(tbSourceFolder, "");
+				errorProviderSourceFolder.Dispose();
+			}
+			#endregion
+
+			#region [ CHECK TARGET FOLDER PATH ]-------------------------------
+			if (!ValidatePath(tbTargetFolder.Text))
+			{
+				tbSourceFolder.Select(0, tbTargetFolder.Text.Length);
+				errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
+				DialogResult = DialogResult.None;
+			}
+			else
+			{
+				// If all conditions have been met, clear the ErrorProvider of errors.
+				errorProviderTargetFolder.SetError(tbTargetFolder, "");
+				errorProviderTargetFolder.Dispose();
+			}
+			#endregion 
+
+			if (Helper.IsAppSettingsEmptyOrNull(appSettings))
+			{
+				DialogResult = DialogResult.None;
+			}
+
+		} // END_METHOD
+
+
 		#region [ FILE EXTENSIONS ]
 
 		// File Extension...
@@ -108,6 +177,7 @@ namespace Push
 		
 		// Path Common
 		string errorMsg = "Invalid Path";
+
 
 		private bool ValidatePath(string path)
 		{

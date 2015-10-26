@@ -18,6 +18,7 @@ namespace Push
 		public AppSettings appSettings;
 		public AppSettings originalAppSettings;
 
+		// Form Construct...
 		public ConfigForm()
 		{
 			InitializeComponent();
@@ -25,7 +26,7 @@ namespace Push
 		} // END_METHOD
 
 
-		// Form Load..
+		// Form Load...
 		private void ConfigForm_Load(object sender, EventArgs e)
 		{
 			// Hydrate the controls with the current settings...
@@ -85,117 +86,63 @@ namespace Push
 		} // END_METHOD
 
 		
-		// OK, Cancel & 'X'...
-		private void ConfigForm_FormClosing(Object sender, FormClosingEventArgs e)
-		{
-			if (DialogResult == DialogResult.Cancel)
-			{
-				// If we get here, the user wants to discard all entered values...
-
-				if (Helper.IsAppSettingsEmptyOrNull(originalAppSettings))
-				{
-					// If we get here, we are aborting the first-run, settings configuration...
-					DialogResult dialogResult = MessageBox.Show( 
-							this, 
-							"Select Cancel to abort Application Setup\n\n"+
-								"Select Retry to return to Application Setup", 
-							"Cancel Push Application Setup", 
-							MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
-
-					if (dialogResult == DialogResult.Cancel)
-					{
-						return;
-					}
-					else
-					{
-						// If we get here, the user wants to finish configuration...
-						e.Cancel = true;
-						return;
-					}
-				} // END_IF_RESULT = CANCEL
-
-				// Restore the original appSettings
-				appSettings = originalAppSettings;
-				return;
-			}
-
-			//--------------------------------------------------------------------------
-			// If we get here, the user did not select Cancel...
-
-			appSettings.DisableSplashScreen = cbDisableSplashScreen.Checked;
-			appSettings.DisableXMLOptions = cbDisableSplashScreen.Checked;
-			appSettings.HideDupeMessage = cbHideDupeFileMessage.Checked;
-			appSettings.ShowDetails = appSettings.ShowDetails.GetValueOrDefault(true);
-			//appSettings.DuplicateFileAction = "";
-
-		} // END_METHOD
-	
-	
 		// OK...
 		private void btnOK_Click(object sender, EventArgs e)
 		{
-			// Validate ALL values before save...
-
-			if (!IsValidFileExtensionFilters())
-			{
-				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
-				errorProviderFileExtensions.SetError(tbFileExtensions, "Valid file extension filter is required");
-				DialogResult = DialogResult.None;
-			}
-			else
-			{
-				// If all conditions have been met, clear the ErrorProvider of errors.
-				errorProviderFileExtensions.SetError(tbFileExtensions, "");
-				errorProviderFileExtensions.Dispose();
-			}
-			
-			if (!rbOverwrite.Checked && !rbRename.Checked
-						&& !rbSkip.Checked && !rbCancel.Checked)
-			{
-				errorProviderDuplicateHandeling.SetError(rbOverwrite, "Please choose a Duplicate Action");
-				DialogResult = DialogResult.None;
-			}
-			else
-				errorProviderDuplicateHandeling.Clear();
-			
-			
-			if (!ValidatePath(tbSourceFolder.Text))
-			{
-				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
-				errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
-				DialogResult = DialogResult.None;
-			}
-			else
-			{
-				// If all conditions have been met, clear the ErrorProvider of errors.
-				errorProviderSourceFolder.SetError(tbSourceFolder, "");
-				errorProviderSourceFolder.Dispose();
-			}
-
-			if (!ValidatePath(tbTargetFolder.Text))
-			{
-				tbSourceFolder.Select(0, tbTargetFolder.Text.Length);
-				errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
-				DialogResult = DialogResult.None;
-			}
-			else
-			{
-				// If all conditions have been met, clear the ErrorProvider of errors.
-				errorProviderTargetFolder.SetError(tbTargetFolder, "");
-				errorProviderTargetFolder.Dispose();
-			}
-
-			if (String.IsNullOrEmpty(appSettings.FileExtensionFilter) ||
-				String.IsNullOrEmpty(appSettings.SourcePath) ||
-				String.IsNullOrEmpty(appSettings.TargetPath) )
-			{
-				DialogResult = DialogResult.None;
-			}
-
-			if (DialogResult == DialogResult.None)
-				return;
+			ValidateConfigForm();
 		} // END_METHOD
-		
+
+
+		// OK, Cancel & 'X' Event Handler...
+		private void ConfigForm_FormClosing(Object sender, FormClosingEventArgs e)
+		{
+			if (DialogResult != DialogResult.Cancel)
+			{
+				//-------------------------------------------------------------
+				// If we get here, the user did not select Cancel...
+
+				appSettings.DisableSplashScreen = cbDisableSplashScreen.Checked;
+				appSettings.DisableXMLOptions = cbDisableSplashScreen.Checked;
+				appSettings.HideDupeMessage = cbHideDupeFileMessage.Checked;
+				appSettings.ShowDetails = appSettings.ShowDetails.GetValueOrDefault(true);
+				return;
+			}
+
+			//-----------------------------------------------------------------
+			// If we get here, the user wants to discard all entered values...
+
+			if (Helper.IsAppSettingsEmptyOrNull(originalAppSettings))
+			{
+				// If we get here, we are aborting the first-run, settings configuration...
+				DialogResult dialogResult = MessageBox.Show( 
+						this, 
+						"Select Cancel to abort Application Setup\n\n"+
+							"Select Retry to return to Application Setup", 
+						"Cancel Push Application Setup", 
+						MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
+
+				if (dialogResult == DialogResult.Cancel)
+				{
+					// If we get here, the user wants to exit the configuration...
+					return;
+				}
+				else
+				{
+					// If we get here, the user wants to finish configuration...
+					e.Cancel = true;
+					return;
+				}
+			} // END_IF_RESULT = CANCEL
+
+			//-----------------------------------------------------------------
+			// If were get here, the user wants to discard the settings they just
+			//		made and restory the orginal settings...
+
+			// Restore the original appSettings
+			appSettings = originalAppSettings;
+			return;
+		} // END_METHOD
+
 
 		#region [ DUPLICATE RADIO BUTTONS ]
 
