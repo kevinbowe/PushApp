@@ -52,7 +52,7 @@ namespace Push
 		} // END_CTOR
 
 
-		//	TODO: Re-factor... Necessary?
+		
 		private void InitControls()
 		{
 
@@ -81,10 +81,34 @@ namespace Push
 		} // END_METHOD
 
 
-		// TODO: Re-factor... Or Delete... Necessary?
+		
 		private void UpdateControls()
 		{
-			// Update the controls to the last used settings...
+			lblSourcePath.Text = appSettings.SourcePath.ToUpperInvariant();
+			lblTargetPath.Text = appSettings.TargetPath.ToUpperInvariant();
+			lblFileExtensionFilterString.Text = appSettings.FileExtensionFilter.ToUpperInvariant();
+			lblDupeFileActionText.Text = GetDuplicateFileAction();
+			//if (!(bool)appSettings.HideDupeMessage)
+			//	lblDupeFileActionText.Text = "MANUAL";
+			//else
+			//	lblDupeFileActionText.Text = appSettings.DuplicateFileAction.ToUpperInvariant();
+
+			ttDetails.ToolTipTitle = "Details";
+			ttDetails.ToolTipIcon = ToolTipIcon.Info;
+			ttDetails.IsBalloon = true;
+
+			string ttDetailsText = string.Format(
+					"Source Folder = {0}\n" +
+					"Target Folder = {1}\n" +
+					"FileFilter = {2}\n" +
+					"Duplicate File Action = {3}",
+					appSettings.SourcePath.ToUpperInvariant(),
+					appSettings.TargetPath.ToUpperInvariant(),
+					appSettings.FileExtensionFilter.ToUpperInvariant(),
+					GetDuplicateFileAction()
+					);
+			ttDetails.SetToolTip(lblShowHide, ttDetailsText);
+
 
 			if (appSettings.ShowDetails.GetValueOrDefault(true))
 			{
@@ -103,6 +127,12 @@ namespace Push
 				pnlDetails.Visible = false;
 				formSettings.Form.MinimumSize = MinimumSize = MaximumSize = MinHideDetailSize;
 			}
+		} // END_METHOD
+
+
+		private string GetDuplicateFileAction()
+		{
+			return !(bool)appSettings.HideDupeMessage ? "MANUAL" : appSettings.DuplicateFileAction.ToUpperInvariant();
 		} // END_METHOD
 
 	
@@ -217,19 +247,19 @@ namespace Push
 		private void LoadConfigurationDialog()
 		{
 			string s = string.Empty;
-			ConfigForm dlg = new ConfigForm();
+			ConfigForm configDialog = new ConfigForm();
 
 			// Copy the current settings into the Configuration form...
-			dlg.appSettings = appSettings;
-			dlg.StartPosition = FormStartPosition.CenterParent;
+			configDialog.appSettings = appSettings;
+			configDialog.StartPosition = FormStartPosition.CenterParent;
 			
-			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
+			if (configDialog.ShowDialog(this) == DialogResult.OK) s = "OK";
 			else s = "Cancel";
 
 			// Copy settings...
-			appSettings = dlg.appSettings;
+			appSettings = configDialog.appSettings;
 
-			dlg.Dispose();
+			configDialog.Dispose();
 		} // END_METHOD
 
 
@@ -251,6 +281,10 @@ namespace Push
 		private void tooStripBtnConfig_Click(object sender, EventArgs e)
 		{
 			LoadConfigurationDialog();
+
+			// Update the MainForm controls...
+			UpdateControls();
+
 		} // END_METHOD
 
 		#endregion
@@ -365,7 +399,26 @@ namespace Push
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
-		
+
+
+		private void DEBUG_Pink()
+		{
+			DEBUG_InitFolders();
+
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_3\Source", appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_3\Target", appSettings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+			lbStatus.Items.Clear();
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
+
+
 		#endregion		
 
 
@@ -395,6 +448,13 @@ namespace Push
 					case (Keys.LButton | Keys.RButton | Keys.ShiftKey | Keys.Space):
 						DEBUG_PowderBlue();
 						break;
+
+					// ENTER (FOUR)
+					case (Keys.MButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_Pink();
+						break;
+
+
 					default:
 						break;
 				} // END_SWITCH

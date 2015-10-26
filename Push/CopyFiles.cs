@@ -193,8 +193,6 @@ namespace Push
 					// Update UI...
 					lbStatus.Items.Add("CleanUp: Deleting " + s);
 					lbStatus.Update();
-					//((MainForm)sender).StatusControl.Items.Add("CleanUp: Deleting " + s);
-					//((MainForm)sender).StatusControl.Update();
 
 					break; // Exit innter loop...
 
@@ -235,7 +233,7 @@ namespace Push
 			int suffixInteger = 0;
 			int matchInteger = 0;
 
-			string regExPattern = @"(?<Prefix>(\w*))\((?<integer>\d*)\)";
+			string regExPattern = @"(?<Prefix>(\w*))\s*\((?<integer>\d*)\)";
 
 			// OUTER LOOP
 			// Interate over each file in the source folder...
@@ -278,7 +276,8 @@ namespace Push
 					if (!prefix.Equals(sourceFileNamePrefix, StringComparison.Ordinal) ||
 						!targetFileExtension.Equals(sourceFileExtension, StringComparison.Ordinal))
 					{
-						// If we get here, the target file name prefix does not match the source file name...
+						// If we get here, the target file name prefix does not match the source file prefix 
+						// -- OR -- The target file extension does not match the source file extension...
 						continue;
 					}
 
