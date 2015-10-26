@@ -88,7 +88,7 @@
 			this.btnDebug2.Text = "<< DEBUG >>";
 			this.btnDebug2.UseVisualStyleBackColor = false;
 			this.btnDebug2.Visible = false;
-			this.btnDebug2.Click += new System.EventHandler(this.button2_Click);
+			this.btnDebug2.Click += new System.EventHandler(this.btnDebug2_Click);
 			// 
 			// btnDebug4
 			// 
@@ -104,7 +104,7 @@
 			this.btnDebug4.Text = "<< DEBUG >>";
 			this.btnDebug4.UseVisualStyleBackColor = false;
 			this.btnDebug4.Visible = false;
-			this.btnDebug4.Click += new System.EventHandler(this.button4_Click);
+			this.btnDebug4.Click += new System.EventHandler(this.btnDebug4_Click);
 			// 
 			// btnDebug5
 			// 
@@ -120,7 +120,7 @@
 			this.btnDebug5.Text = "<< DEBUG >>";
 			this.btnDebug5.UseVisualStyleBackColor = false;
 			this.btnDebug5.Visible = false;
-			this.btnDebug5.Click += new System.EventHandler(this.button5_Click);
+			this.btnDebug5.Click += new System.EventHandler(this.btnDebug5_Click);
 			// 
 			// pnlDetails
 			// 
@@ -257,7 +257,7 @@
 			this.picBxPush.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.picBxPush.TabIndex = 21;
 			this.picBxPush.TabStop = false;
-			this.picBxPush.Click += new System.EventHandler(this.pictureBox2_Click);
+			this.picBxPush.Click += new System.EventHandler(this.picBoxPush_Click);
 			// 
 			// picBxShowHide
 			// 
@@ -267,7 +267,7 @@
 			this.picBxShowHide.Size = new System.Drawing.Size(17, 19);
 			this.picBxShowHide.TabIndex = 19;
 			this.picBxShowHide.TabStop = false;
-			this.picBxShowHide.Click += new System.EventHandler(this.pictureBox1_Click);
+			this.picBxShowHide.Click += new System.EventHandler(this.picBoxShowHide_Click);
 			// 
 			// toolStripBtnPush
 			// 
@@ -277,7 +277,7 @@
 			this.toolStripBtnPush.Name = "toolStripBtnPush";
 			this.toolStripBtnPush.Size = new System.Drawing.Size(23, 22);
 			this.toolStripBtnPush.Text = "toolStripButton4";
-			this.toolStripBtnPush.Click += new System.EventHandler(this.toolStripButton4_Click);
+			this.toolStripBtnPush.Click += new System.EventHandler(this.toolStripBtnPush_Click);
 			// 
 			// toolStripBtnRefresh
 			// 
@@ -287,7 +287,7 @@
 			this.toolStripBtnRefresh.Name = "toolStripBtnRefresh";
 			this.toolStripBtnRefresh.Size = new System.Drawing.Size(23, 22);
 			this.toolStripBtnRefresh.Text = "toolStripButton5";
-			this.toolStripBtnRefresh.Click += new System.EventHandler(this.toolStripButton5_Click);
+			this.toolStripBtnRefresh.Click += new System.EventHandler(this.toolStripBtnRefresh_Click);
 			// 
 			// tooStripBtnConfig
 			// 
@@ -297,7 +297,7 @@
 			this.tooStripBtnConfig.Name = "tooStripBtnConfig";
 			this.tooStripBtnConfig.Size = new System.Drawing.Size(23, 22);
 			this.tooStripBtnConfig.Text = "toolStripButton6";
-			this.tooStripBtnConfig.Click += new System.EventHandler(this.toolStripButton6_Click);
+			this.tooStripBtnConfig.Click += new System.EventHandler(this.tooStripBtnConfig_Click);
 			// 
 			// toolStrip
 			// 
@@ -330,8 +330,7 @@
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Push Application";
-			this.Load += new System.EventHandler(this.Form1_Load);
-			this.Click += new System.EventHandler(this.Form1_Click);
+			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.pnlDetails.ResumeLayout(false);
 			this.splitContainerDetails.Panel1.ResumeLayout(false);
 			this.splitContainerDetails.Panel2.ResumeLayout(false);

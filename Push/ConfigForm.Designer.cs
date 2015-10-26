@@ -110,6 +110,7 @@
 			this.rbCancel.TabStop = true;
 			this.rbCancel.Text = "Cancel";
 			this.rbCancel.UseVisualStyleBackColor = true;
+			this.rbCancel.CheckedChanged += new System.EventHandler(this.rbCancel_CheckedChanged);
 			// 
 			// rbSkip
 			// 

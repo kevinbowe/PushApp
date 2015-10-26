@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using Itenso.Configuration;
 
 namespace Push
 {
@@ -10,23 +8,23 @@ namespace Push
 		[STAThread]
 		static void Main()
 		{
-			// This loads the properties, defined in Settings, with values...
-			//		If the value of a property has not been defined it will be set to null...
+			// This loads the properties, defined in AppSettings, with values...
+			//		If the value of a property has not been defined, all properties will be set to null...
 			appSettings.Load();
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			MainForm form1 = new MainForm(appSettings);
+			MainForm mainForm = new MainForm(appSettings);
 			
 			// Assign the FormClosed Event handler...
-			form1.FormClosed += FormClosed;
+			mainForm.FormClosed += FormClosed;
 
 			// This handles the first-run + cancel scenario...
-			if (form1.IsDisposed)
+			if (mainForm.IsDisposed)
 				return;
 
-			Application.Run(form1);
+			Application.Run(mainForm);
 
 			#region [ Comments ]
 			/* When the form is closed, the Form.OnClosing and Form.OnFormClosed 
@@ -37,10 +35,10 @@ namespace Push
 			 * 
 			 *	Next the Form.OnFormClosed event calls Program.FormClosed( ).
 			 *	This method copies the PushSettings properties into the 
-			 *		MyApplicatinSettings collection.   */
+			 *		AppSettings collection.   */
 			#endregion			
 			
-			// Save the MyApplicationSettings to the same XML file that holds the form properties...
+			// Save the AppSettings to the same XML file that holds the form properties...
 			appSettings.Save();
 
 		} // END_METHOD
@@ -60,44 +58,9 @@ namespace Push
 		} // END_METHOD
 
 
-		private static readonly MyApplicationSettings appSettings = new MyApplicationSettings();
+		private static readonly AppSettings appSettings = new AppSettings();
 
 
     } // END_CLASS
 
-
-	// TODO: Move this to a different source code file...
-	public class MyApplicationSettings : ApplicationSettings
-	{
-		public bool DisableSplashScreen { get; set; }
-		public bool DisableXMLOptions { get; set; }
-		public string DuplicateFileAction { get; set; }
-		public string ExePath { get; set; }
-		public string FileExtensionFilter { get; set; }
-		public bool HideDupeMessage { get; set; }
-		public string SourcePath { get; set; }
-		public string TargetPath { get; set; }
-		public bool ShowDetails { get; set; }
-
-		
-		public MyApplicationSettings() : base(typeof(MyApplicationSettings))
-		{
-			//-----------------------------------------------------------------
-			// At this point, the AutoUpgrade property has been added and setto true...
-			
-			// IMPORTANT:  This code block DOES NOT add the value related to the property...
-			Settings.Add(new PropertySetting(this, "DisableSplashScreen"));
-			Settings.Add(new PropertySetting(this, "DisableXMLOptions"));
-			Settings.Add(new PropertySetting(this, "DuplicateFileAction"));
-			Settings.Add(new PropertySetting(this, "ExePath"));
-			Settings.Add(new PropertySetting(this, "FileExtensionFilter"));
-			Settings.Add(new PropertySetting(this, "HideDupeMessage"));
-			Settings.Add(new PropertySetting(this, "SourcePath"));
-			Settings.Add(new PropertySetting(this, "TargetPath"));
-			Settings.Add(new PropertySetting(this, "ShowDetails"));
-
-		} // END_METHOD
-
-	} // END_CLASS
-
-}
+} // END_NS
