@@ -20,17 +20,3 @@ EDIT WORKSTATION
 The edit workstation is a Win 7/10 PC.  A second Ethernet card provides a link to the scanning workstation.  This P2P network is in a different domain so the scanning workstation is protected.
 
 Comments:  This is un-factored code.  There are many duplicate blocks of code that will be refactored before release.  There are many constant values related to configuration that will be removed.  This code has not been heavy tested but does work properly in XP.  This code is available to review and comment.  This code is not ready for release.
-
--------------------------------------------------------------------------------
-FEATURE
-The code base should be organized in such a way that file names describe the highest level of functional organization.  GOOD == MainForm.cs  | BAD == Form1.cs.  The code base should be distributed to multiple files that encapsulate a specific functional group.  GOOD == TaskDialog.cs  |  BAD == Class1.cs.
-
-USER STORY 
-The existing code base contains TWO principle files, FORM1.cs and FORM2.cs.  There are a group of additional files with similar names that are related to these files.
-—
-As a developer, source code file names should be descriptive.
-
-USER STORY
-The existing code base has large code blocks that perform specific functions.  These code blocks are collected in a single source code file.
-—
-As a developer, there should be a source code file for each major code block, based on function.  These code blocks can be represented as 'partial classes' or separate classes with an associated 'interface'.
