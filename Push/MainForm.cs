@@ -15,6 +15,12 @@ using System.Web.Script.Serialization;
 //---
 using Itenso.Configuration;
 using System.Globalization;
+//--
+using System.Linq;
+using LinqLib.Operators;
+using LinqLib.Operators.Logical;
+using LinqLib.Sequence;
+using LinqLib.Array;
 
 namespace Push
 {
@@ -51,7 +57,6 @@ namespace Push
 			InitControls();
 		} // END_CTOR
 
-
 		
 		private void InitControls()
 		{
@@ -79,7 +84,6 @@ namespace Push
 			// Update the form properties to the last used...
 			UpdateControls();
 		} // END_METHOD
-
 
 		
 		private void UpdateControls()
@@ -224,18 +228,36 @@ namespace Push
 
 		public static List<string> LoadFileExtensions(AppSettings appSettings)
 		{
+			/* NOTE:	
+			 * The FOUR Linq queries below could be componded into one large query
+			 * but it would make the code harder to read and debug.
+			 * Performance is not dramatically affected.  */ 
+	
 			string[] delimiters = new string[] { ";", "|", ":" };
-			string[] fefArray = appSettings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
 			
-			// Scan array and strip any leading or trailing spaces...
-			int length = fefArray.Length;
-			for(int i = 0; i < length; i++)
-			{
-				fefArray[i] = fefArray[i].Trim();
-			}
+			// Split the FileExtensionFilter string into an array of strings.
+			string[] fefArray = appSettings.FileExtensionFilter
+						.Split(delimiters, StringSplitOptions.None)
+						.ToArray();
+
+			// Trim all leading and trailing spaces in each element...
+			fefArray = fefArray.Select(fef => fef.Trim()).ToArray();
+
+			// Scan for duplicate filters with Linq Query...
+			fefArray = fefArray.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+
+			// Check for "*.*" filter. Discard all other filters since *.* rules...
+			if (ContainsFilterStarDotStar(fefArray))
+				fefArray = new string[] { "*.*" };
 
 			return new List<string>(fefArray);
 		} // END_METHOD
+
+
+		private static bool ContainsFilterStarDotStar(string[] fefArray)
+		{
+			return fefArray.Where(f => f.Equals("*.*")).DefaultIfEmpty("").First() == "*.*";
+		}
 
 
 		private void picBoxPush_Click(object sender, EventArgs e)

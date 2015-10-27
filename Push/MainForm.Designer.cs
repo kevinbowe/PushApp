@@ -35,11 +35,15 @@
 			this.btnDebug5 = new System.Windows.Forms.Button();
 			this.pnlDetails = new System.Windows.Forms.Panel();
 			this.splitContainerDetails = new System.Windows.Forms.SplitContainer();
+			this.lblSourcePath = new System.Windows.Forms.Label();
+			this.lblSource = new System.Windows.Forms.Label();
 			this.lvSource = new System.Windows.Forms.ListView();
 			this.FName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.FSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.Date = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.lblTargetPath = new System.Windows.Forms.Label();
+			this.lblTarget = new System.Windows.Forms.Label();
 			this.lvTarget = new System.Windows.Forms.ListView();
 			this.FNameTarget = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.TypeTarget = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -52,10 +56,6 @@
 			this.toolStripBtnRefresh = new System.Windows.Forms.ToolStripButton();
 			this.tooStripBtnConfig = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
-			this.lblSourceNew = new System.Windows.Forms.Label();
-			this.lblTargetNew = new System.Windows.Forms.Label();
-			this.lblSourcePath = new System.Windows.Forms.Label();
-			this.lblTargetPath = new System.Windows.Forms.Label();
 			this.lblFileFilter = new System.Windows.Forms.Label();
 			this.lblFileExtensionFilterString = new System.Windows.Forms.Label();
 			this.ttDetails = new System.Windows.Forms.ToolTip(this.components);
@@ -150,17 +150,38 @@
 			// splitContainerDetails.Panel1
 			// 
 			this.splitContainerDetails.Panel1.Controls.Add(this.lblSourcePath);
-			this.splitContainerDetails.Panel1.Controls.Add(this.lblSourceNew);
+			this.splitContainerDetails.Panel1.Controls.Add(this.lblSource);
 			this.splitContainerDetails.Panel1.Controls.Add(this.lvSource);
 			// 
 			// splitContainerDetails.Panel2
 			// 
 			this.splitContainerDetails.Panel2.Controls.Add(this.lblTargetPath);
-			this.splitContainerDetails.Panel2.Controls.Add(this.lblTargetNew);
+			this.splitContainerDetails.Panel2.Controls.Add(this.lblTarget);
 			this.splitContainerDetails.Panel2.Controls.Add(this.lvTarget);
 			this.splitContainerDetails.Size = new System.Drawing.Size(718, 96);
 			this.splitContainerDetails.SplitterDistance = 357;
 			this.splitContainerDetails.TabIndex = 0;
+			// 
+			// lblSourcePath
+			// 
+			this.lblSourcePath.AutoSize = true;
+			this.lblSourcePath.BackColor = System.Drawing.SystemColors.Control;
+			this.lblSourcePath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblSourcePath.ForeColor = System.Drawing.Color.Red;
+			this.lblSourcePath.Location = new System.Drawing.Point(79, 6);
+			this.lblSourcePath.Name = "lblSourcePath";
+			this.lblSourcePath.Size = new System.Drawing.Size(73, 13);
+			this.lblSourcePath.TabIndex = 9;
+			this.lblSourcePath.Text = "SourcePath";
+			// 
+			// lblSource
+			// 
+			this.lblSource.AutoSize = true;
+			this.lblSource.Location = new System.Drawing.Point(4, 6);
+			this.lblSource.Name = "lblSource";
+			this.lblSource.Size = new System.Drawing.Size(76, 13);
+			this.lblSource.TabIndex = 8;
+			this.lblSource.Text = "Source Folder:";
 			// 
 			// lvSource
 			// 
@@ -198,6 +219,27 @@
 			// 
 			this.Date.Text = "Date";
 			this.Date.Width = 118;
+			// 
+			// lblTargetPath
+			// 
+			this.lblTargetPath.AutoSize = true;
+			this.lblTargetPath.BackColor = System.Drawing.SystemColors.Control;
+			this.lblTargetPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblTargetPath.ForeColor = System.Drawing.Color.Red;
+			this.lblTargetPath.Location = new System.Drawing.Point(83, 6);
+			this.lblTargetPath.Name = "lblTargetPath";
+			this.lblTargetPath.Size = new System.Drawing.Size(70, 13);
+			this.lblTargetPath.TabIndex = 10;
+			this.lblTargetPath.Text = "TargetPath";
+			// 
+			// lblTarget
+			// 
+			this.lblTarget.AutoSize = true;
+			this.lblTarget.Location = new System.Drawing.Point(3, 6);
+			this.lblTarget.Name = "lblTarget";
+			this.lblTarget.Size = new System.Drawing.Size(73, 13);
+			this.lblTarget.TabIndex = 9;
+			this.lblTarget.Text = "Target Folder:";
 			// 
 			// lvTarget
 			// 
@@ -307,48 +349,6 @@
 			this.toolStrip.TabIndex = 22;
 			this.toolStrip.Text = "toolStrip1";
 			// 
-			// lblSourceNew
-			// 
-			this.lblSourceNew.AutoSize = true;
-			this.lblSourceNew.Location = new System.Drawing.Point(4, 6);
-			this.lblSourceNew.Name = "lblSourceNew";
-			this.lblSourceNew.Size = new System.Drawing.Size(76, 13);
-			this.lblSourceNew.TabIndex = 8;
-			this.lblSourceNew.Text = "Source Folder:";
-			// 
-			// lblTargetNew
-			// 
-			this.lblTargetNew.AutoSize = true;
-			this.lblTargetNew.Location = new System.Drawing.Point(3, 6);
-			this.lblTargetNew.Name = "lblTargetNew";
-			this.lblTargetNew.Size = new System.Drawing.Size(73, 13);
-			this.lblTargetNew.TabIndex = 9;
-			this.lblTargetNew.Text = "Target Folder:";
-			// 
-			// lblSourcePath
-			// 
-			this.lblSourcePath.AutoSize = true;
-			this.lblSourcePath.BackColor = System.Drawing.SystemColors.Control;
-			this.lblSourcePath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblSourcePath.ForeColor = System.Drawing.Color.Red;
-			this.lblSourcePath.Location = new System.Drawing.Point(79, 6);
-			this.lblSourcePath.Name = "lblSourcePath";
-			this.lblSourcePath.Size = new System.Drawing.Size(73, 13);
-			this.lblSourcePath.TabIndex = 9;
-			this.lblSourcePath.Text = "SourcePath";
-			// 
-			// lblTargetPath
-			// 
-			this.lblTargetPath.AutoSize = true;
-			this.lblTargetPath.BackColor = System.Drawing.SystemColors.Control;
-			this.lblTargetPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblTargetPath.ForeColor = System.Drawing.Color.Red;
-			this.lblTargetPath.Location = new System.Drawing.Point(83, 6);
-			this.lblTargetPath.Name = "lblTargetPath";
-			this.lblTargetPath.Size = new System.Drawing.Size(70, 13);
-			this.lblTargetPath.TabIndex = 10;
-			this.lblTargetPath.Text = "TargetPath";
-			// 
 			// lblFileFilter
 			// 
 			this.lblFileFilter.AutoSize = true;
@@ -453,8 +453,8 @@
 		private System.Windows.Forms.ToolStripButton toolStripBtnRefresh;
 		private System.Windows.Forms.ToolStripButton tooStripBtnConfig;
 		private System.Windows.Forms.ToolStrip toolStrip;
-		private System.Windows.Forms.Label lblSourceNew;
-		private System.Windows.Forms.Label lblTargetNew;
+		private System.Windows.Forms.Label lblSource;
+		private System.Windows.Forms.Label lblTarget;
 		private System.Windows.Forms.Label lblSourcePath;
 		private System.Windows.Forms.Label lblTargetPath;
 		private System.Windows.Forms.Label lblFileFilter;

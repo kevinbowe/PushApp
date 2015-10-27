@@ -39,6 +39,10 @@
     <Reference Include="Itenso.Configuration.WindowsForms">
       <HintPath>Lib\Itenso.Configuration.WindowsForms.dll</HintPath>
     </Reference>
+    <Reference Include="LinqLib, Version=1.0.3.0, Culture=neutral, PublicKeyToken=100a413726ba3d7c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\LinqLib.dll</HintPath>
+    </Reference>
     <Reference Include="PSTaskDialog, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Lib\PSTaskDialog.dll</HintPath>
