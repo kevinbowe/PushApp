@@ -38,6 +38,9 @@ namespace Push
 		private Size MinShowDetailSize = new Size(764, 286);
 
 
+		#region [ MainForm Constructor + Support ]
+
+		// Main Form Ctor...
 		public MainForm(AppSettings appSettings)
 		{
 			InitializeComponent();
@@ -52,12 +55,12 @@ namespace Push
 
 			// Copy the appSettings argument into this forms appSettings property...
 			this.appSettings = appSettings;
-			
+
 			// Set the default form properties and then update them with the last used properties...
 			InitControls();
 		} // END_CTOR
 
-		
+
 		private void InitControls()
 		{
 
@@ -85,18 +88,13 @@ namespace Push
 			UpdateControls();
 		} // END_METHOD
 
-		
+
 		private void UpdateControls()
 		{
 			lblSourcePath.Text = appSettings.SourcePath.ToUpperInvariant();
 			lblTargetPath.Text = appSettings.TargetPath.ToUpperInvariant();
 			lblFileExtensionFilterString.Text = appSettings.FileExtensionFilter.ToUpperInvariant();
 			lblDupeFileActionText.Text = GetDuplicateFileAction();
-			//if (!(bool)appSettings.HideDupeMessage)
-			//	lblDupeFileActionText.Text = "MANUAL";
-			//else
-			//	lblDupeFileActionText.Text = appSettings.DuplicateFileAction.ToUpperInvariant();
-
 			ttDetails.ToolTipTitle = "Details";
 			ttDetails.ToolTipIcon = ToolTipIcon.Info;
 			ttDetails.IsBalloon = true;
@@ -139,8 +137,10 @@ namespace Push
 			return !(bool)appSettings.HideDupeMessage ? "MANUAL" : appSettings.DuplicateFileAction.ToUpperInvariant();
 		} // END_METHOD
 
+		#endregion
 	
-		// Load data...
+
+		// Load MainForm Data...
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			// Disable the Maximize control on the form...
@@ -149,6 +149,13 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
+		
+		// Push Button...
+		private void picBoxPush_Click(object sender, EventArgs e)
+		{
+			CopyFiles(sender, e);
 		} // END_METHOD
 
 
@@ -226,6 +233,7 @@ namespace Push
 		} // END_METHOD
 
 
+		// File Extensions...
 		public static List<string> LoadFileExtensions(AppSettings appSettings)
 		{
 			/* NOTE:	
@@ -260,12 +268,7 @@ namespace Push
 		}
 
 
-		private void picBoxPush_Click(object sender, EventArgs e)
-		{
-			CopyFiles(sender, e);
-		} // END_METHOD
-
-
+		// Configuration Dialog...
 		private void LoadConfigurationDialog()
 		{
 			string s = string.Empty;
