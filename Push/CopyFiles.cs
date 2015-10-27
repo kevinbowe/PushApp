@@ -305,9 +305,13 @@ namespace Push
 				{
 					// Copy the source file to the target folder...
 					string sourcefileName = Path.GetFileNameWithoutExtension(s);
-					sourcefileName = string.Format("{0} ({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
-					string destFileName = Path.Combine(targetPath, sourcefileName);
+					string newfileName = string.Format("{0} ({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
+					string destFileName = Path.Combine(targetPath, newfileName);
 					File.Copy(s, destFileName, false);
+
+					// Update UI...
+					lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
+					lbStatus.Update();
 				}
 				else
 				{
@@ -315,6 +319,10 @@ namespace Push
 					string sourcefileName = Path.GetFileName(s);
 					string destFileName = Path.Combine(targetPath, sourcefileName);
 					File.Copy(s, destFileName, false);
+
+					// Update UI...
+					lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
+					lbStatus.Update();
 				}// END_IF
 
 				// Reset...
