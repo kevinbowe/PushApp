@@ -20,7 +20,8 @@ namespace Push
 {
 	public partial class MainForm
 	{
-		private void RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
+		//private void 
+		private Tuple<int, int> RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
 		{
 			bool okToRename = false;
 			int suffixInteger = 0;
@@ -117,9 +118,10 @@ namespace Push
 					string destFileName = Path.Combine(targetPath, newfileName);
 					File.Copy(s, destFileName, false);
 
-					// Update UI...
-					lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
-					lbStatus.Update();
+					//// Update UI...
+					//lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
+					//lbStatus.Update();
+
 				}
 				else
 				{
@@ -128,9 +130,10 @@ namespace Push
 					string destFileName = Path.Combine(targetPath, sourcefileName);
 					File.Copy(s, destFileName, false);
 
-					// Update UI...
-					lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
-					lbStatus.Update();
+					//// Update UI...
+					//lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
+					//lbStatus.Update();
+
 				}// END_IF
 
 
@@ -142,6 +145,9 @@ namespace Push
 				matchInteger = 0;
 
 			} // END_OUTER_LOOP
+
+			return new Tuple<int, int>(111, 222);
+
 		} // END_METHOD
 
 	}

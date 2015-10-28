@@ -81,18 +81,40 @@ namespace Push
 
 					switch ((commandResult)Enum.Parse(typeof(commandResult), appSettings.DuplicateFileAction))
 					{
+
 						case commandResult.Rename:
-							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
-							break;
+							{
+								Tuple<int, int> statusResult = RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								//...
+								string status = string.Format("Copy={0} & Renamed={1}", statusResult.Item1, statusResult.Item2);
+								lbStatus.Items.Add(status);
+								lbStatus.Update();
+								break;
+							}
+
 						case commandResult.Skip:
-							SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
-							break;
+							{
+								Tuple<int, int> statusResult = SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								//...
+								string status = string.Format("Copy={0} & Skip={1}", statusResult.Item1, statusResult.Item2);
+								lbStatus.Items.Add(status);
+								lbStatus.Update();
+								break;
+							}
 						case commandResult.Cancel:
 							return;
+
 						case commandResult.Overwrite:
 						default:
-							CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
-							break;
+							{
+								Tuple<int, int> statusResult = CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
+								//...
+								string status = string.Format("Copy={0} & Overwrite={1}", statusResult.Item1, statusResult.Item2);
+								lbStatus.Items.Add(status);
+								lbStatus.Update();
+								break;
+							}
+
 					} // END SWITCH
 				}
 				else
@@ -100,12 +122,13 @@ namespace Push
 					//---------------------------------------------------------
 					// If we get here, Hide Dupe Message checkbox is false.
 
+					#region [ TASK DIALOG ]
 					cTaskDialog.ForceEmulationMode = true;
 					cTaskDialog.EmulatedFormWidth = 450;
 
 					DialogResult res =
 							cTaskDialog.ShowTaskDialogBox(
-							//...((MainForm)sender),
+						//...((MainForm)sender),
 							this,
 							"Duplicate Files Found",
 							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
@@ -120,7 +143,8 @@ namespace Push
 							eTaskDialogButtons.None,
 							eSysIcons.Information,
 							eSysIcons.Warning);
-
+					#endregion					
+					
 					//-------------------------------------------------------------
 					// Based on the configuration above, DialogResult and RadioButtonResult is ignored...
 
@@ -135,23 +159,39 @@ namespace Push
 
 					switch ((commandResult)cTaskDialog.CommandButtonResult)
 					{
-						case commandResult.Rename:
-							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
-							break;
-						case commandResult.Skip:
-							Tuple<int,int> result = SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
-							//...
-							string status = string.Format("Copy={0} & Skip={1}", result.Item1, result.Item2);
-							lbStatus.Items.Add(status);
-							lbStatus.Update();
 
-							break;
+						case commandResult.Rename:
+							{
+								Tuple<int, int> statusResult = RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								//...
+								string status = string.Format("Copy={0} & Renamed={1}", statusResult.Item1, statusResult.Item2);
+								lbStatus.Items.Add(status);
+								lbStatus.Update();
+								break;
+							}
+
+						case commandResult.Skip:
+							{
+								Tuple<int, int> statusResult = SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								//...
+								string status = string.Format("Copy={0} & Skip={1}", statusResult.Item1, statusResult.Item2);
+								lbStatus.Items.Add(status);
+								lbStatus.Update();
+								break;
+							}
 						case commandResult.Cancel:
 							return;
+
 						case commandResult.Overwrite:
 						default:
-							CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
-							break;
+							{
+								Tuple<int, int> statusResult = CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
+								//...
+								string status = string.Format("Copy={0} & Overwrite={1}", statusResult.Item1, statusResult.Item2);
+								lbStatus.Items.Add(status);
+								lbStatus.Update();
+								break;
+							}
 
 					} // END SWITCH
 

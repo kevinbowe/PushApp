@@ -64,9 +64,9 @@ namespace Push
 					//      Verify that 't' is the correct file name...
 					deleteSourceArrayList.Add(s);
 
-					// Update UI...
-					lbStatus.Items.Add("Copying " + s + " to " + destFileName);
-					lbStatus.Update();
+					//// Update UI...
+					//lbStatus.Items.Add("Copying " + s + " to " + destFileName);
+					//lbStatus.Update();
 				}
 
 				// Raise the okToCopy flag...
@@ -75,8 +75,9 @@ namespace Push
 			} // END_FOREACH_OUTER
 
 			fileSourceArrayList = deleteSourceArrayList;
-			//.. return new  { CopyCount = 33, SkipCount = 44 };
+
 			return new Tuple<int, int>(33, 44);
+
 		} // END_METHOD
 
 	}
