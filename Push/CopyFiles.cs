@@ -32,6 +32,7 @@ namespace Push
 			// File extension types...
 			List<string> FileExtensionArrayList = LoadFileExtensions(appSettings);
 
+			#region [ BUILD LIST OF SOURCE FILES ]
 			// Build list of file to copy... 
 			foreach (string fileExtension in FileExtensionArrayList)
 			{
@@ -43,7 +44,9 @@ namespace Push
 				foreach (string s in fileSourceStrArray)
 					fileSourceArrayList.Add(s);
 			} // END_FOREACH
+			#endregion
 
+			#region [ BUILD LIST OF TARGET FILES ]
 			// Build a list of files on the target folder...
 			string[] fileTargetStrArray = System.IO.Directory.GetFiles(appSettings.TargetPath);
 			int dupeFileCount = 0;
@@ -67,6 +70,7 @@ namespace Push
 
 				} // END_FOREACH_INNER
 			} // END_FOREACH_OUTER
+			#endregion
 
 			if (dupeFileCount <= 0)
 			{
@@ -79,12 +83,13 @@ namespace Push
 					//---------------------------------------------------------
 					// If we get here, perform whatever Dupe File Action has been configured...
 
+					#region [ AUTO DUPE ACTION ]
 					switch ((commandResult)Enum.Parse(typeof(commandResult), appSettings.DuplicateFileAction))
 					{
 
 						case commandResult.Rename:
 							{
-								Tuple<int, int> statusResult = RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								Tuple<int, int> statusResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								//...
 								string status = string.Format("Copy={0} & Renamed={1}", statusResult.Item1, statusResult.Item2);
 								lbStatus.Items.Add(status);
@@ -113,9 +118,11 @@ namespace Push
 								lbStatus.Items.Add(status);
 								lbStatus.Update();
 								break;
-							}
+							} 
 
 					} // END SWITCH
+				#endregion		
+				
 				}
 				else
 				{
@@ -157,12 +164,13 @@ namespace Push
 						appSettings.DuplicateFileAction = Enum.GetName(typeof(commandResult), cTaskDialog.CommandButtonResult);
 					}
 
+					#region [ MANUAL DUPE ACTION ]
 					switch ((commandResult)cTaskDialog.CommandButtonResult)
 					{
 
 						case commandResult.Rename:
 							{
-								Tuple<int, int> statusResult = RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								Tuple<int, int> statusResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								//...
 								string status = string.Format("Copy={0} & Renamed={1}", statusResult.Item1, statusResult.Item2);
 								lbStatus.Items.Add(status);
@@ -194,6 +202,7 @@ namespace Push
 							}
 
 					} // END SWITCH
+					#endregion
 
 				} // END_IF_ELSE HideDupeMessage
 

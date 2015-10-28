@@ -18,14 +18,18 @@ using System.Globalization;
 
 namespace Push
 {
-	public partial class MainForm
+	//public partial class MainForm
+	public class CopyFilesRename
 	{
-		//private void 
-		private Tuple<int, int> RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
+		public static Tuple<int, int> RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, AppSettings appSettings)
 		{
+			string targetPath = appSettings.TargetPath;
+			string sourcePath = appSettings.SourcePath;
 			bool okToRename = false;
 			int suffixInteger = 0;
 			int matchInteger = 0;
+			int renameCount = 0;
+			int copyCount = 0;
 
 			string regExPattern = @"(?<Prefix>(\w*))\s*\((?<integer>\d*)\)";
 
@@ -112,11 +116,13 @@ namespace Push
 
 				if (okToRename)
 				{
-					// Copy the source file to the target folder...
+					// Copy/Rename the source file to the target folder...
 					string sourcefileName = Path.GetFileNameWithoutExtension(s);
 					string newfileName = string.Format("{0} ({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
 					string destFileName = Path.Combine(targetPath, newfileName);
 					File.Copy(s, destFileName, false);
+					//--
+					renameCount++;
 
 					//// Update UI...
 					//lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
@@ -129,6 +135,7 @@ namespace Push
 					string sourcefileName = Path.GetFileName(s);
 					string destFileName = Path.Combine(targetPath, sourcefileName);
 					File.Copy(s, destFileName, false);
+					copyCount++;
 
 					//// Update UI...
 					//lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
@@ -146,7 +153,7 @@ namespace Push
 
 			} // END_OUTER_LOOP
 
-			return new Tuple<int, int>(111, 222);
+			return new Tuple<int, int>(copyCount, renameCount);
 
 		} // END_METHOD
 
