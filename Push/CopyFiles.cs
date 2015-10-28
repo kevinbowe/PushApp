@@ -18,7 +18,7 @@ using System.Globalization;
 
 namespace Push
 {
-	public partial class MainForm //: IDisposable
+	public partial class MainForm
 	{
 
 		// Copy Files from Source folder to Target folder...
@@ -85,7 +85,7 @@ namespace Push
 							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
 							break;
 						case commandResult.Skip:
-							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+							SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
 							break;
 						case commandResult.Cancel:
 							return;
@@ -139,7 +139,12 @@ namespace Push
 							RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
 							break;
 						case commandResult.Skip:
-							fileSourceArrayList = SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+							Tuple<int,int> result = SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+							//...
+							string status = string.Format("Copy={0} & Skip={1}", result.Item1, result.Item2);
+							lbStatus.Items.Add(status);
+							lbStatus.Update();
+
 							break;
 						case commandResult.Cancel:
 							return;
@@ -190,204 +195,15 @@ namespace Push
 					// Delete the source file...
 					File.Delete(s);
 
-					// Update UI...
-					lbStatus.Items.Add("CleanUp: Deleting " + s);
-					lbStatus.Update();
-
 					break; // Exit innter loop...
 
 				} // END_FOREACH_INNER
 			} // END_FOREACH_OUTER
 			#endregion
 
-			lbStatus.Items.Add("Copy Complete");
-			lbStatus.Update();
-
 			// Update Source & Target Listboxes...
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
-
-		} // END_METHOD
-
-
-		private void CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
-		{
-			// Copy files...
-			foreach (string s in fileSourceArrayList)
-			{
-				string srcfileName = Path.GetFileName(s);
-				string destFileName = Path.Combine(targetPath, srcfileName);
-
-				File.Copy(s, destFileName, true);
-
-				// Update UI...
-				lbStatus.Items.Add("Copying " + srcfileName + " to " + destFileName);
-				lbStatus.Update();
-			}
-		} // END_METHOD
-
-
-		private void RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
-		{
-			bool okToRename = false;
-			int suffixInteger = 0;
-			int matchInteger = 0;
-
-			string regExPattern = @"(?<Prefix>(\w*))\s*\((?<integer>\d*)\)";
-
-			// OUTER LOOP
-			// Interate over each file in the source folder...
-			foreach (string s in fileSourceArrayList)
-			{
-				string sourceFileNamePrefix = Path.GetFileNameWithoutExtension(s);
-				string sourceFileName = Path.GetFileName(s);
-				string sourceFileExtension = Path.GetExtension(s);
-
-				// INNER LOOP
-				// Iterate over each file in the target folder...
-				foreach (string t in fileTargetStrArray)
-				{
-					// init...
-					matchInteger = 0;
-
-					string targetFileExtension = Path.GetExtension(t);
-					string targetFileName = Path.GetFileName(t);
-
-					// Compair source and target filename...
-					if (targetFileName.Equals(sourceFileName, StringComparison.Ordinal))
-					{
-						okToRename = true;
-						continue;
-					}
-
-					//------------------------------------------------------------------------
-					// If we get here, the source and target filenames are not the same...
-
-					Match match = Regex.Match(targetFileName, regExPattern);
-
-					if (!match.Success)
-					{
-						// If we get here, the files do not match. Do nothing...
-						continue;
-					}
-
-					// Compar source and target filename...
-					string prefix = match.Groups["Prefix"].Value;
-					if (!prefix.Equals(sourceFileNamePrefix, StringComparison.Ordinal) ||
-						!targetFileExtension.Equals(sourceFileExtension, StringComparison.Ordinal))
-					{
-						// If we get here, the target file name prefix does not match the source file prefix 
-						// -- OR -- The target file extension does not match the source file extension...
-						continue;
-					}
-
-					//------------------------------------------------------------------------
-					// If we get here, we found a similar file name...
-
-					// Fetch the suffix-integer...
-					string value = match.Groups["integer"].Value;
-					Int32.TryParse(value, out matchInteger);
-
-					if (suffixInteger <= matchInteger)
-					{
-						suffixInteger = matchInteger;
-						okToRename = true;
-						continue;
-					}
-
-					//------------------------------------------------------------------------
-					// If we get here, target integer is less than the current sufficInteger...
-
-					continue;
-				} // END_INNER_LOOP
-
-				if (okToRename)
-				{
-					// Copy the source file to the target folder...
-					string sourcefileName = Path.GetFileNameWithoutExtension(s);
-					string newfileName = string.Format("{0} ({1}){2}", sourcefileName, ++suffixInteger, sourceFileExtension);
-					string destFileName = Path.Combine(targetPath, newfileName);
-					File.Copy(s, destFileName, false);
-
-					// Update UI...
-					lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
-					lbStatus.Update();
-				}
-				else
-				{
-					// Copy the source file to the target folder...
-					string sourcefileName = Path.GetFileName(s);
-					string destFileName = Path.Combine(targetPath, sourcefileName);
-					File.Copy(s, destFileName, false);
-
-					// Update UI...
-					lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
-					lbStatus.Update();
-				}// END_IF
-
-				// Reset...
-				okToRename = false;
-				suffixInteger = 0;
-				matchInteger = 0;
-
-			} // END_OUTER_LOOP
-		} // END_METHOD
-
-
-		private ArrayList SkipDuplicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
-		{
-			/*  
-			 *  If a duplicate is SKIPPED, it should NOT be deleted from the source folder. 
-			 *  We need to return a revised list of files that are only the ones that should be deleted.
-			 *  
-			 *  fileSourceArrayList
-			 */
-			bool okToCopy = true;
-			ArrayList deleteSourceArrayList = new ArrayList();
-
-			foreach (string s in fileSourceArrayList)
-			{
-				FileInfo sourceFileInfo = new FileInfo(s);
-
-				// INNER_LOOP -- Iterate over each file in the source list...
-				foreach (string t in fileTargetStrArray)
-				{
-					FileInfo targetFileInfo = new FileInfo(t);
-					if (sourceFileInfo.Name.Equals(targetFileInfo.Name, StringComparison.Ordinal))
-					{
-						// If we get here, the file esists in the target folder.
-						//      Skip this file...
-
-						okToCopy = false;
-						break; // Exit Inner loop...
-
-					} // END_IF
-
-				} // END_FOREACH_INNER
-
-				if (okToCopy)
-				{
-					// Copy the source file to the target folder...
-					string sourcefileName = Path.GetFileName(s);
-					string destFileName = Path.Combine(targetPath, sourcefileName);
-
-					File.Copy(s, destFileName, true);
-
-					// Update the lisst of files that should be deleted from the source folder...
-					//      Verify that 't' is the correct file name...
-					deleteSourceArrayList.Add(s);
-
-					// Update UI...
-					lbStatus.Items.Add("Copying " + s + " to " + destFileName);
-					lbStatus.Update();
-				}
-
-				// Raise the okToCopy flag...
-				okToCopy = true;
-
-			} // END_FOREACH_OUTER
-
-			return deleteSourceArrayList;
 		} // END_METHOD
 
 	} //END_CLASS

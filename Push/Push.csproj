@@ -64,6 +64,15 @@
     <Compile Include="CopyFiles.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="CopyFilesOverwrite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CopyFilesRename.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CopyFilesSkip.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FileTypes.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="MainForm.cs">
