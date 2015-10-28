@@ -1,33 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Runtime.InteropServices;
-//---
-using PSTaskDialog;
-using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
 //---
 using Itenso.Configuration;
-using System.Globalization;
-//--
-using System.Linq;
-using LinqLib.Operators;
-using LinqLib.Operators.Logical;
-using LinqLib.Sequence;
-using LinqLib.Array;
 
 namespace Push
 {
 	public partial class MainForm : Form
 	{
 		private readonly FormSettings formSettings;
-		enum commandResult { Overwrite, Rename, Skip, Cancel };
 		public AppSettings appSettings;
 		Size savedMainFormSize;
 
@@ -155,7 +138,39 @@ namespace Push
 		// Push Button...
 		private void picBoxPush_Click(object sender, EventArgs e)
 		{
-			CopyFiles(sender, e);
+			// Init Controls...
+			lbStatus.Items.Clear();
+
+			Tuple<Helper.commandResult, int, int> r = new CopyFiles().CopyAction(this);
+
+			string status = string.Empty;
+			switch (r.Item1)
+			{
+				case Helper.commandResult.Cancel:
+					status = "Copy Canceled";
+					break;
+
+				case Helper.commandResult.Overwrite:
+					status = string.Format("Overwrite={0}", r.Item2);
+					break;
+
+				case Helper.commandResult.Rename: 
+					status = string.Format("Copy={0} & Renamed={1}", r.Item2, r.Item3);
+					break;
+
+				case Helper.commandResult.Skip: 
+					status = string.Format("Copy={0} & Skip={1}", r.Item2, r.Item3);
+					break;
+			}
+			
+			lbStatus.Items.Add(status);
+			lbStatus.Update();
+
+			// Update Source & Target Listboxes...
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);	
+		
+		
 		} // END_METHOD
 
 
@@ -206,7 +221,7 @@ namespace Push
 			DestinationListView.Items.Clear();
 
 			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
+			fileExtensionList.AddRange(Helper.LoadFileExtensions(appSettings));
 
 			List<string> fileSourceArrayList = new List<string>();
 			foreach (string FileExtension in fileExtensionList)
@@ -233,41 +248,6 @@ namespace Push
 		} // END_METHOD
 
 
-		// File Extensions...
-		public static List<string> LoadFileExtensions(AppSettings appSettings)
-		{
-			/* NOTE:	
-			 * The FOUR Linq queries below could be componded into one large query
-			 * but it would make the code harder to read and debug.
-			 * Performance is not dramatically affected.  */ 
-	
-			string[] delimiters = new string[] { ";", "|", ":" };
-			
-			// Split the FileExtensionFilter string into an array of strings.
-			string[] fefArray = appSettings.FileExtensionFilter
-						.Split(delimiters, StringSplitOptions.None)
-						.ToArray();
-
-			// Trim all leading and trailing spaces in each element...
-			fefArray = fefArray.Select(fef => fef.Trim()).ToArray();
-
-			// Scan for duplicate filters with Linq Query...
-			fefArray = fefArray.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-
-			// Check for "*.*" filter. Discard all other filters since *.* rules...
-			if (ContainsFilterStarDotStar(fefArray))
-				fefArray = new string[] { "*.*" };
-
-			return new List<string>(fefArray);
-		} // END_METHOD
-
-
-		private static bool ContainsFilterStarDotStar(string[] fefArray)
-		{
-			return fefArray.Where(f => f.Equals("*.*")).DefaultIfEmpty("").First() == "*.*";
-		}
-
-
 		// Configuration Dialog...
 		private void LoadConfigurationDialog()
 		{
@@ -292,7 +272,7 @@ namespace Push
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
 		{
-			CopyFiles(sender, e);
+			new CopyFiles().CopyAction(this);
 		} // END_METHOD
 
 
@@ -363,7 +343,7 @@ namespace Push
 		private void DEBUG_LoadFolderTestData(string TestDataPath, string destinationPath)
 		{
 			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
+			fileExtensionList.AddRange(Helper.LoadFileExtensions(appSettings));
 
 			List<string> fileTestDataList = new List<string>();
 			foreach (string fileExtension in fileExtensionList)

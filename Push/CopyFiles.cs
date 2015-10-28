@@ -18,19 +18,20 @@ using System.Globalization;
 
 namespace Push
 {
-	public partial class MainForm
+	public class CopyFiles
 	{
-
 		// Copy Files from Source folder to Target folder...
-		private void CopyFiles(object sender, EventArgs e)
+		public Tuple<Helper.commandResult, int, int> CopyAction(MainForm mainForm)
 		{
-			ArrayList fileSourceArrayList = new ArrayList();
+			AppSettings appSettings = mainForm.appSettings;
 
-			// Init Controls...
-			lbStatus.Items.Clear();
+			ArrayList fileSourceArrayList = new ArrayList();
+			Helper.commandResult DuplicateAction;
+
+			Tuple<int, int> copyResult;
 
 			// File extension types...
-			List<string> FileExtensionArrayList = LoadFileExtensions(appSettings);
+			List<string> FileExtensionArrayList = Helper.LoadFileExtensions(appSettings);
 
 			#region [ BUILD LIST OF SOURCE FILES ]
 			// Build list of file to copy... 
@@ -50,6 +51,7 @@ namespace Push
 			// Build a list of files on the target folder...
 			string[] fileTargetStrArray = System.IO.Directory.GetFiles(appSettings.TargetPath);
 			int dupeFileCount = 0;
+
 			// OUTER LOOP -- Iterate over each file in the target list...
 			foreach (string t in fileTargetStrArray)
 			{
@@ -74,12 +76,10 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				//CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
-				Tuple<int> r = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
-				string status = string.Format("Copy={0} -- No Duplicates", r.Item1);
-				lbStatus.Items.Add(status);
-				lbStatus.Update();
-
+				// Save the Dupe Action. We need this for the statusing return value...
+				DuplicateAction = Helper.commandResult.Overwrite;				
+				
+				copyResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 			}
 			else
 			{
@@ -88,45 +88,36 @@ namespace Push
 					//---------------------------------------------------------
 					// If we get here, perform whatever Dupe File Action has been configured...
 
+					// Save the Dupe Action. We need this for the statusing return value...
+					DuplicateAction = (Helper.commandResult)Enum.Parse(typeof(Helper.commandResult), appSettings.DuplicateFileAction);
+
 					#region [ AUTO DUPE ACTION ]
-					switch ((commandResult)Enum.Parse(typeof(commandResult), appSettings.DuplicateFileAction))
+					switch (DuplicateAction)
 					{
 
-						case commandResult.Rename:
+						case Helper.commandResult.Rename:
 							{
-								Tuple<int, int> r = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
-								//...
-								string status = string.Format("Copy={0} & Renamed={1}", r.Item1, r.Item2);
-								lbStatus.Items.Add(status);
-								lbStatus.Update();
+								copyResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
-						case commandResult.Skip:
+						case Helper.commandResult.Skip:
 							{
-								Tuple<int, int> r = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
-								//...
-								string status = string.Format("Copy={0} & Skip={1}", r.Item1, r.Item2);
-								lbStatus.Items.Add(status);
-								lbStatus.Update();
+								copyResult = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
-						case commandResult.Cancel:
-							return;
+						case Helper.commandResult.Cancel:
+							{
+								copyResult = new Tuple<int, int>(0, 0);
+								break;
+							}
 
-						case commandResult.Overwrite:
+						case Helper.commandResult.Overwrite:
 						default:
 							{
-								Tuple<int> r = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
-								//Tuple<int> statusResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
-								//...
-								//string status = string.Format("Copy={0} & Overwrite={1}", statusResult.Item1, statusResult.Item2);
-								//lbStatus.Items.Add(status);
-								//lbStatus.Update();
-								string status = string.Format("Overwrite={1}", r.Item1);
-								lbStatus.Items.Add(status);
-								lbStatus.Update();
+								//Tuple<int> 
+								copyResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
 							} 
 
@@ -145,8 +136,7 @@ namespace Push
 
 					DialogResult res =
 							cTaskDialog.ShowTaskDialogBox(
-						//...((MainForm)sender),
-							this,
+							mainForm,
 							"Duplicate Files Found",
 							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
 							"What would you like to do?",
@@ -171,45 +161,40 @@ namespace Push
 						//		has been deselected. Save the currently selected 
 						//		action to settings...
 						appSettings.HideDupeMessage = cTaskDialog.VerificationChecked;
-						appSettings.DuplicateFileAction = Enum.GetName(typeof(commandResult), cTaskDialog.CommandButtonResult);
+						appSettings.DuplicateFileAction = Enum.GetName(typeof(Helper.commandResult), cTaskDialog.CommandButtonResult);
 					}
 
+
 					#region [ MANUAL DUPE ACTION ]
-					switch ((commandResult)cTaskDialog.CommandButtonResult)
+
+					// Fetch the Dupe Action. We need this for the statusing return value...
+					DuplicateAction = (Helper.commandResult)cTaskDialog.CommandButtonResult;
+
+					switch (DuplicateAction)
 					{
 
-						case commandResult.Rename:
+						case Helper.commandResult.Rename:
 							{
-								Tuple<int, int> r = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
-								//...
-								string status = string.Format("Copy={0} & Renamed={1}", r.Item1, r.Item2);
-								lbStatus.Items.Add(status);
-								lbStatus.Update();
+								copyResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
-						case commandResult.Skip:
+						case Helper.commandResult.Skip:
 							{
-								Tuple<int, int> r = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
-								//...
-								string status = string.Format("Copy={0} & Skip={1}", r.Item1, r.Item2);
-								lbStatus.Items.Add(status);
-								lbStatus.Update();
+								copyResult = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
-						case commandResult.Cancel:
-							return;
+						case Helper.commandResult.Cancel:
+							{
+								copyResult = new Tuple<int,int>(0,0);
+								break;
+							}
 
-						case commandResult.Overwrite:
+						case Helper.commandResult.Overwrite:
 						default:
 							{
-								Tuple<int> r = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
-								//Tuple<int> statusResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
-								//...
-								string status = string.Format("Overwrite={0}", r.Item1);
-								lbStatus.Items.Add(status);
-								lbStatus.Update();
+								copyResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
 							}
 
@@ -262,9 +247,7 @@ namespace Push
 			} // END_FOREACH_OUTER
 			#endregion
 
-			// Update Source & Target Listboxes...
-			LoadListView(lvSource, appSettings.SourcePath);
-			LoadListView(lvTarget, appSettings.TargetPath);
+			return new Tuple<Helper.commandResult, int, int>(DuplicateAction, copyResult.Item1, copyResult.Item2);
 		} // END_METHOD
 
 	} //END_CLASS

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 //---
-using System.Web.Script.Serialization;
 using System.Text.RegularExpressions;
 
 
@@ -112,7 +108,7 @@ namespace Push
 				return false;
 
 			// Parse the File Extension Filter string...
-			List<string> filterList = MainForm.LoadFileExtensions(appSettings);
+			List<string> filterList = Helper.LoadFileExtensions(appSettings);
 
 			#region [ DEBUG STRINGS_SAVE ]
 			//// BAD_FILTERS

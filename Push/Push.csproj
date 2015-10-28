@@ -61,9 +61,7 @@
     <Compile Include="ConfigFormValidation.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CopyFiles.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="CopyFiles.cs" />
     <Compile Include="CopyFilesOverwrite.cs" />
     <Compile Include="CopyFilesRename.cs" />
     <Compile Include="CopyFilesSkip.cs" />
