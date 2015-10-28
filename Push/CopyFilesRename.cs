@@ -1,24 +1,12 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
-using System.Runtime.InteropServices;
 //---
-using PSTaskDialog;
 using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
 //---
-using Itenso.Configuration;
-using System.Globalization;
 
 namespace Push
 {
-	//public partial class MainForm
 	public class CopyFilesRename
 	{
 		public static Tuple<int, int> RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, AppSettings appSettings)
@@ -33,8 +21,7 @@ namespace Push
 
 			string regExPattern = @"(?<Prefix>(\w*))\s*\((?<integer>\d*)\)";
 
-			// OUTER LOOP
-			// Interate over each file in the source folder...
+			// OUTER LOOP - Interate over each file in the source folder...
 			foreach (string s in fileSourceArrayList)
 			{
 				string sourceFileNamePrefix = Path.GetFileNameWithoutExtension(s);
@@ -47,8 +34,7 @@ namespace Push
 				 *		exists (renamed) that the highest rename number is found.  */
 				#endregion
 
-				// INNER LOOP
-				// Iterate over each file in the target folder...
+				// INNER LOOP - Iterate over each file in the target folder...
 				foreach (string t in fileTargetStrArray)
 				{
 					matchInteger = 0;
@@ -113,7 +99,6 @@ namespace Push
 				} // END_INNER_LOOP
 
 				#region [ COPY OR RENAME ]
-
 				if (okToRename)
 				{
 					// Copy/Rename the source file to the target folder...
@@ -123,11 +108,6 @@ namespace Push
 					File.Copy(s, destFileName, false);
 					//--
 					renameCount++;
-
-					//// Update UI...
-					//lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
-					//lbStatus.Update();
-
 				}
 				else
 				{
@@ -135,15 +115,9 @@ namespace Push
 					string sourcefileName = Path.GetFileName(s);
 					string destFileName = Path.Combine(targetPath, sourcefileName);
 					File.Copy(s, destFileName, false);
+					//--
 					copyCount++;
-
-					//// Update UI...
-					//lbStatus.Items.Add("Copying " + sourcefileName + " to " + destFileName);
-					//lbStatus.Update();
-
 				}// END_IF
-
-
 				#endregion
 
 				// Reset...

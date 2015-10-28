@@ -18,10 +18,9 @@ using System.Globalization;
 
 namespace Push
 {
-	public partial class MainForm
+	public class CopyFilesSkip
 	{
-		private Tuple<int, int> SkipDuplicates(ref ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
-		//...private void SkipDuplicates(ref ArrayList fileSourceArrayList, string[] fileTargetStrArray, string targetPath, string sourcePath)
+		public static Tuple<int, int> SkipDuplicates(ref ArrayList fileSourceArrayList, string[] fileTargetStrArray, AppSettings appSettings)
 		{
 			#region [ DESIGN POINT ]
 			/*  If a duplicate is SKIPPED, it should NOT be deleted from the source folder. 
@@ -29,8 +28,12 @@ namespace Push
 			 *  fileSourceArrayList */
 			#endregion
 
+			string targetPath = appSettings.TargetPath;
+			string sourcePath = appSettings.SourcePath;		
 			bool okToCopy = true;
 			ArrayList deleteSourceArrayList = new ArrayList();
+			int skipCount = 0;
+			int copyCount = 0;
 
 			foreach (string s in fileSourceArrayList)
 			{
@@ -60,14 +63,13 @@ namespace Push
 
 					File.Copy(s, destFileName, true);
 
-					// Update the lisst of files that should be deleted from the source folder...
-					//      Verify that 't' is the correct file name...
+					// Update the list of files that should be deleted from the source folder...
 					deleteSourceArrayList.Add(s);
 
-					//// Update UI...
-					//lbStatus.Items.Add("Copying " + s + " to " + destFileName);
-					//lbStatus.Update();
+					copyCount++;
 				}
+				else
+					skipCount++;
 
 				// Raise the okToCopy flag...
 				okToCopy = true;
@@ -76,7 +78,7 @@ namespace Push
 
 			fileSourceArrayList = deleteSourceArrayList;
 
-			return new Tuple<int, int>(33, 44);
+			return new Tuple<int, int>(copyCount, skipCount);
 
 		} // END_METHOD
 

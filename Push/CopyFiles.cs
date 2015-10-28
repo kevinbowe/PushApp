@@ -74,7 +74,12 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
+				//CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
+				Tuple<int> r = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+				string status = string.Format("Copy={0} -- No Duplicates", r.Item1);
+				lbStatus.Items.Add(status);
+				lbStatus.Update();
+
 			}
 			else
 			{
@@ -89,9 +94,9 @@ namespace Push
 
 						case commandResult.Rename:
 							{
-								Tuple<int, int> statusResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
+								Tuple<int, int> r = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								//...
-								string status = string.Format("Copy={0} & Renamed={1}", statusResult.Item1, statusResult.Item2);
+								string status = string.Format("Copy={0} & Renamed={1}", r.Item1, r.Item2);
 								lbStatus.Items.Add(status);
 								lbStatus.Update();
 								break;
@@ -99,22 +104,27 @@ namespace Push
 
 						case commandResult.Skip:
 							{
-								Tuple<int, int> statusResult = SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								Tuple<int, int> r = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
 								//...
-								string status = string.Format("Copy={0} & Skip={1}", statusResult.Item1, statusResult.Item2);
+								string status = string.Format("Copy={0} & Skip={1}", r.Item1, r.Item2);
 								lbStatus.Items.Add(status);
 								lbStatus.Update();
 								break;
 							}
+
 						case commandResult.Cancel:
 							return;
 
 						case commandResult.Overwrite:
 						default:
 							{
-								Tuple<int, int> statusResult = CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
+								Tuple<int> r = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+								//Tuple<int> statusResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
 								//...
-								string status = string.Format("Copy={0} & Overwrite={1}", statusResult.Item1, statusResult.Item2);
+								//string status = string.Format("Copy={0} & Overwrite={1}", statusResult.Item1, statusResult.Item2);
+								//lbStatus.Items.Add(status);
+								//lbStatus.Update();
+								string status = string.Format("Overwrite={1}", r.Item1);
 								lbStatus.Items.Add(status);
 								lbStatus.Update();
 								break;
@@ -170,9 +180,9 @@ namespace Push
 
 						case commandResult.Rename:
 							{
-								Tuple<int, int> statusResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
+								Tuple<int, int> r = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								//...
-								string status = string.Format("Copy={0} & Renamed={1}", statusResult.Item1, statusResult.Item2);
+								string status = string.Format("Copy={0} & Renamed={1}", r.Item1, r.Item2);
 								lbStatus.Items.Add(status);
 								lbStatus.Update();
 								break;
@@ -180,22 +190,24 @@ namespace Push
 
 						case commandResult.Skip:
 							{
-								Tuple<int, int> statusResult = SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings.TargetPath, appSettings.SourcePath);
+								Tuple<int, int> r = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
 								//...
-								string status = string.Format("Copy={0} & Skip={1}", statusResult.Item1, statusResult.Item2);
+								string status = string.Format("Copy={0} & Skip={1}", r.Item1, r.Item2);
 								lbStatus.Items.Add(status);
 								lbStatus.Update();
 								break;
 							}
+
 						case commandResult.Cancel:
 							return;
 
 						case commandResult.Overwrite:
 						default:
 							{
-								Tuple<int, int> statusResult = CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
+								Tuple<int> r = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+								//Tuple<int> statusResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings.TargetPath);
 								//...
-								string status = string.Format("Copy={0} & Overwrite={1}", statusResult.Item1, statusResult.Item2);
+								string status = string.Format("Overwrite={0}", r.Item1);
 								lbStatus.Items.Add(status);
 								lbStatus.Update();
 								break;

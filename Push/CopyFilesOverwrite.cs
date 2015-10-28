@@ -18,11 +18,16 @@ using System.Globalization;
 
 namespace Push
 {
-	public partial class MainForm
+	//public partial class MainForm
+	public class CopyFilesOverwrite
 	{
 		//private void 
-		private Tuple<int, int> CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
+		public static Tuple<int> CopyOverwrite(ArrayList fileSourceArrayList, AppSettings appSettings)
+		//private Tuple<int, int> CopyOverwrite(ArrayList fileSourceArrayList, string targetPath)
 		{
+			string targetPath = appSettings.TargetPath;
+			int copyCount = 0;
+
 			// Copy files...
 			foreach (string s in fileSourceArrayList)
 			{
@@ -34,9 +39,11 @@ namespace Push
 				//// Update UI...
 				//lbStatus.Items.Add("Copying " + srcfileName + " to " + destFileName);
 				//lbStatus.Update();
+
+				copyCount++;
 			}
 
-			return new Tuple<int, int>(5555, 6666);
+			return new Tuple<int>(copyCount);
 
 		} // END_METHOD
 
