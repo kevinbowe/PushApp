@@ -18,10 +18,10 @@ using System.Globalization;
 
 namespace Push
 {
-	public class CopyFiles
+	public class CopyFile
 	{
 		// Copy Files from Source folder to Target folder...
-		public Tuple<Helper.commandResult, int, int> CopyAction(MainForm mainForm)
+		public Tuple<Helper.commandResult, int, int> CopyFiles(MainForm mainForm)
 		{
 			AppSettings appSettings = mainForm.appSettings;
 
@@ -79,7 +79,7 @@ namespace Push
 				// Save the Dupe Action. We need this for the statusing return value...
 				DuplicateAction = Helper.commandResult.Overwrite;				
 				
-				copyResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+				copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 			}
 			else
 			{
@@ -97,13 +97,13 @@ namespace Push
 
 						case Helper.commandResult.Rename:
 							{
-								copyResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
+								copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
 						case Helper.commandResult.Skip:
 							{
-								copyResult = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
+								copyResult = CopyFileSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
@@ -117,7 +117,7 @@ namespace Push
 						default:
 							{
 								//Tuple<int> 
-								copyResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+								copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
 							} 
 
@@ -175,13 +175,13 @@ namespace Push
 
 						case Helper.commandResult.Rename:
 							{
-								copyResult = CopyFilesRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
+								copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
 						case Helper.commandResult.Skip:
 							{
-								copyResult = CopyFilesSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
+								copyResult = CopyFileSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 							}
 
@@ -194,7 +194,7 @@ namespace Push
 						case Helper.commandResult.Overwrite:
 						default:
 							{
-								copyResult = CopyFilesOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+								copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
 							}
 

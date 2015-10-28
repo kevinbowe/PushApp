@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Push
 {
-	public class CopyFilesSkip
+	public class CopyFileSkip
 	{
 		public static Tuple<int, int> SkipDuplicates(ref ArrayList fileSourceArrayList, string[] fileTargetStrArray, AppSettings appSettings)
 		{

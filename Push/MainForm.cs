@@ -141,7 +141,7 @@ namespace Push
 			// Init Controls...
 			lbStatus.Items.Clear();
 
-			Tuple<Helper.commandResult, int, int> r = new CopyFiles().CopyAction(this);
+			Tuple<Helper.commandResult, int, int> r = new CopyFile().CopyFiles(this);
 
 			string status = string.Empty;
 			switch (r.Item1)
@@ -272,7 +272,7 @@ namespace Push
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
 		{
-			new CopyFiles().CopyAction(this);
+			new CopyFile().CopyFiles(this);
 		} // END_METHOD
 
 

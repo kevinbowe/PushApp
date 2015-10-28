@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Push
 {
-	public class CopyFilesOverwrite
+	public class CopyFileOverwrite
 	{
 		public static Tuple<int,int> CopyOverwrite(ArrayList fileSourceArrayList, AppSettings appSettings)
 		{

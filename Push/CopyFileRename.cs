@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Push
 {
-	public class CopyFilesRename
+	public class CopyFileRename
 	{
 		public static Tuple<int, int> RenameDulpicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, AppSettings appSettings)
 		{
