@@ -15,10 +15,12 @@ namespace Push
 		Size savedMainFormSize;
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
-		private Size MinHideDetailSize = new Size(400, 161);
+		private Size MinHideDetailSize = new Size(275, 161);
+		//private Size MinHideDetailSize = new Size(400, 161);
 		
 		// The minimum window size so the source and target can not be hidden when resizing the window...
-		private Size MinShowDetailSize = new Size(764, 286);
+		private Size MinShowDetailSize = new Size(700, 286);
+		//private Size MinShowDetailSize = new Size(764, 286);
 
 
 		#region [ MainForm Constructor + Support ]
@@ -139,38 +141,54 @@ namespace Push
 		private void picBoxPush_Click(object sender, EventArgs e)
 		{
 			// Init Controls...
-			lbStatus.Items.Clear();
+			lblStatus1_1.Text = string.Empty;
+			lblStatus1_2.Text = string.Empty;
+			lblStatus2_2.Text = string.Empty;
 
-			Tuple<Helper.commandResult, int, int> r = new CopyFile().CopyFiles(this);
+			Tuple<Helper.commandResult, int, int> copyFileResult = new CopyFile().CopyFiles(this);
 
-			string status = string.Empty;
-			switch (r.Item1)
-			{
-				case Helper.commandResult.Cancel:
-					status = "Copy Canceled";
-					break;
-
-				case Helper.commandResult.Overwrite:
-					status = string.Format("Overwrite={0}", r.Item2);
-					break;
-
-				case Helper.commandResult.Rename: 
-					status = string.Format("Copy={0} & Renamed={1}", r.Item2, r.Item3);
-					break;
-
-				case Helper.commandResult.Skip: 
-					status = string.Format("Copy={0} & Skip={1}", r.Item2, r.Item3);
-					break;
-			}
+			UpdateStatus(copyFileResult);
 			
-			lbStatus.Items.Add(status);
-			lbStatus.Update();
-
 			// Update Source & Target Listboxes...
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);	
-		
-		
+		} // END_METHOD
+
+
+		private void UpdateStatus(Tuple<Helper.commandResult, int, int> copyFileResult)
+		{
+			List<string> statusList = new List<string>();
+			//---
+			switch (copyFileResult.Item1)
+			{
+				case Helper.commandResult.Cancel:
+					statusList.Add("Copy Canceled");
+					break;
+
+				case Helper.commandResult.Overwrite:
+					statusList.Add(string.Format("{0} Files Overwritten", copyFileResult.Item2));
+					break;
+
+				case Helper.commandResult.Rename:
+					statusList.Add(string.Format("{0} Files Copied", copyFileResult.Item2));
+					statusList.Add(string.Format("{0} Files Renamed", copyFileResult.Item3));
+					break;
+
+				case Helper.commandResult.Skip:
+					statusList.Add(string.Format("{0} Files Copied", copyFileResult.Item2));
+					statusList.Add(string.Format("{0} Files Skipped", copyFileResult.Item3));
+					break;
+			}
+
+			if (statusList.Count <= 1)
+			{
+				lblStatus1_1.Text = statusList[0];
+			}
+			else
+			{
+				lblStatus1_2.Text = statusList[0];
+				lblStatus2_2.Text = statusList[1];
+			}
 		} // END_METHOD
 
 
@@ -278,6 +296,10 @@ namespace Push
 
 		private void toolStripBtnRefresh_Click(object sender, EventArgs e)
 		{
+			lblStatus1_1.Text = string.Empty;
+			lblStatus1_2.Text = string.Empty;
+			lblStatus2_2.Text = string.Empty;
+			//--
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
@@ -304,12 +326,10 @@ namespace Push
 		} // END_METHOD
 
 
-		public ListBox StatusControl { get { return this.lbStatus; } set { this.lbStatus = value; } }
-
 		public ListView SourceControl { get { return this.lvSource; } set { this.lvSource = value; } }
 
-		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } }
 
+		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } }
 
 
 		private void DEBUG_MistyRose()
@@ -321,7 +341,6 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
@@ -374,7 +393,6 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
@@ -398,7 +416,6 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
@@ -415,7 +432,6 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
@@ -478,6 +494,10 @@ namespace Push
 			// Enter Ctrl+R // Refresh...
 			if (keyData == (Keys.Control | Keys.R))
 			{
+				lblStatus1_1.Text = string.Empty;
+				lblStatus1_2.Text = string.Empty;
+				lblStatus2_2.Text = string.Empty;
+				//--
 				LoadListView(lvSource, appSettings.SourcePath);
 				LoadListView(lvTarget, appSettings.TargetPath);
 				return true;
