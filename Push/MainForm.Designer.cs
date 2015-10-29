@@ -101,7 +101,7 @@
 			this.splitContainerDetails.Panel2.Controls.Add(this.lblTarget);
 			this.splitContainerDetails.Panel2.Controls.Add(this.lvTarget);
 			this.splitContainerDetails.Size = new System.Drawing.Size(675, 118);
-			this.splitContainerDetails.SplitterDistance = 250;
+			this.splitContainerDetails.SplitterDistance = 249;
 			this.splitContainerDetails.SplitterWidth = 5;
 			this.splitContainerDetails.TabIndex = 0;
 			// 
@@ -142,7 +142,7 @@
 			this.lvSource.Location = new System.Drawing.Point(0, 30);
 			this.lvSource.Margin = new System.Windows.Forms.Padding(4);
 			this.lvSource.Name = "lvSource";
-			this.lvSource.Size = new System.Drawing.Size(249, 88);
+			this.lvSource.Size = new System.Drawing.Size(248, 88);
 			this.lvSource.TabIndex = 7;
 			this.lvSource.UseCompatibleStateImageBehavior = false;
 			this.lvSource.View = System.Windows.Forms.View.Details;
@@ -266,7 +266,7 @@
 			this.toolStripBtnPush.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripBtnPush.Name = "toolStripBtnPush";
 			this.toolStripBtnPush.Size = new System.Drawing.Size(23, 22);
-			this.toolStripBtnPush.Text = "toolStripButton4";
+			this.toolStripBtnPush.Text = "Push";
 			this.toolStripBtnPush.Click += new System.EventHandler(this.toolStripBtnPush_Click);
 			// 
 			// toolStripBtnRefresh
@@ -276,7 +276,7 @@
 			this.toolStripBtnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripBtnRefresh.Name = "toolStripBtnRefresh";
 			this.toolStripBtnRefresh.Size = new System.Drawing.Size(23, 22);
-			this.toolStripBtnRefresh.Text = "toolStripButton5";
+			this.toolStripBtnRefresh.Text = "Refresh";
 			this.toolStripBtnRefresh.Click += new System.EventHandler(this.toolStripBtnRefresh_Click);
 			// 
 			// tooStripBtnConfig
@@ -286,7 +286,7 @@
 			this.tooStripBtnConfig.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tooStripBtnConfig.Name = "tooStripBtnConfig";
 			this.tooStripBtnConfig.Size = new System.Drawing.Size(23, 22);
-			this.tooStripBtnConfig.Text = "toolStripButton6";
+			this.tooStripBtnConfig.Text = "Configuration";
 			this.tooStripBtnConfig.Click += new System.EventHandler(this.tooStripBtnConfig_Click);
 			// 
 			// toolStrip
