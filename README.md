@@ -20,28 +20,3 @@ EDIT WORKSTATION
 The edit workstation is a Win 7/10 PC.  A second Ethernet card provides a link to the scanning workstation.  This P2P network is in a different domain so the scanning workstation is protected.
 
 Comments:  This is un-factored code.  There are many duplicate blocks of code that will be refactored before release.  There are many constant values related to configuration that will be removed.  This code has not been heavy tested but does work properly in XP.  This code is available to review and comment.  This code is not ready for release.
-
--------------------------------------------------------------------------------
-FEATURE BRANCH - Redesign MainForm Status UI
-The user should be able to look at the Main Form and quickly determin the current configuration and processing status of the application.  This ability should be available when the details are visible or hidden. The user should be able to detirmin these configuration characteristics. The user should be able to determin these processing statuses.
-
-USER STORY
-The current MainForm UI has static text labeling the Source Folder and Taarget Folder.
---
-As a user, I want to be able to look at the MainForm and see the actual Source and Target Folder Path.
-
-USER STORY
-The current MainForm UI does not display the current File Extension Filter.
---
-As a user, I want to see the current File Extension Filter.
-
-USER STORY
-The current Status List box displays each file processing status.  The status List Box has a scroll bar.
---
-As a user, I want to see a summary of the processing.  Individual files are not helpful because there are too many files to look at.  I want to know these things:
-1) Number of files Copied/Moved
-2) Number of files Skipped
-3) Number of Files Renamed
-4) Cleanup completed
-5) Processing Success
-6) Processing Canceled
