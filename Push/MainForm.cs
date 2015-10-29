@@ -60,8 +60,11 @@ namespace Push
 				configFormDialog.Text = "Push Application Setup";
 
 				if (configFormDialog.ShowDialog(this) == DialogResult.Cancel)
+				{
 					// If we get here, exit the application imeadiatly...
 					this.Close();
+					return;
+				}
 
 				// Copy settings...
 				appSettings = configFormDialog.appSettings;
