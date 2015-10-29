@@ -6,7 +6,7 @@ namespace Push
 {
 	public class CopyFileSkip
 	{
-		public static Tuple<int, int> SkipDuplicates(ref ArrayList fileSourceArrayList, string[] fileTargetStrArray, AppSettings appSettings)
+		public static Tuple<int, int> SkipDuplicates(ArrayList fileSourceArrayList, string[] fileTargetStrArray, AppSettings appSettings)
 		{
 			#region [ DESIGN POINT ]
 			/*  If a duplicate is SKIPPED, it should NOT be deleted from the source folder. 
@@ -36,7 +36,6 @@ namespace Push
 
 						okToCopy = false;
 						break; // Exit Inner loop...
-
 					} // END_IF
 
 				} // END_FOREACH_INNER
@@ -46,12 +45,10 @@ namespace Push
 					// Copy the source file to the target folder...
 					string sourcefileName = Path.GetFileName(s);
 					string destFileName = Path.Combine(targetPath, sourcefileName);
-
+					//---
 					File.Copy(s, destFileName, true);
-
-					// Update the list of files that should be deleted from the source folder...
-					deleteSourceArrayList.Add(s);
-
+					File.Delete(s);
+					//---
 					copyCount++;
 				}
 				else
@@ -62,10 +59,7 @@ namespace Push
 
 			} // END_FOREACH_OUTER
 
-			fileSourceArrayList = deleteSourceArrayList;
-
 			return new Tuple<int, int>(copyCount, skipCount);
-
 		} // END_METHOD
 
 	}

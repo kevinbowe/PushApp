@@ -96,30 +96,21 @@ namespace Push
 					{
 
 						case Helper.commandResult.Rename:
-							{
-								copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
+							copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
-							}
 
 						case Helper.commandResult.Skip:
-							{
-								copyResult = CopyFileSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
+								copyResult = CopyFileSkip.SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
-							}
 
 						case Helper.commandResult.Cancel:
-							{
-								copyResult = new Tuple<int, int>(0, 0);
-								break;
-							}
+								return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
 
 						case Helper.commandResult.Overwrite:
 						default:
-							{
 								//Tuple<int> 
 								copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
-							} 
 
 					} // END SWITCH
 				#endregion		
@@ -174,29 +165,20 @@ namespace Push
 					{
 
 						case Helper.commandResult.Rename:
-							{
 								copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
-							}
 
 						case Helper.commandResult.Skip:
-							{
-								copyResult = CopyFileSkip.SkipDuplicates(ref fileSourceArrayList, fileTargetStrArray, appSettings);
+								copyResult = CopyFileSkip.SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
-							}
 
 						case Helper.commandResult.Cancel:
-							{
-								copyResult = new Tuple<int,int>(0,0);
-								break;
-							}
+								return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
 
 						case Helper.commandResult.Overwrite:
 						default:
-							{
 								copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
-							}
 
 					} // END SWITCH
 					#endregion
@@ -204,48 +186,6 @@ namespace Push
 				} // END_IF_ELSE HideDupeMessage
 
 			} // END_IF_ELSE DupeFileCount
-
-			/*----------------------------------------------------------------- 
-			 * If we get here, all of the files have been copied from the source folder to 
-			 * the target folder.
-			 * 
-			 * Now verify and remove each file has been copied.
-			 *----------------------------------------------------------------*/
-
-			// Rebuild the Target file list with the new files that have been copied...
-			fileTargetStrArray = System.IO.Directory.GetFiles(appSettings.TargetPath);
-
-			#region [ DELETE COPIED FILES ]
-			// OUTER LOOP -- Iterate over each file in the target list...
-			foreach (string t in fileTargetStrArray)
-			{
-				FileInfo targetFileInfo = new FileInfo(t);
-
-				// INNER_LOOP -- Iterate over each file in the source list...
-				foreach (string s in fileSourceArrayList)
-				{
-					FileInfo sourceFileInfo = new FileInfo(s);
-
-					// Compare the fileName.ext (ignore the path)...
-					if (!targetFileInfo.Name.Equals(sourceFileInfo.Name, StringComparison.Ordinal))
-						continue;
-
-					// Compare size and create date...
-					// TODO: Try using CRC Checksum later...
-					if (sourceFileInfo.Length != targetFileInfo.Length)
-						break;
-
-					//---------------------------------------------------------
-					// If we get here, the files match...
-
-					// Delete the source file...
-					File.Delete(s);
-
-					break; // Exit innter loop...
-
-				} // END_FOREACH_INNER
-			} // END_FOREACH_OUTER
-			#endregion
 
 			return new Tuple<Helper.commandResult, int, int>(DuplicateAction, copyResult.Item1, copyResult.Item2);
 		} // END_METHOD
