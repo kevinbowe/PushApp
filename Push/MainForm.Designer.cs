@@ -76,10 +76,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.pnlDetails.Controls.Add(this.splitContainerDetails);
-			this.pnlDetails.Location = new System.Drawing.Point(21, 171);
+			this.pnlDetails.Location = new System.Drawing.Point(21, 177);
 			this.pnlDetails.Margin = new System.Windows.Forms.Padding(4);
 			this.pnlDetails.Name = "pnlDetails";
-			this.pnlDetails.Size = new System.Drawing.Size(675, 118);
+			this.pnlDetails.Size = new System.Drawing.Size(675, 125);
 			this.pnlDetails.TabIndex = 16;
 			// 
 			// splitContainerDetails
@@ -100,7 +100,7 @@
 			this.splitContainerDetails.Panel2.Controls.Add(this.lblTargetPath);
 			this.splitContainerDetails.Panel2.Controls.Add(this.lblTarget);
 			this.splitContainerDetails.Panel2.Controls.Add(this.lvTarget);
-			this.splitContainerDetails.Size = new System.Drawing.Size(675, 118);
+			this.splitContainerDetails.Size = new System.Drawing.Size(675, 125);
 			this.splitContainerDetails.SplitterDistance = 249;
 			this.splitContainerDetails.SplitterWidth = 5;
 			this.splitContainerDetails.TabIndex = 0;
@@ -142,7 +142,7 @@
 			this.lvSource.Location = new System.Drawing.Point(0, 30);
 			this.lvSource.Margin = new System.Windows.Forms.Padding(4);
 			this.lvSource.Name = "lvSource";
-			this.lvSource.Size = new System.Drawing.Size(248, 88);
+			this.lvSource.Size = new System.Drawing.Size(248, 95);
 			this.lvSource.TabIndex = 7;
 			this.lvSource.UseCompatibleStateImageBehavior = false;
 			this.lvSource.View = System.Windows.Forms.View.Details;
@@ -202,7 +202,7 @@
 			this.lvTarget.Location = new System.Drawing.Point(0, 30);
 			this.lvTarget.Margin = new System.Windows.Forms.Padding(4);
 			this.lvTarget.Name = "lvTarget";
-			this.lvTarget.Size = new System.Drawing.Size(417, 88);
+			this.lvTarget.Size = new System.Drawing.Size(416, 95);
 			this.lvTarget.TabIndex = 8;
 			this.lvTarget.UseCompatibleStateImageBehavior = false;
 			this.lvTarget.View = System.Windows.Forms.View.Details;
@@ -304,7 +304,7 @@
 			// lblFileFilter
 			// 
 			this.lblFileFilter.AutoSize = true;
-			this.lblFileFilter.Location = new System.Drawing.Point(237, 151);
+			this.lblFileFilter.Location = new System.Drawing.Point(237, 158);
 			this.lblFileFilter.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblFileFilter.Name = "lblFileFilter";
 			this.lblFileFilter.Size = new System.Drawing.Size(69, 17);
@@ -317,7 +317,7 @@
 			this.lblFileExtensionFilterString.BackColor = System.Drawing.SystemColors.Control;
 			this.lblFileExtensionFilterString.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblFileExtensionFilterString.ForeColor = System.Drawing.Color.RoyalBlue;
-			this.lblFileExtensionFilterString.Location = new System.Drawing.Point(305, 151);
+			this.lblFileExtensionFilterString.Location = new System.Drawing.Point(305, 158);
 			this.lblFileExtensionFilterString.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblFileExtensionFilterString.Name = "lblFileExtensionFilterString";
 			this.lblFileExtensionFilterString.Size = new System.Drawing.Size(184, 17);
@@ -327,7 +327,7 @@
 			// lblDuplicateFileAction
 			// 
 			this.lblDuplicateFileAction.AutoSize = true;
-			this.lblDuplicateFileAction.Location = new System.Drawing.Point(28, 151);
+			this.lblDuplicateFileAction.Location = new System.Drawing.Point(28, 158);
 			this.lblDuplicateFileAction.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblDuplicateFileAction.Name = "lblDuplicateFileAction";
 			this.lblDuplicateFileAction.Size = new System.Drawing.Size(89, 17);
@@ -339,7 +339,7 @@
 			this.lblDupeFileActionText.AutoSize = true;
 			this.lblDupeFileActionText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblDupeFileActionText.ForeColor = System.Drawing.Color.RoyalBlue;
-			this.lblDupeFileActionText.Location = new System.Drawing.Point(120, 151);
+			this.lblDupeFileActionText.Location = new System.Drawing.Point(120, 158);
 			this.lblDupeFileActionText.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblDupeFileActionText.Name = "lblDupeFileActionText";
 			this.lblDupeFileActionText.Size = new System.Drawing.Size(84, 17);
@@ -380,7 +380,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(715, 304);
+			this.ClientSize = new System.Drawing.Size(715, 321);
 			this.Controls.Add(this.lblStatus2_2);
 			this.Controls.Add(this.lblStatus1_2);
 			this.Controls.Add(this.lblStatus1_1);
