@@ -293,7 +293,7 @@ namespace Push
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
 		{
-			new CopyFile().CopyFiles(this);
+			picBoxPush_Click(sender, e);
 		} // END_METHOD
 
 
@@ -321,13 +321,6 @@ namespace Push
 
 
 		#region [ DEBUG BUTTONS ]
-
-		// DEBUG Button - MistyRose -- Reset source and target data...
-		private void btnDebug2_Click(object sender, EventArgs e)
-		{
-			DEBUG_MistyRose();
-		} // END_METHOD
-
 
 		public ListView SourceControl { get { return this.lvSource; } set { this.lvSource = value; } }
 
@@ -379,13 +372,6 @@ namespace Push
 			}
 		} // END_METHOD
 
-		
-		// DEBUG Button - Pale Green -- Reset source and target data...
-		private void btnDebug4_Click(object sender, EventArgs e)
-		{
-			DEBUG_PaleGreen();
-		} // END_METHOD
-
 
 		private void DEBUG_PaleGreen()
 		{
@@ -400,13 +386,6 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
-		} // END_METHOD
-
-
-		// DEBUG Button - Powder Blue -- Reset source and target data...
-		private void btnDebug5_Click(object sender, EventArgs e)
-		{
-			DEBUG_PowderBlue();
 		} // END_METHOD
 
 
@@ -440,8 +419,6 @@ namespace Push
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
-
-
 
 		#endregion		
 
