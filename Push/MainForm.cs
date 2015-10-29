@@ -1,37 +1,31 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Runtime.InteropServices;
-//---
-using PSTaskDialog;
-using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
 //---
 using Itenso.Configuration;
-using System.Globalization;
 
 namespace Push
 {
 	public partial class MainForm : Form
 	{
 		private readonly FormSettings formSettings;
-		enum commandResult { Overwrite, Rename, Skip, Cancel };
 		public AppSettings appSettings;
 		Size savedMainFormSize;
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
-		private Size MinHideDetailSize = new Size(400, 161);
+		private Size MinHideDetailSize = new Size(275, 161);
+		//private Size MinHideDetailSize = new Size(400, 161);
 		
 		// The minimum window size so the source and target can not be hidden when resizing the window...
-		private Size MinShowDetailSize = new Size(764, 286);
+		private Size MinShowDetailSize = new Size(700, 286);
+		//private Size MinShowDetailSize = new Size(764, 286);
 
 
+		#region [ MainForm Constructor + Support ]
+
+		// Main Form Ctor...
 		public MainForm(AppSettings appSettings)
 		{
 			InitializeComponent();
@@ -46,13 +40,12 @@ namespace Push
 
 			// Copy the appSettings argument into this forms appSettings property...
 			this.appSettings = appSettings;
-			
+
 			// Set the default form properties and then update them with the last used properties...
 			InitControls();
 		} // END_CTOR
 
 
-		//	TODO: Re-factor... Necessary?
 		private void InitControls()
 		{
 
@@ -81,10 +74,28 @@ namespace Push
 		} // END_METHOD
 
 
-		// TODO: Re-factor... Or Delete... Necessary?
 		private void UpdateControls()
 		{
-			// Update the controls to the last used settings...
+			lblSourcePath.Text = appSettings.SourcePath.ToUpperInvariant();
+			lblTargetPath.Text = appSettings.TargetPath.ToUpperInvariant();
+			lblFileExtensionFilterString.Text = appSettings.FileExtensionFilter.ToUpperInvariant();
+			lblDupeFileActionText.Text = GetDuplicateFileAction();
+			ttDetails.ToolTipTitle = "Details";
+			ttDetails.ToolTipIcon = ToolTipIcon.Info;
+			ttDetails.IsBalloon = true;
+
+			string ttDetailsText = string.Format(
+					"Source Folder = {0}\n" +
+					"Target Folder = {1}\n" +
+					"FileFilter = {2}\n" +
+					"Duplicate File Action = {3}",
+					appSettings.SourcePath.ToUpperInvariant(),
+					appSettings.TargetPath.ToUpperInvariant(),
+					appSettings.FileExtensionFilter.ToUpperInvariant(),
+					GetDuplicateFileAction()
+					);
+			ttDetails.SetToolTip(lblShowHide, ttDetailsText);
+
 
 			if (appSettings.ShowDetails.GetValueOrDefault(true))
 			{
@@ -105,8 +116,16 @@ namespace Push
 			}
 		} // END_METHOD
 
+
+		private string GetDuplicateFileAction()
+		{
+			return !(bool)appSettings.HideDupeMessage ? "MANUAL" : appSettings.DuplicateFileAction.ToUpperInvariant();
+		} // END_METHOD
+
+		#endregion
 	
-		// Load data...
+
+		// Load MainForm Data...
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			// Disable the Maximize control on the form...
@@ -115,6 +134,61 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
+		
+		// Push Button...
+		private void picBoxPush_Click(object sender, EventArgs e)
+		{
+			// Init Controls...
+			lblStatus1_1.Text = string.Empty;
+			lblStatus1_2.Text = string.Empty;
+			lblStatus2_2.Text = string.Empty;
+
+			Tuple<Helper.commandResult, int, int> copyFileResult = new CopyFile().CopyFiles(this);
+
+			UpdateStatus(copyFileResult);
+			
+			// Update Source & Target Listboxes...
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);	
+		} // END_METHOD
+
+
+		private void UpdateStatus(Tuple<Helper.commandResult, int, int> copyFileResult)
+		{
+			List<string> statusList = new List<string>();
+			//---
+			switch (copyFileResult.Item1)
+			{
+				case Helper.commandResult.Cancel:
+					statusList.Add("Copy Canceled");
+					break;
+
+				case Helper.commandResult.Overwrite:
+					statusList.Add(string.Format("{0} Files Overwritten", copyFileResult.Item2));
+					break;
+
+				case Helper.commandResult.Rename:
+					statusList.Add(string.Format("{0} Files Copied", copyFileResult.Item2));
+					statusList.Add(string.Format("{0} Files Renamed", copyFileResult.Item3));
+					break;
+
+				case Helper.commandResult.Skip:
+					statusList.Add(string.Format("{0} Files Copied", copyFileResult.Item2));
+					statusList.Add(string.Format("{0} Files Skipped", copyFileResult.Item3));
+					break;
+			}
+
+			if (statusList.Count <= 1)
+			{
+				lblStatus1_1.Text = statusList[0];
+			}
+			else
+			{
+				lblStatus1_2.Text = statusList[0];
+				lblStatus2_2.Text = statusList[1];
+			}
 		} // END_METHOD
 
 
@@ -165,7 +239,7 @@ namespace Push
 			DestinationListView.Items.Clear();
 
 			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
+			fileExtensionList.AddRange(Helper.LoadFileExtensions(appSettings));
 
 			List<string> fileSourceArrayList = new List<string>();
 			foreach (string FileExtension in fileExtensionList)
@@ -192,44 +266,23 @@ namespace Push
 		} // END_METHOD
 
 
-		public static List<string> LoadFileExtensions(AppSettings appSettings)
-		{
-			string[] delimiters = new string[] { ";", "|", ":" };
-			string[] fefArray = appSettings.FileExtensionFilter.Split(delimiters, StringSplitOptions.None);
-			
-			// Scan array and strip any leading or trailing spaces...
-			int length = fefArray.Length;
-			for(int i = 0; i < length; i++)
-			{
-				fefArray[i] = fefArray[i].Trim();
-			}
-
-			return new List<string>(fefArray);
-		} // END_METHOD
-
-
-		private void picBoxPush_Click(object sender, EventArgs e)
-		{
-			CopyFiles(sender, e);
-		} // END_METHOD
-
-
+		// Configuration Dialog...
 		private void LoadConfigurationDialog()
 		{
 			string s = string.Empty;
-			ConfigForm dlg = new ConfigForm();
+			ConfigForm configDialog = new ConfigForm();
 
 			// Copy the current settings into the Configuration form...
-			dlg.appSettings = appSettings;
-			dlg.StartPosition = FormStartPosition.CenterParent;
+			configDialog.appSettings = appSettings;
+			configDialog.StartPosition = FormStartPosition.CenterParent;
 			
-			if (dlg.ShowDialog(this) == DialogResult.OK) s = "OK";
+			if (configDialog.ShowDialog(this) == DialogResult.OK) s = "OK";
 			else s = "Cancel";
 
 			// Copy settings...
-			appSettings = dlg.appSettings;
+			appSettings = configDialog.appSettings;
 
-			dlg.Dispose();
+			configDialog.Dispose();
 		} // END_METHOD
 
 
@@ -237,12 +290,16 @@ namespace Push
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
 		{
-			CopyFiles(sender, e);
+			new CopyFile().CopyFiles(this);
 		} // END_METHOD
 
 
 		private void toolStripBtnRefresh_Click(object sender, EventArgs e)
 		{
+			lblStatus1_1.Text = string.Empty;
+			lblStatus1_2.Text = string.Empty;
+			lblStatus2_2.Text = string.Empty;
+			//--
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
@@ -251,6 +308,10 @@ namespace Push
 		private void tooStripBtnConfig_Click(object sender, EventArgs e)
 		{
 			LoadConfigurationDialog();
+
+			// Update the MainForm controls...
+			UpdateControls();
+
 		} // END_METHOD
 
 		#endregion
@@ -265,12 +326,10 @@ namespace Push
 		} // END_METHOD
 
 
-		public ListBox StatusControl { get { return this.lbStatus; } set { this.lbStatus = value; } }
-
 		public ListView SourceControl { get { return this.lvSource; } set { this.lvSource = value; } }
 
-		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } }
 
+		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } }
 
 
 		private void DEBUG_MistyRose()
@@ -282,7 +341,6 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
@@ -304,7 +362,7 @@ namespace Push
 		private void DEBUG_LoadFolderTestData(string TestDataPath, string destinationPath)
 		{
 			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(LoadFileExtensions(appSettings));
+			fileExtensionList.AddRange(Helper.LoadFileExtensions(appSettings));
 
 			List<string> fileTestDataList = new List<string>();
 			foreach (string fileExtension in fileExtensionList)
@@ -335,7 +393,6 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
@@ -359,13 +416,30 @@ namespace Push
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
-			lbStatus.Items.Clear();
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
-		
+
+
+		private void DEBUG_Pink()
+		{
+			DEBUG_InitFolders();
+
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_3\Source", appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_3\Target", appSettings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
+
+
 		#endregion		
 
 
@@ -395,6 +469,13 @@ namespace Push
 					case (Keys.LButton | Keys.RButton | Keys.ShiftKey | Keys.Space):
 						DEBUG_PowderBlue();
 						break;
+
+					// ENTER (FOUR)
+					case (Keys.MButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_Pink();
+						break;
+
+
 					default:
 						break;
 				} // END_SWITCH
@@ -413,6 +494,10 @@ namespace Push
 			// Enter Ctrl+R // Refresh...
 			if (keyData == (Keys.Control | Keys.R))
 			{
+				lblStatus1_1.Text = string.Empty;
+				lblStatus1_2.Text = string.Empty;
+				lblStatus2_2.Text = string.Empty;
+				//--
 				LoadListView(lvSource, appSettings.SourcePath);
 				LoadListView(lvTarget, appSettings.TargetPath);
 				return true;

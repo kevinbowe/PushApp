@@ -1,12 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Push
 {
 	public static class Helper
 	{
+
+		public enum commandResult { Overwrite, Rename, Skip, Cancel };
+
+
+		public static bool ContainsFilterStarDotStar(string[] fefArray)
+		{
+			return fefArray.Where(f => f.Equals("*.*")).DefaultIfEmpty("").First() == "*.*";
+		}
+
+
+		// File Extensions...
+		public static List<string> LoadFileExtensions(AppSettings appSettings)
+		{
+			/* NOTE:	
+			 * The FOUR Linq queries below could be componded into one large query
+			 * but it would make the code harder to read and debug.
+			 * Performance is not dramatically affected.  */
+
+			string[] delimiters = new string[] { ";", "|", ":" };
+
+			// Split the FileExtensionFilter string into an array of strings.
+			string[] fefArray = appSettings.FileExtensionFilter
+						.Split(delimiters, StringSplitOptions.None)
+						.ToArray();
+
+			// Trim all leading and trailing spaces in each element...
+			fefArray = fefArray.Select(fef => fef.Trim()).ToArray();
+
+			// Scan for duplicate filters with Linq Query...
+			fefArray = fefArray.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+
+			// Check for "*.*" filter. Discard all other filters since *.* rules...
+			if (ContainsFilterStarDotStar(fefArray))
+				fefArray = new string[] { "*.*" };
+
+			return new List<string>(fefArray);
+		} // END_METHOD
+
 
 		public static bool IsAppSettingsEmptyOrNull(AppSettings setting)
 		{
