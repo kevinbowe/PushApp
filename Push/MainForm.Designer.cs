@@ -60,6 +60,8 @@
 			this.lblStatus1_1 = new System.Windows.Forms.Label();
 			this.lblStatus1_2 = new System.Windows.Forms.Label();
 			this.lblStatus2_2 = new System.Windows.Forms.Label();
+			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+			this.lblProgress = new System.Windows.Forms.Label();
 			this.pnlDetails.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerDetails)).BeginInit();
 			this.splitContainerDetails.Panel1.SuspendLayout();
@@ -202,7 +204,7 @@
 			this.lvTarget.Location = new System.Drawing.Point(0, 30);
 			this.lvTarget.Margin = new System.Windows.Forms.Padding(4);
 			this.lvTarget.Name = "lvTarget";
-			this.lvTarget.Size = new System.Drawing.Size(416, 95);
+			this.lvTarget.Size = new System.Drawing.Size(414, 95);
 			this.lvTarget.TabIndex = 8;
 			this.lvTarget.UseCompatibleStateImageBehavior = false;
 			this.lvTarget.View = System.Windows.Forms.View.Details;
@@ -376,11 +378,23 @@
 			this.lblStatus2_2.Size = new System.Drawing.Size(0, 25);
 			this.lblStatus2_2.TabIndex = 29;
 			// 
+			// lblProgress
+			// 
+			this.lblProgress.AutoSize = true;
+			this.lblProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblProgress.ForeColor = System.Drawing.Color.Red;
+			this.lblProgress.Location = new System.Drawing.Point(470, 65);
+			this.lblProgress.Name = "lblProgress";
+			this.lblProgress.Size = new System.Drawing.Size(98, 25);
+			this.lblProgress.TabIndex = 30;
+			this.lblProgress.Text = "Progress";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(715, 321);
+			this.Controls.Add(this.lblProgress);
 			this.Controls.Add(this.lblStatus2_2);
 			this.Controls.Add(this.lblStatus1_2);
 			this.Controls.Add(this.lblStatus1_1);
@@ -447,6 +461,8 @@
 		private System.Windows.Forms.Label lblStatus1_1;
 		private System.Windows.Forms.Label lblStatus1_2;
 		private System.Windows.Forms.Label lblStatus2_2;
+		private System.ComponentModel.BackgroundWorker backgroundWorker1;
+		private System.Windows.Forms.Label lblProgress;
     }
 }
 

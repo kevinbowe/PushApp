@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 //---
 using Itenso.Configuration;
+using System.ComponentModel;
 
 namespace Push
 {
@@ -13,11 +14,20 @@ namespace Push
 		private readonly FormSettings formSettings;
 		public AppSettings appSettings;
 		Size savedMainFormSize;
+		//BackgroundWorker bgWorker;
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
 		private Size MinHideDetailSize = new Size(275, 161);
 		private Size MinShowDetailSize = new Size(700, 286);
 
+
+		public void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e)
+		{
+			Console.WriteLine();
+			string progress = e.ProgressPercentage.ToString() + "%";
+			lblProgress.Text = e.ProgressPercentage.ToString() + "%";
+
+		}
 
 		#region [ MainForm Constructor + Support ]
 
@@ -39,7 +49,34 @@ namespace Push
 
 			// Set the default form properties and then update them with the last used properties...
 			InitControls();
+
+			//// 
+			//bgWorker = new BackgroundWorker();
+			//bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandler);
+			//bgWorker.ProgressChanged += new ProgressChangedEventHandler(bgProgressChangedEventHandler);
+			//bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgRunWorkerCompletedEventHandler);
+			//bgWorker.WorkerReportsProgress = true;
+			//bgWorker.WorkerSupportsCancellation = true;
+
+
 		} // END_CTOR
+
+		//void bgDoWorkEventHandler(object sender, DoWorkEventArgs e) 
+		//{
+		//	Tuple<Helper.commandResult, int, int> copyFileResult = new CopyFile().CopyFiles(this);
+
+		//	UpdateStatus(copyFileResult);
+
+		//	// Update Source & Target Listboxes...
+		//	LoadListView(lvSource, appSettings.SourcePath);
+		//	LoadListView(lvTarget, appSettings.TargetPath);
+
+		//	Console.WriteLine(); 
+		//}
+
+		//void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e) { Console.WriteLine(); }
+
+		//void bgRunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e) { Console.WriteLine(); }
 
 
 		private void InitControls()
@@ -143,11 +180,15 @@ namespace Push
 			lblStatus1_1.Text = string.Empty;
 			lblStatus1_2.Text = string.Empty;
 			lblStatus2_2.Text = string.Empty;
+			
+			
+			// __DEBUG_CODE__
+			//bgWorker.RunWorkerAsync();
 
 			Tuple<Helper.commandResult, int, int> copyFileResult = new CopyFile().CopyFiles(this);
 
 			UpdateStatus(copyFileResult);
-			
+
 			// Update Source & Target Listboxes...
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);	
@@ -285,6 +326,10 @@ namespace Push
 		} // END_METHOD
 
 
+
+
+
+
 		#region [ TOOL STRIP ]
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
@@ -323,12 +368,16 @@ namespace Push
 
 		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } }
 
-
+		// Hot-Key ONE
 		private void DEBUG_MistyRose()
 		{
-			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
-			string TargetTestData = @"C:\DEV_TESTDATA\TargetPictures";
+			//string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
+			//string TargetTestData = @"C:\DEV_TESTDATA\TargetPictures";
+			string SourceTestData = @"C:\DEV_TESTDATA_0\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_0\Target";
 		
+
+
 			if (DEBUG_InitFolders())
 				return;
 
@@ -389,6 +438,7 @@ namespace Push
 		} // END_METHOD
 
 
+		// Hot-Key TWO...
 		private void DEBUG_PaleGreen()
 		{
 			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
@@ -418,6 +468,7 @@ namespace Push
 		} // END_METHOD
 
 
+		// Hot-Key THREE...
 		private void DEBUG_PowderBlue()
 		{
 			//DEBUG_InitFolders();
@@ -448,6 +499,7 @@ namespace Push
 		} // END_METHOD
 
 
+		// Hot-Key FOUR...
 		private void DEBUG_Pink()
 		{
 			string SourceTestData = @"C:\DEV_TESTDATA_3\Source";

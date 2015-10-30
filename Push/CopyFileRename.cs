@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 //---
 using System.Text.RegularExpressions;
+using System.Threading;
 
 
 namespace Push
@@ -124,6 +125,9 @@ namespace Push
 					copyCount++;
 				}// END_IF
 				#endregion
+
+				// __DEBUG_CODE__
+				Thread.Sleep(100);
 
 				// Reset...
 				okToRename = false;
