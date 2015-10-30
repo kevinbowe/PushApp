@@ -60,8 +60,11 @@ namespace Push
 				configFormDialog.Text = "Push Application Setup";
 
 				if (configFormDialog.ShowDialog(this) == DialogResult.Cancel)
+				{
 					// If we get here, exit the application imeadiatly...
 					this.Close();
+					return;
+				}
 
 				// Copy settings...
 				appSettings = configFormDialog.appSettings;
@@ -290,7 +293,7 @@ namespace Push
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
 		{
-			new CopyFile().CopyFiles(this);
+			picBoxPush_Click(sender, e);
 		} // END_METHOD
 
 
@@ -319,13 +322,6 @@ namespace Push
 
 		#region [ DEBUG BUTTONS ]
 
-		// DEBUG Button - MistyRose -- Reset source and target data...
-		private void btnDebug2_Click(object sender, EventArgs e)
-		{
-			DEBUG_MistyRose();
-		} // END_METHOD
-
-
 		public ListView SourceControl { get { return this.lvSource; } set { this.lvSource = value; } }
 
 
@@ -334,10 +330,21 @@ namespace Push
 
 		private void DEBUG_MistyRose()
 		{
-			DEBUG_InitFolders();
+			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
+			string TargetTestData = @"C:\DEV_TESTDATA\TargetPictures";
+		
+			if (DEBUG_InitFolders())
+				return;
 
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\TargetPictures", appSettings.TargetPath);
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
@@ -348,14 +355,23 @@ namespace Push
 		} // END_METHOD
 
 
-		private void DEBUG_InitFolders()
+		private bool DEBUG_InitFolders()
 		{
+			// Validate the source and target folders...
+			if (!Directory.Exists(appSettings.SourcePath) || !Directory.Exists(appSettings.TargetPath))
+			{
+				MessageBox.Show("The Source or Target Path do NOT Exist.\nDEBUG Hot-Key Canceled");
+				return true;
+			}
+			
 			// Generate a collection of ALL files, source and target, that must be deleted...
 			List<string> fileList = new List<string>(Directory.GetFiles(appSettings.SourcePath));
 			fileList.AddRange(new List<string>(Directory.GetFiles(appSettings.TargetPath)));
 			
 			foreach (string file in fileList) 
 				File.Delete(file);
+
+			return false;
 		} // END_METHOD
 
 		
@@ -376,20 +392,26 @@ namespace Push
 			}
 		} // END_METHOD
 
-		
-		// DEBUG Button - Pale Green -- Reset source and target data...
-		private void btnDebug4_Click(object sender, EventArgs e)
-		{
-			DEBUG_PaleGreen();
-		} // END_METHOD
-
 
 		private void DEBUG_PaleGreen()
 		{
-			DEBUG_InitFolders();
+			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
+			string TargetTestData = @"C:\DEV_TESTDATA_2";
 
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_2", appSettings.TargetPath);
+			// Validate Source and Target folders...
+			if (DEBUG_InitFolders())
+				return;
+
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+
+			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
@@ -400,19 +422,26 @@ namespace Push
 		} // END_METHOD
 
 
-		// DEBUG Button - Powder Blue -- Reset source and target data...
-		private void btnDebug5_Click(object sender, EventArgs e)
-		{
-			DEBUG_PowderBlue();
-		} // END_METHOD
-
-
 		private void DEBUG_PowderBlue()
 		{
-			DEBUG_InitFolders();
+			//DEBUG_InitFolders();
+			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
+			string TargetTestData = @"C:\DEV_TESTDATA_1";
 
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA\Pictures", appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_1", appSettings.TargetPath);
+			// Validate Source and Target folders...
+			if (DEBUG_InitFolders())
+				return;
+
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+
+			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
@@ -425,10 +454,22 @@ namespace Push
 
 		private void DEBUG_Pink()
 		{
-			DEBUG_InitFolders();
+			string SourceTestData = @"C:\DEV_TESTDATA_3\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_3\Target";
 
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_3\Source", appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(@"C:\DEV_TESTDATA_3\Target", appSettings.TargetPath);
+			// Validate Source and Target folders...
+			if (DEBUG_InitFolders())
+				return;
+
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
@@ -437,8 +478,6 @@ namespace Push
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
-
-
 
 		#endregion		
 
