@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace Push
 {
@@ -8,6 +9,14 @@ namespace Push
 	{
 
 		public enum commandResult { Overwrite, Rename, Skip, Cancel };
+
+
+		public static bool ValidateDataPaths(AppSettings appSettings)
+		{
+			// Validate the source and target folders...
+			// Return true is either folder or both folders do not exist...
+			return !Directory.Exists(appSettings.SourcePath) || !Directory.Exists(appSettings.TargetPath);
+		} // END_METHOD
 
 
 		public static bool ContainsFilterStarDotStar(string[] fefArray)
@@ -45,7 +54,7 @@ namespace Push
 		} // END_METHOD
 
 
-		public static bool IsAppSettingsEmptyOrNull(AppSettings setting)
+		public static bool AppSettingsEmptyOrNull(AppSettings setting)
 		{
 			bool result = string.IsNullOrEmpty(setting.DuplicateFileAction) &&
 							string.IsNullOrEmpty(setting.ExePath) &&

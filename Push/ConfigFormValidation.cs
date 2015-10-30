@@ -73,7 +73,7 @@ namespace Push
 			}
 			#endregion 
 
-			if (Helper.IsAppSettingsEmptyOrNull(appSettings))
+			if (Helper.AppSettingsEmptyOrNull(appSettings))
 			{
 				DialogResult = DialogResult.None;
 			}

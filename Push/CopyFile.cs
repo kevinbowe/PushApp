@@ -108,7 +108,6 @@ namespace Push
 
 						case Helper.commandResult.Overwrite:
 						default:
-								//Tuple<int> 
 								copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
 
