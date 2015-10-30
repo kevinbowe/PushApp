@@ -78,11 +78,16 @@ namespace Push
 			}
 
 			// Set the applications exe path...
-			if (Helper.IsAppSettingsEmptyOrNull(appSettings))
+			if (Helper.AppSettingsEmptyOrNull(appSettings))
 			{
 				FileInfo exePath = new FileInfo("Push.exe");
 				appSettings.ExePath = exePath.DirectoryName;
 			}
+
+			// Force ConfigForm validation...
+			//		This causes all required controls to be 'marked' with a '!' icon...
+			ValidateConfigForm();
+
 		} // END_METHOD
 
 		
@@ -111,7 +116,7 @@ namespace Push
 			//-----------------------------------------------------------------
 			// If we get here, the user wants to discard all entered values...
 
-			if (Helper.IsAppSettingsEmptyOrNull(originalAppSettings))
+			if (Helper.AppSettingsEmptyOrNull(originalAppSettings))
 			{
 				// If we get here, we are aborting the first-run, settings configuration...
 				DialogResult dialogResult = MessageBox.Show( 

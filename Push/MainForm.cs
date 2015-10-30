@@ -16,11 +16,7 @@ namespace Push
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
 		private Size MinHideDetailSize = new Size(275, 161);
-		//private Size MinHideDetailSize = new Size(400, 161);
-		
-		// The minimum window size so the source and target can not be hidden when resizing the window...
 		private Size MinShowDetailSize = new Size(700, 286);
-		//private Size MinShowDetailSize = new Size(764, 286);
 
 
 		#region [ MainForm Constructor + Support ]
@@ -48,9 +44,9 @@ namespace Push
 
 		private void InitControls()
 		{
-
 			// Test to see if any of the required properties are missing...
-			if (Helper.IsAppSettingsEmptyOrNull(appSettings))
+			// Test to see if the current source & target folders are valid...	
+			if (Helper.AppSettingsEmptyOrNull(appSettings) || Helper.ValidateDataPaths(appSettings))
 			{
 				ConfigForm configFormDialog = new ConfigForm();
 
