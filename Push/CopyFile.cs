@@ -95,6 +95,8 @@ namespace Push
 					//---------------------------------------------------------
 					// If we get here, perform whatever Dupe File Action has been configured...
 
+					List<object> args;
+					
 					// Save the Dupe Action. We need this for the statusing return value...
 					DuplicateAction = (Helper.commandResult)Enum.Parse(typeof(Helper.commandResult), appSettings.DuplicateFileAction);
 
@@ -102,21 +104,29 @@ namespace Push
 					switch (DuplicateAction)
 					{
 						case Helper.commandResult.Rename:
-								//copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
-								break;
+							// Assign the correct event handler to the worker...
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileRename.RenameDuplicates_BackGround);
+							// Load DoWorkEvent Arguments
+							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							// Start the worker...
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 						case Helper.commandResult.Skip:
-								//copyResult = CopyFileSkip.SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings);
-								break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
+							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 						case Helper.commandResult.Cancel:
-								//return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
-								break;
+							break;
 
 						case Helper.commandResult.Overwrite:
 						default:
-								//copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
-								break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
+							args = new List<object>() { fileSourceArrayList, appSettings };
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 					} // END SWITCH
 				#endregion		
