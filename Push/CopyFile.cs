@@ -16,7 +16,6 @@ using System.Web.Script.Serialization;
 using Itenso.Configuration;
 using System.Globalization;
 //---
-using System.ComponentModel;
 using System.Threading;
 
 namespace Push
@@ -26,7 +25,7 @@ namespace Push
 		BackgroundWorker bgWorker;
 	
 		// Copy Files from Source folder to Target folder...
-		public Tuple<Helper.commandResult, int, int> CopyFiles(MainForm mainForm)
+		public void CopyFiles(MainForm mainForm)
 		{
 			AppSettings appSettings = mainForm.appSettings;
 
@@ -85,9 +84,9 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				// Save the Dupe Action. We need this for the statusing return value...
-				DuplicateAction = Helper.commandResult.Overwrite;
-				bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandlerCopyOverwrite);
+				bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
+				List<object> args = new List<object>() { fileSourceArrayList, appSettings };
+				bgWorker.RunWorkerAsync(args);
 			}
 			else
 			{
@@ -111,7 +110,8 @@ namespace Push
 								break;
 
 						case Helper.commandResult.Cancel:
-								return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
+								//return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
+								break;
 
 						case Helper.commandResult.Overwrite:
 						default:
@@ -184,15 +184,13 @@ namespace Push
 								break;
 
 						case Helper.commandResult.Skip:
-								//bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandlerSkipDuplicates);
 								bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
 								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
 								bgWorker.RunWorkerAsync(args);
 								break;
 
 						case Helper.commandResult.Cancel:
-								// bgWorker.RunWorkerAsync();
-								return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
+								break;
 
 						case Helper.commandResult.Overwrite:
 						default:
@@ -208,31 +206,7 @@ namespace Push
 
 			} // END_IF_ELSE DupeFileCount
 
-			return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 10101010, 90909090);
 		} // END_METHOD
-
-
-		void bgDoWorkEventHandlerCopyOverwrite(object sender, DoWorkEventArgs e)
-		{
-			var doWorkEventArgs = e;
-
-			Thread.Sleep(2500);
-
-			e.Result = new Tuple<int, int>(303030, 606060);
-
-		}
-
-
-		void bgDoWorkEventHandlerSkipDuplicates(object sender, DoWorkEventArgs e)
-		{
-			var doWorkEventArgs = e;
-
-			Thread.Sleep(2500);
-
-			e.Result = new Tuple<int, int>(404040, 707070);
-
-		}
-
 
 	} //END_CLASS
 } // END_NS

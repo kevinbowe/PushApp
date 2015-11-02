@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 //---
 using System.ComponentModel;
-using System.Threading;
 //---
 using System.Collections.Generic;
 
