@@ -178,7 +178,7 @@ namespace Push
 								// Assign the correct event handler to the worker...
 								bgWorker.DoWork += new DoWorkEventHandler(CopyFileRename.RenameDuplicates_BackGround);
 								// Load DoWorkEvent Arguments
-								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings, mainForm };
+								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
 								// Start the worker...
 								bgWorker.RunWorkerAsync(args);
 								break;
@@ -186,9 +186,8 @@ namespace Push
 						case Helper.commandResult.Skip:
 								bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandlerSkipDuplicates);
 
-								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings, mainForm };
+								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
 								bgWorker.RunWorkerAsync(args);
-								//copyResult = CopyFileSkip.SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings);
 								break;
 
 						case Helper.commandResult.Cancel:
@@ -197,11 +196,9 @@ namespace Push
 
 						case Helper.commandResult.Overwrite:
 						default:
-								bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandlerCopyOverwrite);
-	
-								args = new List<object>() { fileSourceArrayList, appSettings, mainForm };
+								bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
+								args = new List<object>() { fileSourceArrayList, appSettings};
 								bgWorker.RunWorkerAsync(args);
-								//copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
 								break;
 
 					} // END SWITCH
