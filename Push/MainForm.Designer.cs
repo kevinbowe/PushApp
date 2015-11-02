@@ -62,6 +62,7 @@
 			this.lblStatus2_2 = new System.Windows.Forms.Label();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.lblProgress = new System.Windows.Forms.Label();
+			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.pnlDetails.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerDetails)).BeginInit();
 			this.splitContainerDetails.Panel1.SuspendLayout();
@@ -204,7 +205,7 @@
 			this.lvTarget.Location = new System.Drawing.Point(0, 30);
 			this.lvTarget.Margin = new System.Windows.Forms.Padding(4);
 			this.lvTarget.Name = "lvTarget";
-			this.lvTarget.Size = new System.Drawing.Size(414, 95);
+			this.lvTarget.Size = new System.Drawing.Size(412, 95);
 			this.lvTarget.TabIndex = 8;
 			this.lvTarget.UseCompatibleStateImageBehavior = false;
 			this.lvTarget.View = System.Windows.Forms.View.Details;
@@ -365,8 +366,9 @@
 			this.lblStatus1_2.ForeColor = System.Drawing.Color.RoyalBlue;
 			this.lblStatus1_2.Location = new System.Drawing.Point(125, 49);
 			this.lblStatus1_2.Name = "lblStatus1_2";
-			this.lblStatus1_2.Size = new System.Drawing.Size(0, 25);
+			this.lblStatus1_2.Size = new System.Drawing.Size(48, 25);
 			this.lblStatus1_2.TabIndex = 28;
+			this.lblStatus1_2.Text = "1_2";
 			// 
 			// lblStatus2_2
 			// 
@@ -375,19 +377,31 @@
 			this.lblStatus2_2.ForeColor = System.Drawing.Color.RoyalBlue;
 			this.lblStatus2_2.Location = new System.Drawing.Point(125, 78);
 			this.lblStatus2_2.Name = "lblStatus2_2";
-			this.lblStatus2_2.Size = new System.Drawing.Size(0, 25);
+			this.lblStatus2_2.Size = new System.Drawing.Size(48, 25);
 			this.lblStatus2_2.TabIndex = 29;
+			this.lblStatus2_2.Text = "2_2";
 			// 
 			// lblProgress
 			// 
 			this.lblProgress.AutoSize = true;
+			this.lblProgress.BackColor = System.Drawing.SystemColors.Control;
 			this.lblProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblProgress.ForeColor = System.Drawing.Color.Red;
-			this.lblProgress.Location = new System.Drawing.Point(470, 65);
+			this.lblProgress.ForeColor = System.Drawing.Color.RoyalBlue;
+			this.lblProgress.Location = new System.Drawing.Point(126, 49);
 			this.lblProgress.Name = "lblProgress";
 			this.lblProgress.Size = new System.Drawing.Size(98, 25);
 			this.lblProgress.TabIndex = 30;
 			this.lblProgress.Text = "Progress";
+			// 
+			// progressBar1
+			// 
+			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBar1.ForeColor = System.Drawing.Color.RoyalBlue;
+			this.progressBar1.Location = new System.Drawing.Point(131, 78);
+			this.progressBar1.Name = "progressBar1";
+			this.progressBar1.Size = new System.Drawing.Size(565, 25);
+			this.progressBar1.TabIndex = 31;
 			// 
 			// MainForm
 			// 
@@ -407,6 +421,7 @@
 			this.Controls.Add(this.lblShowHide);
 			this.Controls.Add(this.picBxShowHide);
 			this.Controls.Add(this.pnlDetails);
+			this.Controls.Add(this.progressBar1);
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -463,6 +478,7 @@
 		private System.Windows.Forms.Label lblStatus2_2;
 		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 		private System.Windows.Forms.Label lblProgress;
+		private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 

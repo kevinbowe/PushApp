@@ -14,7 +14,6 @@ namespace Push
 		private readonly FormSettings formSettings;
 		public AppSettings appSettings;
 		Size savedMainFormSize;
-		//BackgroundWorker bgWorker;
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
 		private Size MinHideDetailSize = new Size(275, 161);
@@ -23,11 +22,32 @@ namespace Push
 
 		public void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e)
 		{
-			Console.WriteLine();
+			lblProgress.Visible = true;
+			progressBar1.Visible = true;
+
 			string progress = e.ProgressPercentage.ToString() + "%";
-			lblProgress.Text = e.ProgressPercentage.ToString() + "%";
+			lblProgress.Text = "Processing, please wait... "+ e.ProgressPercentage.ToString() + "%";
+
+			progressBar1.Value = e.ProgressPercentage;
+		}
+
+
+		public void bgRunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e)
+		{
+			var result = (Tuple<Helper.commandResult, int,int>)e.Result;
+	
+			// Update Source & Target Listboxes...
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+
+			// Hide the Progress Bar...
+			progressBar1.Visible = false;
+			lblProgress.Visible = false;
+
+			UpdateStatus(result);
 
 		}
+
 
 		#region [ MainForm Constructor + Support ]
 
@@ -50,33 +70,7 @@ namespace Push
 			// Set the default form properties and then update them with the last used properties...
 			InitControls();
 
-			//// 
-			//bgWorker = new BackgroundWorker();
-			//bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandler);
-			//bgWorker.ProgressChanged += new ProgressChangedEventHandler(bgProgressChangedEventHandler);
-			//bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgRunWorkerCompletedEventHandler);
-			//bgWorker.WorkerReportsProgress = true;
-			//bgWorker.WorkerSupportsCancellation = true;
-
-
 		} // END_CTOR
-
-		//void bgDoWorkEventHandler(object sender, DoWorkEventArgs e) 
-		//{
-		//	Tuple<Helper.commandResult, int, int> copyFileResult = new CopyFile().CopyFiles(this);
-
-		//	UpdateStatus(copyFileResult);
-
-		//	// Update Source & Target Listboxes...
-		//	LoadListView(lvSource, appSettings.SourcePath);
-		//	LoadListView(lvTarget, appSettings.TargetPath);
-
-		//	Console.WriteLine(); 
-		//}
-
-		//void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e) { Console.WriteLine(); }
-
-		//void bgRunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e) { Console.WriteLine(); }
 
 
 		private void InitControls()
@@ -104,6 +98,18 @@ namespace Push
 
 				configFormDialog.Dispose();
 			}
+
+			// Init Controls...
+			lblStatus1_1.Text = string.Empty;
+			lblStatus1_2.Text = string.Empty;
+			lblStatus2_2.Text = string.Empty;
+
+			lblStatus1_1.Visible = false;
+			lblStatus1_2.Visible = false;
+			lblStatus2_2.Visible = false;
+
+			lblProgress.Visible = false;
+			progressBar1.Visible = false;
 
 			// Update the form properties to the last used...
 			UpdateControls();
@@ -176,27 +182,18 @@ namespace Push
 		// Push Button...
 		private void picBoxPush_Click(object sender, EventArgs e)
 		{
-			// Init Controls...
-			lblStatus1_1.Text = string.Empty;
-			lblStatus1_2.Text = string.Empty;
-			lblStatus2_2.Text = string.Empty;
-			
-			
-			// __DEBUG_CODE__
-			//bgWorker.RunWorkerAsync();
+			// Hide the status listboxes...
+			lblStatus1_1.Visible = false;
+			lblStatus1_2.Visible = false;
+			lblStatus2_2.Visible = false;
 
-			Tuple<Helper.commandResult, int, int> copyFileResult = new CopyFile().CopyFiles(this);
-
-			UpdateStatus(copyFileResult);
-
-			// Update Source & Target Listboxes...
-			LoadListView(lvSource, appSettings.SourcePath);
-			LoadListView(lvTarget, appSettings.TargetPath);	
+			new CopyFile().CopyFiles(this);
 		} // END_METHOD
 
 
 		private void UpdateStatus(Tuple<Helper.commandResult, int, int> copyFileResult)
 		{
+			
 			List<string> statusList = new List<string>();
 			//---
 			switch (copyFileResult.Item1)
@@ -223,11 +220,15 @@ namespace Push
 			if (statusList.Count <= 1)
 			{
 				lblStatus1_1.Text = statusList[0];
+				lblStatus1_1.Visible = true;
 			}
 			else
 			{
 				lblStatus1_2.Text = statusList[0];
 				lblStatus2_2.Text = statusList[1];
+				//---
+				lblStatus1_2.Visible = true;
+				lblStatus2_2.Visible = true;
 			}
 		} // END_METHOD
 
@@ -325,11 +326,7 @@ namespace Push
 			configDialog.Dispose();
 		} // END_METHOD
 
-
-
-
-
-
+	
 		#region [ TOOL STRIP ]
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
