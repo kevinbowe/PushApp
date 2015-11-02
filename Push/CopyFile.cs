@@ -184,8 +184,8 @@ namespace Push
 								break;
 
 						case Helper.commandResult.Skip:
-								bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandlerSkipDuplicates);
-
+								//bgWorker.DoWork += new DoWorkEventHandler(bgDoWorkEventHandlerSkipDuplicates);
+								bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
 								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
 								bgWorker.RunWorkerAsync(args);
 								break;
