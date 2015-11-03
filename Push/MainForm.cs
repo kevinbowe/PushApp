@@ -6,6 +6,7 @@ using System.IO;
 //---
 using Itenso.Configuration;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Push
 {
@@ -22,14 +23,14 @@ namespace Push
 
 		public void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e)
 		{
-			lblProgress.Visible = true;
-			progressBar1.Visible = true;
+			toolStripLblProgress.Visible = true;
+			toolStripProgressBar.Visible = true;
 
 			string progress = e.ProgressPercentage.ToString() + "%";
-			lblProgress.Text = "Processing, please wait... "+ e.ProgressPercentage.ToString() + "%";
+			toolStripLblProgress.Text = "Processing... "+ e.ProgressPercentage.ToString() + "%";
 
-			progressBar1.Value = e.ProgressPercentage;
-		}
+			toolStripProgressBar.Value = e.ProgressPercentage;
+		} // END_METHOD
 
 
 		public void bgRunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e)
@@ -40,13 +41,8 @@ namespace Push
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 
-			// Hide the Progress Bar...
-			progressBar1.Visible = false;
-			lblProgress.Visible = false;
-
 			UpdateStatus(result);
-
-		}
+		} // END_METHOD
 
 
 		#region [ MainForm Constructor + Support ]
@@ -108,8 +104,10 @@ namespace Push
 			lblStatus1_2.Visible = false;
 			lblStatus2_2.Visible = false;
 
-			lblProgress.Visible = false;
-			progressBar1.Visible = false;
+			toolStripProgressBar.Visible = false;
+			toolStripLblProgress.Visible = false;
+			//lblProgress.Visible = false;
+			//progressBar1.Visible = false;
 
 			// Update the form properties to the last used...
 			UpdateControls();
@@ -186,6 +184,9 @@ namespace Push
 			lblStatus1_1.Visible = false;
 			lblStatus1_2.Visible = false;
 			lblStatus2_2.Visible = false;
+			//---
+			toolStripProgressBar.Visible = false;
+			toolStripLblProgress.Visible = false;
 
 			new CopyFile().CopyFiles(this);
 		} // END_METHOD
@@ -340,7 +341,10 @@ namespace Push
 			lblStatus1_1.Text = string.Empty;
 			lblStatus1_2.Text = string.Empty;
 			lblStatus2_2.Text = string.Empty;
-			//--
+			//---
+			toolStripProgressBar.Visible = false;
+			toolStripLblProgress.Visible = false;
+			//---
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
