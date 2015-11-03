@@ -53,6 +53,15 @@ namespace Push
 				foreach (string s in fileSourceStrArray)
 					fileSourceArrayList.Add(s);
 			} // END_FOREACH
+
+			if (fileSourceArrayList.Count == 0)
+			{
+				// If we get here, there are not files in the source folder to process...
+				bgWorker.DoWork += new DoWorkEventHandler(CopyFile_BackGround);
+				bgWorker.RunWorkerAsync();
+				return;
+			}
+
 			#endregion
 
 			#region [ BUILD LIST OF TARGET FILES ]
@@ -217,6 +226,15 @@ namespace Push
 			} // END_IF_ELSE DupeFileCount
 
 		} // END_METHOD
+
+
+		public static void CopyFile_BackGround(object sender, DoWorkEventArgs doWorkEventArgs)
+		{
+			doWorkEventArgs.Result = new Tuple<Helper.commandResult, int, int>(Helper.commandResult.Fail, 0, 0);
+		} // END_METHOD
+
+
+
 
 	} //END_CLASS
 } // END_NS

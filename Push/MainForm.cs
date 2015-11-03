@@ -106,8 +106,6 @@ namespace Push
 
 			toolStripProgressBar.Visible = false;
 			toolStripLblProgress.Visible = false;
-			//lblProgress.Visible = false;
-			//progressBar1.Visible = false;
 
 			// Update the form properties to the last used...
 			UpdateControls();
@@ -215,6 +213,9 @@ namespace Push
 				case Helper.commandResult.Skip:
 					statusList.Add(string.Format("{0} Files Copied", copyFileResult.Item2));
 					statusList.Add(string.Format("{0} Files Skipped", copyFileResult.Item3));
+					break;
+				case Helper.commandResult.Fail:
+					statusList.Add("No Files to Copy");
 					break;
 			}
 
