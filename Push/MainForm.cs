@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using System.IO;
 //---
 using Itenso.Configuration;
+using System.ComponentModel;
+using System.Threading;
 
 namespace Push
 {
@@ -17,6 +19,30 @@ namespace Push
 		// The minimum window size which will hide the source and target and shrink the status listbox...
 		private Size MinHideDetailSize = new Size(275, 161);
 		private Size MinShowDetailSize = new Size(700, 286);
+
+
+		public void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e)
+		{
+			toolStripLblProgress.Visible = true;
+			toolStripProgressBar.Visible = true;
+
+			string progress = e.ProgressPercentage.ToString() + "%";
+			toolStripLblProgress.Text = "Processing... "+ e.ProgressPercentage.ToString() + "%";
+
+			toolStripProgressBar.Value = e.ProgressPercentage;
+		} // END_METHOD
+
+
+		public void bgRunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e)
+		{
+			var result = (Tuple<Helper.commandResult, int,int>)e.Result;
+	
+			// Update Source & Target Listboxes...
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+
+			UpdateStatus(result);
+		} // END_METHOD
 
 
 		#region [ MainForm Constructor + Support ]
@@ -39,6 +65,7 @@ namespace Push
 
 			// Set the default form properties and then update them with the last used properties...
 			InitControls();
+
 		} // END_CTOR
 
 
@@ -67,6 +94,18 @@ namespace Push
 
 				configFormDialog.Dispose();
 			}
+
+			// Init Controls...
+			lblStatus1_1.Text = string.Empty;
+			lblStatus1_2.Text = string.Empty;
+			lblStatus2_2.Text = string.Empty;
+
+			lblStatus1_1.Visible = false;
+			lblStatus1_2.Visible = false;
+			lblStatus2_2.Visible = false;
+
+			toolStripProgressBar.Visible = false;
+			toolStripLblProgress.Visible = false;
 
 			// Update the form properties to the last used...
 			UpdateControls();
@@ -139,23 +178,21 @@ namespace Push
 		// Push Button...
 		private void picBoxPush_Click(object sender, EventArgs e)
 		{
-			// Init Controls...
-			lblStatus1_1.Text = string.Empty;
-			lblStatus1_2.Text = string.Empty;
-			lblStatus2_2.Text = string.Empty;
+			// Hide the status listboxes...
+			lblStatus1_1.Visible = false;
+			lblStatus1_2.Visible = false;
+			lblStatus2_2.Visible = false;
+			//---
+			toolStripProgressBar.Visible = false;
+			toolStripLblProgress.Visible = false;
 
-			Tuple<Helper.commandResult, int, int> copyFileResult = new CopyFile().CopyFiles(this);
-
-			UpdateStatus(copyFileResult);
-			
-			// Update Source & Target Listboxes...
-			LoadListView(lvSource, appSettings.SourcePath);
-			LoadListView(lvTarget, appSettings.TargetPath);	
+			new CopyFile().CopyFiles(this);
 		} // END_METHOD
 
 
 		private void UpdateStatus(Tuple<Helper.commandResult, int, int> copyFileResult)
 		{
+			
 			List<string> statusList = new List<string>();
 			//---
 			switch (copyFileResult.Item1)
@@ -177,16 +214,23 @@ namespace Push
 					statusList.Add(string.Format("{0} Files Copied", copyFileResult.Item2));
 					statusList.Add(string.Format("{0} Files Skipped", copyFileResult.Item3));
 					break;
+				case Helper.commandResult.Fail:
+					statusList.Add("No Files to Copy");
+					break;
 			}
 
 			if (statusList.Count <= 1)
 			{
 				lblStatus1_1.Text = statusList[0];
+				lblStatus1_1.Visible = true;
 			}
 			else
 			{
 				lblStatus1_2.Text = statusList[0];
 				lblStatus2_2.Text = statusList[1];
+				//---
+				lblStatus1_2.Visible = true;
+				lblStatus2_2.Visible = true;
 			}
 		} // END_METHOD
 
@@ -284,7 +328,7 @@ namespace Push
 			configDialog.Dispose();
 		} // END_METHOD
 
-
+	
 		#region [ TOOL STRIP ]
 
 		private void toolStripBtnPush_Click(object sender, EventArgs e)
@@ -298,7 +342,10 @@ namespace Push
 			lblStatus1_1.Text = string.Empty;
 			lblStatus1_2.Text = string.Empty;
 			lblStatus2_2.Text = string.Empty;
-			//--
+			//---
+			toolStripProgressBar.Visible = false;
+			toolStripLblProgress.Visible = false;
+			//---
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
@@ -323,12 +370,16 @@ namespace Push
 
 		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } }
 
-
+		// Hot-Key ONE
 		private void DEBUG_MistyRose()
 		{
-			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
-			string TargetTestData = @"C:\DEV_TESTDATA\TargetPictures";
+			//string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
+			//string TargetTestData = @"C:\DEV_TESTDATA\TargetPictures";
+			string SourceTestData = @"C:\DEV_TESTDATA_0\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_0\Target";
 		
+
+
 			if (DEBUG_InitFolders())
 				return;
 
@@ -389,6 +440,7 @@ namespace Push
 		} // END_METHOD
 
 
+		// Hot-Key TWO...
 		private void DEBUG_PaleGreen()
 		{
 			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
@@ -418,6 +470,7 @@ namespace Push
 		} // END_METHOD
 
 
+		// Hot-Key THREE...
 		private void DEBUG_PowderBlue()
 		{
 			//DEBUG_InitFolders();
@@ -448,6 +501,7 @@ namespace Push
 		} // END_METHOD
 
 
+		// Hot-Key FOUR...
 		private void DEBUG_Pink()
 		{
 			string SourceTestData = @"C:\DEV_TESTDATA_3\Source";

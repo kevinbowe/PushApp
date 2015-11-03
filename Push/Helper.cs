@@ -8,7 +8,7 @@ namespace Push
 	public static class Helper
 	{
 
-		public enum commandResult { Overwrite, Rename, Skip, Cancel };
+		public enum commandResult { Overwrite, Rename, Skip, Cancel, Fail };
 
 
 		public static bool ValidateDataPaths(AppSettings appSettings)

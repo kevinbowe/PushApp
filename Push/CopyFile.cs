@@ -15,20 +15,28 @@ using System.Web.Script.Serialization;
 //---
 using Itenso.Configuration;
 using System.Globalization;
+//---
+using System.Threading;
 
 namespace Push
 {
 	public class CopyFile
 	{
+		BackgroundWorker bgWorker;
+	
 		// Copy Files from Source folder to Target folder...
-		public Tuple<Helper.commandResult, int, int> CopyFiles(MainForm mainForm)
+		public void CopyFiles(MainForm mainForm)
 		{
 			AppSettings appSettings = mainForm.appSettings;
 
 			ArrayList fileSourceArrayList = new ArrayList();
 			Helper.commandResult DuplicateAction;
 
-			Tuple<int, int> copyResult;
+			bgWorker = new BackgroundWorker();
+			bgWorker.ProgressChanged += new ProgressChangedEventHandler(mainForm.bgProgressChangedEventHandler);
+			bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(mainForm.bgRunWorkerCompletedEventHandler);
+			bgWorker.WorkerReportsProgress = true;
+			bgWorker.WorkerSupportsCancellation = true;
 
 			// File extension types...
 			List<string> FileExtensionArrayList = Helper.LoadFileExtensions(appSettings);
@@ -45,6 +53,15 @@ namespace Push
 				foreach (string s in fileSourceStrArray)
 					fileSourceArrayList.Add(s);
 			} // END_FOREACH
+
+			if (fileSourceArrayList.Count == 0)
+			{
+				// If we get here, there are not files in the source folder to process...
+				bgWorker.DoWork += new DoWorkEventHandler(CopyFile_BackGround);
+				bgWorker.RunWorkerAsync();
+				return;
+			}
+
 			#endregion
 
 			#region [ BUILD LIST OF TARGET FILES ]
@@ -76,10 +93,9 @@ namespace Push
 
 			if (dupeFileCount <= 0)
 			{
-				// Save the Dupe Action. We need this for the statusing return value...
-				DuplicateAction = Helper.commandResult.Overwrite;				
-				
-				copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+				bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
+				List<object> args = new List<object>() { fileSourceArrayList, appSettings };
+				bgWorker.RunWorkerAsync(args);
 			}
 			else
 			{
@@ -88,28 +104,38 @@ namespace Push
 					//---------------------------------------------------------
 					// If we get here, perform whatever Dupe File Action has been configured...
 
+					List<object> args;
+					
 					// Save the Dupe Action. We need this for the statusing return value...
 					DuplicateAction = (Helper.commandResult)Enum.Parse(typeof(Helper.commandResult), appSettings.DuplicateFileAction);
 
 					#region [ AUTO DUPE ACTION ]
 					switch (DuplicateAction)
 					{
-
 						case Helper.commandResult.Rename:
-							copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
-								break;
+							// Assign the correct event handler to the worker...
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileRename.RenameDuplicates_BackGround);
+							// Load DoWorkEvent Arguments
+							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							// Start the worker...
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 						case Helper.commandResult.Skip:
-								copyResult = CopyFileSkip.SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings);
-								break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
+							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 						case Helper.commandResult.Cancel:
-								return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
+							break;
 
 						case Helper.commandResult.Overwrite:
 						default:
-								copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
-								break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
+							args = new List<object>() { fileSourceArrayList, appSettings };
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 					} // END SWITCH
 				#endregion		
@@ -126,7 +152,9 @@ namespace Push
 
 					DialogResult res =
 							cTaskDialog.ShowTaskDialogBox(
-							mainForm,
+
+							mainForm, // BUG - Use Correct Thread...
+							
 							"Duplicate Files Found",
 							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
 							"What would you like to do?",
@@ -157,6 +185,8 @@ namespace Push
 
 					#region [ MANUAL DUPE ACTION ]
 
+					List<object> args;
+
 					// Fetch the Dupe Action. We need this for the statusing return value...
 					DuplicateAction = (Helper.commandResult)cTaskDialog.CommandButtonResult;
 
@@ -164,19 +194,28 @@ namespace Push
 					{
 
 						case Helper.commandResult.Rename:
-								copyResult = CopyFileRename.RenameDulpicates(fileSourceArrayList, fileTargetStrArray, appSettings);
+								// Assign the correct event handler to the worker...
+								bgWorker.DoWork += new DoWorkEventHandler(CopyFileRename.RenameDuplicates_BackGround);
+								// Load DoWorkEvent Arguments
+								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
+								// Start the worker...
+								bgWorker.RunWorkerAsync(args);
 								break;
 
 						case Helper.commandResult.Skip:
-								copyResult = CopyFileSkip.SkipDuplicates(fileSourceArrayList, fileTargetStrArray, appSettings);
+								bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
+								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
+								bgWorker.RunWorkerAsync(args);
 								break;
 
 						case Helper.commandResult.Cancel:
-								return new Tuple<Helper.commandResult, int, int>(DuplicateAction, 0, 0);
+								break;
 
 						case Helper.commandResult.Overwrite:
 						default:
-								copyResult = CopyFileOverwrite.CopyOverwrite(fileSourceArrayList, appSettings);
+								bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
+								args = new List<object>() { fileSourceArrayList, appSettings};
+								bgWorker.RunWorkerAsync(args);
 								break;
 
 					} // END SWITCH
@@ -186,8 +225,16 @@ namespace Push
 
 			} // END_IF_ELSE DupeFileCount
 
-			return new Tuple<Helper.commandResult, int, int>(DuplicateAction, copyResult.Item1, copyResult.Item2);
 		} // END_METHOD
+
+
+		public static void CopyFile_BackGround(object sender, DoWorkEventArgs doWorkEventArgs)
+		{
+			doWorkEventArgs.Result = new Tuple<Helper.commandResult, int, int>(Helper.commandResult.Fail, 0, 0);
+		} // END_METHOD
+
+
+
 
 	} //END_CLASS
 } // END_NS
