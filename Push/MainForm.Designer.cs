@@ -50,8 +50,10 @@
 			this.picBxShowHide = new System.Windows.Forms.PictureBox();
 			this.toolStripBtnPush = new System.Windows.Forms.ToolStripButton();
 			this.toolStripBtnRefresh = new System.Windows.Forms.ToolStripButton();
-			this.tooStripBtnConfig = new System.Windows.Forms.ToolStripButton();
+			this.toolStripBtnConfig = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+			this.toolStripLblProgress = new System.Windows.Forms.ToolStripLabel();
 			this.lblFileFilter = new System.Windows.Forms.Label();
 			this.lblFileExtensionFilterString = new System.Windows.Forms.Label();
 			this.ttDetails = new System.Windows.Forms.ToolTip(this.components);
@@ -61,8 +63,6 @@
 			this.lblStatus1_2 = new System.Windows.Forms.Label();
 			this.lblStatus2_2 = new System.Windows.Forms.Label();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-			this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-			this.toolStripLblProgress = new System.Windows.Forms.ToolStripLabel();
 			this.pnlDetails.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerDetails)).BeginInit();
 			this.splitContainerDetails.Panel1.SuspendLayout();
@@ -270,22 +270,22 @@
 			this.toolStripBtnRefresh.Text = "Refresh";
 			this.toolStripBtnRefresh.Click += new System.EventHandler(this.toolStripBtnRefresh_Click);
 			// 
-			// tooStripBtnConfig
+			// toolStripBtnConfig
 			// 
-			this.tooStripBtnConfig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tooStripBtnConfig.Image = global::Push.Properties.Resources.gear;
-			this.tooStripBtnConfig.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tooStripBtnConfig.Name = "tooStripBtnConfig";
-			this.tooStripBtnConfig.Size = new System.Drawing.Size(23, 22);
-			this.tooStripBtnConfig.Text = "Configuration";
-			this.tooStripBtnConfig.Click += new System.EventHandler(this.tooStripBtnConfig_Click);
+			this.toolStripBtnConfig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripBtnConfig.Image = global::Push.Properties.Resources.gear;
+			this.toolStripBtnConfig.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripBtnConfig.Name = "toolStripBtnConfig";
+			this.toolStripBtnConfig.Size = new System.Drawing.Size(23, 22);
+			this.toolStripBtnConfig.Text = "Configuration";
+			this.toolStripBtnConfig.Click += new System.EventHandler(this.tooStripBtnConfig_Click);
 			// 
 			// toolStrip
 			// 
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripBtnPush,
             this.toolStripBtnRefresh,
-            this.tooStripBtnConfig,
+            this.toolStripBtnConfig,
             this.toolStripProgressBar,
             this.toolStripLblProgress});
 			this.toolStrip.Location = new System.Drawing.Point(0, 0);
@@ -293,6 +293,18 @@
 			this.toolStrip.Size = new System.Drawing.Size(536, 25);
 			this.toolStrip.TabIndex = 22;
 			this.toolStrip.Text = "toolStrip1";
+			// 
+			// toolStripProgressBar
+			// 
+			this.toolStripProgressBar.Name = "toolStripProgressBar";
+			this.toolStripProgressBar.Size = new System.Drawing.Size(50, 22);
+			// 
+			// toolStripLblProgress
+			// 
+			this.toolStripLblProgress.ForeColor = System.Drawing.Color.RoyalBlue;
+			this.toolStripLblProgress.Name = "toolStripLblProgress";
+			this.toolStripLblProgress.Size = new System.Drawing.Size(113, 22);
+			this.toolStripLblProgress.Text = "toolStripLblProgress";
 			// 
 			// lblFileFilter
 			// 
@@ -370,18 +382,6 @@
 			this.lblStatus2_2.TabIndex = 29;
 			this.lblStatus2_2.Text = "2_2";
 			// 
-			// toolStripProgressBar
-			// 
-			this.toolStripProgressBar.Name = "toolStripProgressBar";
-			this.toolStripProgressBar.Size = new System.Drawing.Size(50, 22);
-			// 
-			// toolStripLblProgress
-			// 
-			this.toolStripLblProgress.ForeColor = System.Drawing.Color.RoyalBlue;
-			this.toolStripLblProgress.Name = "toolStripLblProgress";
-			this.toolStripLblProgress.Size = new System.Drawing.Size(113, 22);
-			this.toolStripLblProgress.Text = "toolStripLblProgress";
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -438,7 +438,7 @@
 		private System.Windows.Forms.PictureBox picBxPush;
 		private System.Windows.Forms.ToolStripButton toolStripBtnPush;
 		private System.Windows.Forms.ToolStripButton toolStripBtnRefresh;
-		private System.Windows.Forms.ToolStripButton tooStripBtnConfig;
+		private System.Windows.Forms.ToolStripButton toolStripBtnConfig;
 		private System.Windows.Forms.ToolStrip toolStrip;
 		private System.Windows.Forms.Label lblSource;
 		private System.Windows.Forms.Label lblTarget;

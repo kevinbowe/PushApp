@@ -15,6 +15,7 @@ namespace Push
 		private readonly FormSettings formSettings;
 		public AppSettings appSettings;
 		Size savedMainFormSize;
+		public enum ctrlStatus { Enable=1 /*true*/, Disable=0 /*false*/ };
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
 		private Size MinHideDetailSize = new Size(275, 161);
@@ -42,6 +43,10 @@ namespace Push
 			LoadListView(lvTarget, appSettings.TargetPath);
 
 			UpdateStatus(result);
+
+			// Enable Controls...
+			SetControlStatus(ctrlStatus.Enable);
+
 		} // END_METHOD
 
 
@@ -186,7 +191,20 @@ namespace Push
 			toolStripProgressBar.Visible = false;
 			toolStripLblProgress.Visible = false;
 
+			// Disable Controls...
+			SetControlStatus(ctrlStatus.Disable);
+
 			new CopyFile().CopyFiles(this);
+		}
+
+		private void SetControlStatus(ctrlStatus ctrlStatus)
+		{
+			bool status = Convert.ToBoolean(ctrlStatus);
+
+			picBxPush.Enabled = status;
+			toolStripBtnPush.Enabled = status;
+			toolStripBtnRefresh.Enabled = status;
+			toolStripBtnConfig.Enabled = status;
 		} // END_METHOD
 
 
