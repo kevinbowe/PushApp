@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="ListViewColumnSort.cs" />
     <Compile Include="ConfigFormValidation.cs">
       <SubType>Form</SubType>
     </Compile>

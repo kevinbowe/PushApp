@@ -143,6 +143,7 @@
 			this.lvSource.TabIndex = 7;
 			this.lvSource.UseCompatibleStateImageBehavior = false;
 			this.lvSource.View = System.Windows.Forms.View.Details;
+			this.lvSource.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListView_ColumnClick);
 			// 
 			// FName
 			// 
@@ -200,6 +201,7 @@
 			this.lvTarget.TabIndex = 8;
 			this.lvTarget.UseCompatibleStateImageBehavior = false;
 			this.lvTarget.View = System.Windows.Forms.View.Details;
+			this.lvTarget.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListView_ColumnClick);
 			// 
 			// FNameTarget
 			// 
