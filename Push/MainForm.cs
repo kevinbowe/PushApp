@@ -71,6 +71,11 @@ namespace Push
 			// Set the default form properties and then update them with the last used properties...
 			InitControls();
 
+			listViewColumnSorter = new ListViewColumnSorter();
+			this.lvSource.ListViewItemSorter = listViewColumnSorter;
+			this.lvTarget.ListViewItemSorter = listViewColumnSorter;
+
+
 		} // END_CTOR
 
 
@@ -611,9 +616,44 @@ namespace Push
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
-		} // END_METHOD
+		}
 	
 		#endregion
+
+
+
+		private ListViewColumnSorter listViewColumnSorter;
+
+		private void ListView_ColumnClick(object sender, ColumnClickEventArgs e)
+		{
+			ListView listView = (ListView)sender;
+
+			// Determine if clicked column is already the column that is being sorted.
+			if (e.Column == listViewColumnSorter.SortColumn)
+			{
+				// Reverse the current sort direction for this column.
+				if (listViewColumnSorter.Order == SortOrder.Ascending)
+				{
+					listViewColumnSorter.Order = SortOrder.Descending;
+				}
+				else
+				{
+					listViewColumnSorter.Order = SortOrder.Ascending;
+				}
+			}
+			else
+			{
+				// Set the column number that is to be sorted; default to ascending.
+				listViewColumnSorter.SortColumn = e.Column;
+				listViewColumnSorter.Order = SortOrder.Ascending;
+			}
+
+			// Perform the sort with these new sort options.
+			listView.Sort();
+
+		} // END_METHOD
+
+
 
 
 	} // END_CLASS
