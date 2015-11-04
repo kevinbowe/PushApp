@@ -18,8 +18,8 @@ namespace Push
 		public enum ctrlStatus { Enable=1 /*true*/, Disable=0 /*false*/ };
 
 		// The minimum window size which will hide the source and target and shrink the status listbox...
-		private Size MinHideDetailSize = new Size(275, 161);
-		private Size MinShowDetailSize = new Size(700, 286);
+		private Size MinHideDetailSize = new Size(295, 161);
+		private Size MinShowDetailSize = new Size(700, 350);
 
 
 		public void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e)
