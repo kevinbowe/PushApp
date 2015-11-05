@@ -715,6 +715,16 @@ namespace Push
 
 		private void lvSource_SizeChanged(object sender, EventArgs e)
 		{
+		}
+
+		private void pictureBox1_Click(object sender, EventArgs e)
+		{
+			lvSource.Columns[0].Width = -2;
+		}
+
+		private void pictureBox2_Click(object sender, EventArgs e)
+		{
+			lvTarget.Columns[0].Width = -2;
 		} // END_METHOD
 
 	} // END_CLASS

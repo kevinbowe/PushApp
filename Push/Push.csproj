@@ -112,6 +112,7 @@
   <ItemGroup>
     <Content Include="Resources\Control_Collapser1.gif" />
     <Content Include="Resources\Control_Expander1.gif" />
+    <Content Include="Resources\Fit.gif" />
     <Content Include="Resources\gear.gif" />
     <Content Include="Resources\Green Button1.gif" />
     <Content Include="Resources\Refresh.gif" />
