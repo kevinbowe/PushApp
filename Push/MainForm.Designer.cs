@@ -145,6 +145,7 @@
 			this.lvSource.UseCompatibleStateImageBehavior = false;
 			this.lvSource.View = System.Windows.Forms.View.Details;
 			this.lvSource.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListView_ColumnClick);
+			this.lvSource.SizeChanged += new System.EventHandler(this.lvSource_SizeChanged);
 			// 
 			// FName
 			// 
@@ -406,6 +407,7 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Push Application";
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.Shown += new System.EventHandler(this.MainForm_Shown);
 			this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
 			this.pnlDetails.ResumeLayout(false);
 			this.splitContainerDetails.Panel1.ResumeLayout(false);
