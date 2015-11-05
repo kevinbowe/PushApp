@@ -695,9 +695,9 @@ namespace Push
 			int otherColumnWidths = listView.Columns[1].Width + listView.Columns[2].Width + listView.Columns[3].Width;
 			int tweek = 25;
 			int ColZeroWidth = (listView.Width - otherColumnWidths) - tweek;
-
-			if (ColZeroWidth < 50)
-				listView.Columns[0].Width = 50;
+			int minColZeroWidth = 50;
+			if (ColZeroWidth < minColZeroWidth)
+				listView.Columns[0].Width = minColZeroWidth;
 			else
 				listView.Columns[0].Width = ColZeroWidth;
 		} // END_METHOD
