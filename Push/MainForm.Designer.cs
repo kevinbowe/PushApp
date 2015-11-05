@@ -104,6 +104,7 @@
 			this.splitContainerDetails.Size = new System.Drawing.Size(506, 102);
 			this.splitContainerDetails.SplitterDistance = 254;
 			this.splitContainerDetails.TabIndex = 0;
+			this.splitContainerDetails.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerDetails_SplitterMoved);
 			// 
 			// lblSourcePath
 			// 
@@ -405,6 +406,7 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Push Application";
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
 			this.pnlDetails.ResumeLayout(false);
 			this.splitContainerDetails.Panel1.ResumeLayout(false);
 			this.splitContainerDetails.Panel1.PerformLayout();

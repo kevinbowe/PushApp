@@ -176,6 +176,40 @@ namespace Push
 		// Load MainForm Data...
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			// Set the width of the first column in each ListView to the maximun size of the content...
+			//		This width is NOT Sticky...
+			//lvSource.Columns[0].Width = -2;
+			lvSource.Columns[1].Width = -2;
+			lvSource.Columns[2].Width = -2;
+			lvSource.Columns[3].Width = -2;
+			//---
+			int totalLvSourceColumnWidth = lvSource.Columns[0].Width + lvSource.Columns[1].Width + lvSource.Columns[2].Width + lvSource.Columns[3].Width;
+
+
+			// Subtract the total Column widths from the width of the ListView...
+			int widthDifference = splitContainerDetails.Panel1.Width - totalLvSourceColumnWidth;
+
+			
+
+			//int widthDifference = lvSource.Width - totalLvSourceColumnWidth;
+
+			if (widthDifference > 0)
+			{
+				// If we get here, inlarge the file name column.
+				lvSource.Columns[0].Width = lvSource.Columns[0].Width + widthDifference; 
+			}
+
+
+
+
+			//lvTarget.Columns[0].Width = -2;
+			//lvTarget.Columns[1].Width = -2;
+			//lvTarget.Columns[2].Width = -2;
+			//lvTarget.Columns[3].Width = -2;
+
+
+
+			
 			// Disable the Maximize control on the form...
 			this.MaximizeBox = false;
 
@@ -327,6 +361,10 @@ namespace Push
 				DestinationListView.Items.Add(itemArray);
 
 			} // END_FOREACH
+
+			// Resize the file name column to fit...
+			//DestinationListView.Columns[0].Width = -2;
+
 
 			return true;
 		} // END_METHOD
@@ -654,6 +692,61 @@ namespace Push
 		} // END_METHOD
 
 
+
+
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
+		{
+			//Console.WriteLine();
+			//int currentColumnWidth = lvSource.Columns[0].Width;
+			//lvSource.Columns[0].Width = -2;
+			//int newColumnWidth = lvSource.Columns[0].Width;
+
+			//if (currentColumnWidth > newColumnWidth)
+			//	lvSource.Columns[0].Width = currentColumnWidth;
+
+
+
+			//currentColumnWidth = lvTarget.Columns[0].Width;
+			//lvTarget.Columns[0].Width = -2;
+			//newColumnWidth = lvTarget.Columns[0].Width;
+
+			//if (currentColumnWidth > newColumnWidth)
+			//	lvTarget.Columns[0].Width = currentColumnWidth;
+
+		}
+
+		private void splitContainerDetails_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			//lvTarget.Columns[0].Width = -2;
+			//lvSource.Columns[0].Width = -2;
+			//Console.WriteLine();
+		}
+
+
+		//private void SizeFirstSourceColumn(ListView listView)
+		//{
+		//	listView.Columns[0 /*listView.Columns.Count -1*/].Width = -2;
+		//}
+
+		//private void SizeFirstTargetColumn(ListView listView)
+		//{
+		//	listView.Columns[0 /*listView.Columns.Count -1*/].Width = -2;
+		//}
+
+
+		//private void lvSource_Resize(object sender, EventArgs e)
+		//{
+		//	//SizeFirstSourceColumn((ListView)sender);
+		//	SizeFirstSourceColumn(lvSource);
+
+		//}
+
+		//private void lvTarget_Resize(object sender, EventArgs e)
+		//{
+		//	//SizeFirstTargetColumn((ListView)sender);
+		//	//SizeFirstTargetColumn(lvTarget);
+		//	lvTarget.Columns[0].Width = -2;
+		//}
 
 
 	} // END_CLASS
