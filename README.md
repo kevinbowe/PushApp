@@ -23,15 +23,16 @@ Comments:  This is un-factored code.  There are many duplicate blocks of code th
 
 -------------------------------------------------------------------------------
 
-##FEATURE BRANCH - Sub folder Feature
+##FEATURE BRANCH - Sub folder feature
 
-Data files and application files are typically stored in sub folders. Push should be able to find, copy/move, and delete these files and sub folders when appropriate.  Not all sub folders and files should be processed. Push should be able to exclude certain files and sub folders when processing.  
+Data files and application files are typically stored in sub folders. 
+Push should be able to find, copy/move, and delete these files and sub folders when appropriate.  
+Not all sub folders and files should be processed. 
+Push should be able to exclude certain files and sub folders when processing.  
 
 -------------------------------------------------------------------------------
 
-###USER STORY
-
-######Find all sub folders and files in sub folder.
+###USER STORY - Find all sub folders and files in sub folder.
 
 As a user, I should be able to see any sub folders in the default source and target folders.
 
@@ -39,35 +40,31 @@ The current code base doesn't recognize or scan sub folders when they are in the
 The application should be able to scan all sub folders underneath the configured source and target folders.
 Only the top level folders will be visible in the UI, but all sub folder levels will be scanned.
 
-
 -------------------------------------------------------------------------------
 
-###USER STORY
-
-######Copy/Move sub folders and their data from target to source folder.
+###USER STORY - Copy/Move sub folders and data from target to source folder.
 
 As a user, I want to be able to copy/move all sub folders and data from the source to the target folder.
+
 New sub folders will be created.
 Existing sub folders will be updated.  They will NOT be renamed like files.
 
 -------------------------------------------------------------------------------
 
-###USER STORY
-
-######Delete sub folders and their files from source folder.
+###USER STORY - Delete sub folders and files from source folder.
 
 As a user, I want to be able to delete all sub folders and data in the source folder after a Copy action has completed.
-If child sub folder or file is considered excluded, the parent sub folder will not be deleted.
+
+If a child sub folder or file is excluded, the parent sub folder will not be deleted.
 
 -------------------------------------------------------------------------------
 
-###USER STORY
-
-######Exclude List
+###USER STORY - Exclude List
 
 As a user, I want to prevent certain files and folders from being copied.
+
 A new filter will be added for exclusions.
 Any excluded folder will automatically exclude any child.
-The exclusion list will be a simple text file with paragraph/line-feed delimited files and sub folder names.
+The exclusion list will be a simple text file with paragraph/line-feed delimited entries.
 
 -------------------------------------------------------------------------------
