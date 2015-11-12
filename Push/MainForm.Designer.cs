@@ -46,11 +46,6 @@
 			this.SizeTarget = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.DateTarget = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.lblShowHide = new System.Windows.Forms.Label();
-			this.picBxPush = new System.Windows.Forms.PictureBox();
-			this.picBxShowHide = new System.Windows.Forms.PictureBox();
-			this.toolStripBtnPush = new System.Windows.Forms.ToolStripButton();
-			this.toolStripBtnRefresh = new System.Windows.Forms.ToolStripButton();
-			this.toolStripBtnConfig = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
 			this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
 			this.toolStripLblProgress = new System.Windows.Forms.ToolStripLabel();
@@ -63,14 +58,23 @@
 			this.lblStatus1_2 = new System.Windows.Forms.Label();
 			this.lblStatus2_2 = new System.Windows.Forms.Label();
 			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+			this.toolStripBtnPush = new System.Windows.Forms.ToolStripButton();
+			this.toolStripBtnRefresh = new System.Windows.Forms.ToolStripButton();
+			this.toolStripBtnConfig = new System.Windows.Forms.ToolStripButton();
+			this.picBxPush = new System.Windows.Forms.PictureBox();
+			this.picBxShowHide = new System.Windows.Forms.PictureBox();
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.pictureBox2 = new System.Windows.Forms.PictureBox();
 			this.pnlDetails.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerDetails)).BeginInit();
 			this.splitContainerDetails.Panel1.SuspendLayout();
 			this.splitContainerDetails.Panel2.SuspendLayout();
 			this.splitContainerDetails.SuspendLayout();
+			this.toolStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picBxPush)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picBxShowHide)).BeginInit();
-			this.toolStrip.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// pnlDetails
@@ -92,18 +96,21 @@
 			// 
 			// splitContainerDetails.Panel1
 			// 
+			this.splitContainerDetails.Panel1.Controls.Add(this.pictureBox1);
 			this.splitContainerDetails.Panel1.Controls.Add(this.lblSourcePath);
 			this.splitContainerDetails.Panel1.Controls.Add(this.lblSource);
 			this.splitContainerDetails.Panel1.Controls.Add(this.lvSource);
 			// 
 			// splitContainerDetails.Panel2
 			// 
+			this.splitContainerDetails.Panel2.Controls.Add(this.pictureBox2);
 			this.splitContainerDetails.Panel2.Controls.Add(this.lblTargetPath);
 			this.splitContainerDetails.Panel2.Controls.Add(this.lblTarget);
 			this.splitContainerDetails.Panel2.Controls.Add(this.lvTarget);
 			this.splitContainerDetails.Size = new System.Drawing.Size(506, 102);
 			this.splitContainerDetails.SplitterDistance = 254;
 			this.splitContainerDetails.TabIndex = 0;
+			this.splitContainerDetails.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerDetails_SplitterMoved);
 			// 
 			// lblSourcePath
 			// 
@@ -111,7 +118,7 @@
 			this.lblSourcePath.BackColor = System.Drawing.SystemColors.Control;
 			this.lblSourcePath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblSourcePath.ForeColor = System.Drawing.Color.RoyalBlue;
-			this.lblSourcePath.Location = new System.Drawing.Point(79, 6);
+			this.lblSourcePath.Location = new System.Drawing.Point(99, 6);
 			this.lblSourcePath.Name = "lblSourcePath";
 			this.lblSourcePath.Size = new System.Drawing.Size(73, 13);
 			this.lblSourcePath.TabIndex = 9;
@@ -120,7 +127,7 @@
 			// lblSource
 			// 
 			this.lblSource.AutoSize = true;
-			this.lblSource.Location = new System.Drawing.Point(4, 6);
+			this.lblSource.Location = new System.Drawing.Point(24, 6);
 			this.lblSource.Name = "lblSource";
 			this.lblSource.Size = new System.Drawing.Size(76, 13);
 			this.lblSource.TabIndex = 8;
@@ -144,6 +151,7 @@
 			this.lvSource.UseCompatibleStateImageBehavior = false;
 			this.lvSource.View = System.Windows.Forms.View.Details;
 			this.lvSource.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListView_ColumnClick);
+			this.lvSource.SizeChanged += new System.EventHandler(this.lvSource_SizeChanged);
 			// 
 			// FName
 			// 
@@ -170,7 +178,7 @@
 			this.lblTargetPath.BackColor = System.Drawing.SystemColors.Control;
 			this.lblTargetPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblTargetPath.ForeColor = System.Drawing.Color.RoyalBlue;
-			this.lblTargetPath.Location = new System.Drawing.Point(83, 6);
+			this.lblTargetPath.Location = new System.Drawing.Point(103, 6);
 			this.lblTargetPath.Name = "lblTargetPath";
 			this.lblTargetPath.Size = new System.Drawing.Size(70, 13);
 			this.lblTargetPath.TabIndex = 10;
@@ -179,7 +187,7 @@
 			// lblTarget
 			// 
 			this.lblTarget.AutoSize = true;
-			this.lblTarget.Location = new System.Drawing.Point(3, 6);
+			this.lblTarget.Location = new System.Drawing.Point(23, 6);
 			this.lblTarget.Name = "lblTarget";
 			this.lblTarget.Size = new System.Drawing.Size(73, 13);
 			this.lblTarget.TabIndex = 9;
@@ -230,57 +238,6 @@
 			this.lblShowHide.Size = new System.Drawing.Size(64, 13);
 			this.lblShowHide.TabIndex = 20;
 			this.lblShowHide.Text = "Hide Details";
-			// 
-			// picBxPush
-			// 
-			this.picBxPush.Image = global::Push.Properties.Resources.Green_Button1;
-			this.picBxPush.Location = new System.Drawing.Point(16, 28);
-			this.picBxPush.Name = "picBxPush";
-			this.picBxPush.Size = new System.Drawing.Size(73, 67);
-			this.picBxPush.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-			this.picBxPush.TabIndex = 21;
-			this.picBxPush.TabStop = false;
-			this.picBxPush.Click += new System.EventHandler(this.picBoxPush_Click);
-			// 
-			// picBxShowHide
-			// 
-			this.picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
-			this.picBxShowHide.Location = new System.Drawing.Point(21, 101);
-			this.picBxShowHide.Name = "picBxShowHide";
-			this.picBxShowHide.Size = new System.Drawing.Size(17, 19);
-			this.picBxShowHide.TabIndex = 19;
-			this.picBxShowHide.TabStop = false;
-			this.picBxShowHide.Click += new System.EventHandler(this.picBoxShowHide_Click);
-			// 
-			// toolStripBtnPush
-			// 
-			this.toolStripBtnPush.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripBtnPush.Image = global::Push.Properties.Resources.Run;
-			this.toolStripBtnPush.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripBtnPush.Name = "toolStripBtnPush";
-			this.toolStripBtnPush.Size = new System.Drawing.Size(23, 22);
-			this.toolStripBtnPush.Text = "Push";
-			this.toolStripBtnPush.Click += new System.EventHandler(this.toolStripBtnPush_Click);
-			// 
-			// toolStripBtnRefresh
-			// 
-			this.toolStripBtnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripBtnRefresh.Image = global::Push.Properties.Resources.Refresh;
-			this.toolStripBtnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripBtnRefresh.Name = "toolStripBtnRefresh";
-			this.toolStripBtnRefresh.Size = new System.Drawing.Size(23, 22);
-			this.toolStripBtnRefresh.Text = "Refresh";
-			this.toolStripBtnRefresh.Click += new System.EventHandler(this.toolStripBtnRefresh_Click);
-			// 
-			// toolStripBtnConfig
-			// 
-			this.toolStripBtnConfig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripBtnConfig.Image = global::Push.Properties.Resources.gear;
-			this.toolStripBtnConfig.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripBtnConfig.Name = "toolStripBtnConfig";
-			this.toolStripBtnConfig.Size = new System.Drawing.Size(23, 22);
-			this.toolStripBtnConfig.Text = "Configuration";
-			this.toolStripBtnConfig.Click += new System.EventHandler(this.tooStripBtnConfig_Click);
 			// 
 			// toolStrip
 			// 
@@ -384,6 +341,77 @@
 			this.lblStatus2_2.TabIndex = 29;
 			this.lblStatus2_2.Text = "2_2";
 			// 
+			// toolStripBtnPush
+			// 
+			this.toolStripBtnPush.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripBtnPush.Image = global::Push.Properties.Resources.Run;
+			this.toolStripBtnPush.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripBtnPush.Name = "toolStripBtnPush";
+			this.toolStripBtnPush.Size = new System.Drawing.Size(23, 22);
+			this.toolStripBtnPush.Text = "Push";
+			this.toolStripBtnPush.Click += new System.EventHandler(this.toolStripBtnPush_Click);
+			// 
+			// toolStripBtnRefresh
+			// 
+			this.toolStripBtnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripBtnRefresh.Image = global::Push.Properties.Resources.Refresh;
+			this.toolStripBtnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripBtnRefresh.Name = "toolStripBtnRefresh";
+			this.toolStripBtnRefresh.Size = new System.Drawing.Size(23, 22);
+			this.toolStripBtnRefresh.Text = "Refresh";
+			this.toolStripBtnRefresh.Click += new System.EventHandler(this.toolStripBtnRefresh_Click);
+			// 
+			// toolStripBtnConfig
+			// 
+			this.toolStripBtnConfig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripBtnConfig.Image = global::Push.Properties.Resources.gear;
+			this.toolStripBtnConfig.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripBtnConfig.Name = "toolStripBtnConfig";
+			this.toolStripBtnConfig.Size = new System.Drawing.Size(23, 22);
+			this.toolStripBtnConfig.Text = "Configuration";
+			this.toolStripBtnConfig.Click += new System.EventHandler(this.tooStripBtnConfig_Click);
+			// 
+			// picBxPush
+			// 
+			this.picBxPush.Image = global::Push.Properties.Resources.Green_Button1;
+			this.picBxPush.Location = new System.Drawing.Point(16, 28);
+			this.picBxPush.Name = "picBxPush";
+			this.picBxPush.Size = new System.Drawing.Size(73, 67);
+			this.picBxPush.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.picBxPush.TabIndex = 21;
+			this.picBxPush.TabStop = false;
+			this.picBxPush.Click += new System.EventHandler(this.picBoxPush_Click);
+			// 
+			// picBxShowHide
+			// 
+			this.picBxShowHide.Image = global::Push.Properties.Resources.Control_Collapser1;
+			this.picBxShowHide.Location = new System.Drawing.Point(21, 101);
+			this.picBxShowHide.Name = "picBxShowHide";
+			this.picBxShowHide.Size = new System.Drawing.Size(17, 19);
+			this.picBxShowHide.TabIndex = 19;
+			this.picBxShowHide.TabStop = false;
+			this.picBxShowHide.Click += new System.EventHandler(this.picBoxShowHide_Click);
+			// 
+			// pictureBox1
+			// 
+			this.pictureBox1.Image = global::Push.Properties.Resources.Fit;
+			this.pictureBox1.Location = new System.Drawing.Point(4, 4);
+			this.pictureBox1.Name = "pictureBox1";
+			this.pictureBox1.Size = new System.Drawing.Size(18, 15);
+			this.pictureBox1.TabIndex = 10;
+			this.pictureBox1.TabStop = false;
+			this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+			// 
+			// pictureBox2
+			// 
+			this.pictureBox2.Image = global::Push.Properties.Resources.Fit;
+			this.pictureBox2.Location = new System.Drawing.Point(3, 4);
+			this.pictureBox2.Name = "pictureBox2";
+			this.pictureBox2.Size = new System.Drawing.Size(18, 15);
+			this.pictureBox2.TabIndex = 11;
+			this.pictureBox2.TabStop = false;
+			this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -405,6 +433,8 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Push Application";
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.Shown += new System.EventHandler(this.MainForm_Shown);
+			this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
 			this.pnlDetails.ResumeLayout(false);
 			this.splitContainerDetails.Panel1.ResumeLayout(false);
 			this.splitContainerDetails.Panel1.PerformLayout();
@@ -412,10 +442,12 @@
 			this.splitContainerDetails.Panel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerDetails)).EndInit();
 			this.splitContainerDetails.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.picBxPush)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.picBxShowHide)).EndInit();
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picBxPush)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.picBxShowHide)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -457,6 +489,8 @@
 		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 		private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
 		private System.Windows.Forms.ToolStripLabel toolStripLblProgress;
+		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
 

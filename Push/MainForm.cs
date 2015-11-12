@@ -12,6 +12,7 @@ namespace Push
 {
 	public partial class MainForm : Form
 	{
+		private ListViewColumnSorter listViewColumnSorter;
 		private readonly FormSettings formSettings;
 		public AppSettings appSettings;
 		Size savedMainFormSize;
@@ -182,6 +183,9 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
+
+			FitListView(lvSource);
+			FitListView(lvTarget);
 		} // END_METHOD
 
 		
@@ -202,10 +206,10 @@ namespace Push
 			new CopyFile().CopyFiles(this);
 		}
 
+
 		private void SetControlStatus(ctrlStatus ctrlStatus)
 		{
 			bool status = Convert.ToBoolean(ctrlStatus);
-
 			picBxPush.Enabled = status;
 			toolStripBtnPush.Enabled = status;
 			toolStripBtnRefresh.Enabled = status;
@@ -371,6 +375,9 @@ namespace Push
 			//---
 			LoadListView(lvSource, appSettings.SourcePath);
 			LoadListView(lvTarget, appSettings.TargetPath);
+
+			FitListView(lvSource);
+			FitListView(lvTarget);
 		} // END_METHOD
 
 
@@ -621,9 +628,6 @@ namespace Push
 		#endregion
 
 
-
-		private ListViewColumnSorter listViewColumnSorter;
-
 		private void ListView_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
 			ListView listView = (ListView)sender;
@@ -654,7 +658,74 @@ namespace Push
 		} // END_METHOD
 
 
+		private void MainForm_Shown(object sender, EventArgs e)
+		{
+			FitListView(lvSource);
+			FitListView(lvTarget);
+		}
 
+
+		private void FitListView(ListView listView)
+		{
+			/*	DESIGN POINT:
+			 *	-1 = resize the column to the length of the longet value in the column.
+			 *	-2 = resize the column to the length of the column header.		*/
+
+			if (listView.Items.Count == 0)
+			{
+				// If we get here, there are no entries in the source ListView...
+
+				// Set the width of the Type, and Size so they will be at least the width of the header...
+				listView.Columns[1].Width = -2;
+				listView.Columns[2].Width = -2;
+				listView.Columns[3].Width = -2;
+			}
+			else
+			{
+				// If we get herem there are entries in the ListView...
+
+				// Set the width of the Type, Size, and Date so they will be at least the width of the longest item in the columnr...
+				listView.Columns[1].Width = -1;
+				listView.Columns[2].Width = -1;
+				listView.Columns[3].Width = -1;
+			}
+
+			// Set the File Name to 'fill' the rest of the List View...
+			// Force a minimum column width...
+			int otherColumnWidths = listView.Columns[1].Width + listView.Columns[2].Width + listView.Columns[3].Width;
+			int tweek = 25;
+			int ColZeroWidth = (listView.Width - otherColumnWidths) - tweek;
+			int minColZeroWidth = 50;
+			if (ColZeroWidth < minColZeroWidth)
+				listView.Columns[0].Width = minColZeroWidth;
+			else
+				listView.Columns[0].Width = ColZeroWidth;
+		} // END_METHOD
+
+
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
+		{
+		} // END_METHOD
+
+
+		private void splitContainerDetails_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+		} // END_METHOD
+
+
+		private void lvSource_SizeChanged(object sender, EventArgs e)
+		{
+		}
+
+		private void pictureBox1_Click(object sender, EventArgs e)
+		{
+			lvSource.Columns[0].Width = -2;
+		}
+
+		private void pictureBox2_Click(object sender, EventArgs e)
+		{
+			lvTarget.Columns[0].Width = -2;
+		} // END_METHOD
 
 	} // END_CLASS
 
