@@ -23,38 +23,38 @@ Comments:  This is un-factored code.  There are many duplicate blocks of code th
 
 -------------------------------------------------------------------------------
 
-FEATURE BRANCH - Redesign MainForm Status UI
+##FEATURE BRANCH - Redesign MainForm Status UI
 
 <__description_here__>
 
 -------------------------------------------------------------------------------
 
-USER STORY
+###USER STORY
 
-<__title of story here__>
-
--------------------------------------------------------------------------------
-
-<__narritive of story here__>
+######<__title of story here__>
 
 -------------------------------------------------------------------------------
 
-USER STORY
-
-<__title of story here__>
+######<__narritive of story here__>
 
 -------------------------------------------------------------------------------
 
-<__narritive of story here__>
+###USER STORY
+
+######<__title of story here__>
 
 -------------------------------------------------------------------------------
 
-USER STORY
-
-<__title of story here__>
+######<__narritive of story here__>
 
 -------------------------------------------------------------------------------
 
-<__narritive of story here__>
+###USER STORY
+
+######<__title of story here__>
+
+-------------------------------------------------------------------------------
+
+######<__narritive of story here__>
 
 -------------------------------------------------------------------------------
