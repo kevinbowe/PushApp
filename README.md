@@ -25,7 +25,7 @@ Comments:  This is un-factored code.  There are many duplicate blocks of code th
 
 ##FEATURE BRANCH - Sub folder Feature
 
-Data files and application files are typically stored in sub folders. Push should be able to find, copy/move, and delete these files and sub folders when appropriate.
+Data files and application files are typically stored in sub folders. Push should be able to find, copy/move, and delete these files and sub folders when appropriate.  Not all sub folders and files should be processed. Push should be able to exclude certain files and sub folders when processing.  
 
 -------------------------------------------------------------------------------
 
