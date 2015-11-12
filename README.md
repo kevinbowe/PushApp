@@ -20,3 +20,41 @@ EDIT WORKSTATION
 The edit workstation is a Win 7/10 PC.  A second Ethernet card provides a link to the scanning workstation.  This P2P network is in a different domain so the scanning workstation is protected.
 
 Comments:  This is un-factored code.  There are many duplicate blocks of code that will be refactored before release.  There are many constant values related to configuration that will be removed.  This code has not been heavy tested but does work properly in XP.  This code is available to review and comment.  This code is not ready for release.
+
+-------------------------------------------------------------------------------
+
+FEATURE BRANCH - Redesign MainForm Status UI
+
+<__description_here__>
+
+-------------------------------------------------------------------------------
+
+USER STORY
+
+<__title of story here__>
+
+-------------------------------------------------------------------------------
+
+<__narritive of story here__>
+
+-------------------------------------------------------------------------------
+
+USER STORY
+
+<__title of story here__>
+
+-------------------------------------------------------------------------------
+
+<__narritive of story here__>
+
+-------------------------------------------------------------------------------
+
+USER STORY
+
+<__title of story here__>
+
+-------------------------------------------------------------------------------
+
+<__narritive of story here__>
+
+-------------------------------------------------------------------------------
