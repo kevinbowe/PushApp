@@ -300,34 +300,65 @@ namespace Push
 		} // END_METHOD
 
 
+
+
+
+
+
 		// Load Source or Target ListView...
 		private bool LoadListView(ListView DestinationListView, string DestinationPath)
 		{
-			// Fetch all of the files in the source filder...
+
 			if (!Directory.Exists(DestinationPath)) return false;
 
 			DestinationListView.Items.Clear();
 
+			List<string> fileSourceArrayList = new List<string>();
+
+			// Fetch all of the subfolders in the root destination folder...
+			DirectoryInfo directoryInfo = new DirectoryInfo(DestinationPath);
+			DirectoryInfo[] directoryInfoArray = directoryInfo.GetDirectories();
+			foreach (DirectoryInfo dirInfo in directoryInfoArray)
+			{
+				fileSourceArrayList.Add(dirInfo.FullName);
+			}
+
+			// Fetch all of the file extensions that shouldbe displayed...
 			List<string> fileExtensionList = new List<string>();
 			fileExtensionList.AddRange(Helper.LoadFileExtensions(appSettings));
 
-			List<string> fileSourceArrayList = new List<string>();
+			// Fetch all of the files in the root destination based on the file extension list...
 			foreach (string FileExtension in fileExtensionList)
 			{
 				fileSourceArrayList.AddRange(Directory.GetFiles(DestinationPath, FileExtension));
 			}
 
+			// Load the list view with the folders and files that have been fetched...
+			string fileName, friendlyFileType, friendlyFileSize, fileDate;
 			foreach (string file in fileSourceArrayList)
 			{
-				FileInfo fileInfo = new FileInfo(file);
-				//
-				string fileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
-				string friendlyFileType = FileTypes.GetFileTypeDescription(file);
-				string friendlyFileSize = FileTypes.StrFormatByteSize(fileInfo.Length);
-				string fileDate = File.GetCreationTime(file).ToString("MM/dd/yyyy h:mm tt");
+				fileName = friendlyFileType = friendlyFileSize = fileDate = string.Empty;
 
-				ListViewItem itemArray = new ListViewItem(new string[] 
-						{ fileName, friendlyFileType, friendlyFileSize, fileDate });
+				// Is the current 'file' a file or a folder??
+				FileAttributes fileAttributes = File.GetAttributes(file);
+				if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
+				{
+					fileName = Path.GetFileNameWithoutExtension(file);
+					friendlyFileType = "File folder";
+					//friendlyFileSize = string.Empty;
+					fileDate = File.GetCreationTime(file).ToString("MM/dd/yyyy h:mm tt");
+				}
+				else
+				{
+					FileInfo fileInfo = new FileInfo(file);
+					//
+					fileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
+					friendlyFileType = FileTypes.GetFileTypeDescription(file);
+					friendlyFileSize = FileTypes.StrFormatByteSize(fileInfo.Length);
+					fileDate = File.GetCreationTime(file).ToString("MM/dd/yyyy h:mm tt");
+				}
+
+				ListViewItem itemArray = new ListViewItem(new string[] { fileName, friendlyFileType, friendlyFileSize, fileDate });
 				DestinationListView.Items.Add(itemArray);
 
 			} // END_FOREACH
@@ -440,13 +471,24 @@ namespace Push
 				MessageBox.Show("The Source or Target Path do NOT Exist.\nDEBUG Hot-Key Canceled");
 				return true;
 			}
+
+			// Delete all files and subfolders in the source folder...
+			DirectoryInfo directoryInfo = new DirectoryInfo(appSettings.SourcePath);
+
+			foreach (System.IO.FileInfo file in directoryInfo.GetFiles())
+				file.Delete();
+
+			foreach (System.IO.DirectoryInfo subDirectory in directoryInfo.GetDirectories())
+				subDirectory.Delete(true);
 			
-			// Generate a collection of ALL files, source and target, that must be deleted...
-			List<string> fileList = new List<string>(Directory.GetFiles(appSettings.SourcePath));
-			fileList.AddRange(new List<string>(Directory.GetFiles(appSettings.TargetPath)));
-			
-			foreach (string file in fileList) 
-				File.Delete(file);
+			// Delete all files and subfolders in the folder...
+			directoryInfo = new DirectoryInfo(appSettings.TargetPath);
+
+			foreach (System.IO.FileInfo file in directoryInfo.GetFiles())
+				file.Delete();
+
+			foreach (System.IO.DirectoryInfo subDirectory in directoryInfo.GetDirectories())
+				subDirectory.Delete(true);
 
 			return false;
 		} // END_METHOD
@@ -469,6 +511,32 @@ namespace Push
 			}
 		} // END_METHOD
 
+
+		private void DEBUG_LoadSubFolderTestData(string TestDataPath, string DestinationPath)
+		{
+			DirectoryInfo dirInfo_TestData = new DirectoryInfo(TestDataPath);
+			DirectoryInfo dirInfo_Destination = new DirectoryInfo(DestinationPath);
+
+			CopyAll(dirInfo_TestData, dirInfo_Destination);
+		} // END_METHOD
+
+		public static void CopyAll(DirectoryInfo dirInfo_TestData, DirectoryInfo dirInfo_Destination)
+		{
+			Directory.CreateDirectory(dirInfo_Destination.FullName);
+
+			// Copy each file into the new directory.
+			foreach (FileInfo fileInfo_TestData in dirInfo_TestData.GetFiles())
+			{
+				fileInfo_TestData.CopyTo(Path.Combine(dirInfo_Destination.FullName, fileInfo_TestData.Name), true);
+			}
+
+			// Copy each subdirectory using recursion.
+			foreach (DirectoryInfo dirInfo_TestDataSubDir in dirInfo_TestData.GetDirectories())
+			{
+				DirectoryInfo dirInfo_nextDestinationtSubDir = dirInfo_Destination.CreateSubdirectory(dirInfo_TestDataSubDir.Name);
+				CopyAll(dirInfo_TestDataSubDir, dirInfo_nextDestinationtSubDir);
+			}
+		}
 
 		// Hot-Key TWO...
 		private void DEBUG_PaleGreen()
@@ -559,6 +627,36 @@ namespace Push
 			LoadListView(lvTarget, appSettings.TargetPath);
 		} // END_METHOD
 
+		// Hot-Key FOUR...
+		private void DEBUG_Orange()
+		{
+			string SourceTestData = @"C:\DEV_TESTDATA_0\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_0\Target";
+
+			// Validate Source and Target folders...
+			if (DEBUG_InitFolders())
+				return;
+
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvTarget, appSettings.TargetPath);
+		} // END_METHOD
+
+
+
 		#endregion		
 
 
@@ -594,6 +692,10 @@ namespace Push
 						DEBUG_Pink();
 						break;
 
+					// ENTER (FIVE)
+					case (Keys.LButton | Keys.MButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_Orange();
+						break;
 
 					default:
 						break;
