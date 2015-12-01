@@ -94,7 +94,7 @@ namespace Push
 			List<string> all_FileSourceList = new List<string>();
 			all_FileSourceList = GetFiles(appSettings.SourcePath, FileExtensionArrayList, all_FileSourceList);
 
-			if (fileSourceArrayList.Count == 0)
+			if (all_FileSourceList.Count == 0)
 			{
 				// If we get here, there are not files in the source folder to process...
 				bgWorker.DoWork += new DoWorkEventHandler(CopyFile_BackGround);
@@ -153,7 +153,7 @@ namespace Push
 			if (dupeFileCount <= 0)
 			{
 				bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
-				List<object> args = new List<object>() { fileSourceArrayList, appSettings };
+				List<object> args = new List<object>() { all_FileSourceList, appSettings };
 				bgWorker.RunWorkerAsync(args);
 			}
 			else
