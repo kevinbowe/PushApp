@@ -38,6 +38,8 @@ namespace Push
 		{
 			BackgroundWorker bgWorker = sender as BackgroundWorker;
 			
+
+			// INVALID CAST - EXCEPTION...
 			List<string> all_FileSourceList = (List<string>)((List<object>)doWorkEventArgs.Argument)[0];
 
 			AppSettings appSettings = (AppSettings)((List<object>)doWorkEventArgs.Argument)[1];
@@ -91,8 +93,23 @@ namespace Push
 				bgWorker.ReportProgress(percentComplete);
 			}
 
+			// Delete all source paths...
+			DeleteSourcePaths(appSettings.SourcePath);
+
 			doWorkEventArgs.Result = new Tuple<Helper.commandResult, int, int>(Helper.commandResult.Overwrite, copyCount, 0);
 		}
+
+		private static void DeleteSourcePaths(string pathArg)
+		{
+			foreach (string path in Directory.GetDirectories(pathArg))
+			{	
+				// Recurse..
+				DeleteSourcePaths(path);
+
+				if (!Directory.GetFileSystemEntries(path).Any())
+					Directory.Delete(path, false /*Recurse*/); 
+			}
+		} // END_METHOD
 
 		private static void CreateTargetPaths(string targetPath, string uniqueSourcePath)
 		{
