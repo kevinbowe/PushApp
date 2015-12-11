@@ -103,15 +103,6 @@ namespace Push
 			}
 			#endregion
 
-
-
-
-
-
-
-
-
-
 			#region [ BUILD LIST OF TARGET FILES ]
 			List<string> all_FileTargetList = new List<string>();
 			all_FileTargetList = GetFiles(appSettings.TargetPath, FileExtensionArrayList, all_FileTargetList);
@@ -175,7 +166,8 @@ namespace Push
 
 						case Helper.commandResult.Skip:
 							bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
-							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							args = new List<object>() { all_FileSourceList, all_FileTargetList, appSettings };
+							//args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
 							bgWorker.RunWorkerAsync(args);
 							break;
 
@@ -256,7 +248,8 @@ namespace Push
 
 						case Helper.commandResult.Skip:
 							bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
-							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							args = new List<object>() { all_FileSourceList, all_FileTargetList, appSettings };
+							//args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
 							bgWorker.RunWorkerAsync(args);
 							break;
 

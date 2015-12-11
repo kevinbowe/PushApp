@@ -114,6 +114,31 @@ namespace Push
 		} // END_METHOD
 
 
+		public static List<string> BuildUniquePathList(List<string> all_FileSourceList, string sourcePath)
+		{
+			List<string> uniqueSourcePathList = new List<string>();
+			foreach (string s in all_FileSourceList)
+			{
+				// Grab the path fragment...
+				string p = Path.GetDirectoryName(s);
+
+				// Strip the source path from the current path fragment...
+				//		If the remainder is empty, continue...
+				string sp = p.Replace(sourcePath, string.Empty);
+				if (string.IsNullOrEmpty(sp))
+					continue;
+
+				// Linq query that tests to see if the current path is in the path collection...
+				if (uniqueSourcePathList.Any(e => e == sp))
+					continue;
+
+				// If we get here, add the subpath to the unique path list...
+				uniqueSourcePathList.Add(sp);
+			}
+			return uniqueSourcePathList;
+		}
+
+
 
 	}
 }
