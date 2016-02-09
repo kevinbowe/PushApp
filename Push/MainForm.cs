@@ -7,6 +7,10 @@ using System.IO;
 using Itenso.Configuration;
 using System.ComponentModel;
 using System.Threading;
+//---
+using System.Text;
+//---
+using System.Text.RegularExpressions;
 
 namespace Push
 {
@@ -21,6 +25,8 @@ namespace Push
 		// The minimum window size which will hide the source and target and shrink the status listbox...
 		private Size MinHideDetailSize = new Size(295, 161);
 		private Size MinShowDetailSize = new Size(700, 350);
+
+		public string ignorePattern;
 
 
 		public void bgProgressChangedEventHandler(object sender, ProgressChangedEventArgs e)
@@ -40,8 +46,11 @@ namespace Push
 			var result = (Tuple<Helper.commandResult, int,int>)e.Result;
 	
 			// Update Source & Target Listboxes...
-			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 			LoadListView(lvTarget, appSettings.TargetPath);
+			
+			FitListView(lvSource);
+			FitListView(lvTarget);
 
 			UpdateStatus(result);
 
@@ -106,6 +115,9 @@ namespace Push
 				configFormDialog.Dispose();
 			}
 
+			// Build the Ignore File regular expression pattern...
+			ignorePattern = BuildIgnorePattern(appSettings.ExePath);
+
 			// Init Controls...
 			lblStatus1_1.Text = string.Empty;
 			lblStatus1_2.Text = string.Empty;
@@ -120,6 +132,44 @@ namespace Push
 
 			// Update the form properties to the last used...
 			UpdateControls();
+		} // END_METHOD
+
+		private string BuildIgnorePattern(string ExePath)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			try
+			{
+				using (StreamReader sr = new StreamReader(appSettings.ExePath + @"\Config\PushIgnore.txt"))
+				{
+					while (sr.Peek() >= 0)
+					{
+						string s = sr.ReadLine();
+
+						// Discard comments and empty lines...
+						if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s) || s[0] == '#')
+							continue;
+
+						// Replace Global Find characters with equivelent RegEx expressions...
+						s = s.Replace(@"\", @"\\");  // Escape all slashes - Only Folders are effected...
+						s = s.Replace(".",@"\.");	// Escape periods
+						s =	s.Replace(@"*",".*");	// Convert *
+						s =	s.Replace(@"?", ".");	// Convert ?
+						// Add token...					
+						sb.Append(sb.Length == 0 ? s : '|' + s);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("Reading PushIgnore.txt failed.  {0}", e.Message);
+			}
+
+			// Add valid Prefix and Suffix to regex pattern...
+			sb.Append(')');
+			sb.Insert(0, "(");
+
+			return sb.ToString();
 		} // END_METHOD
 
 
@@ -153,8 +203,11 @@ namespace Push
 				pnlDetails.Visible = true;
 				formSettings.Form.MinimumSize = MinimumSize = MinShowDetailSize;
 
-				LoadListView(lvSource, appSettings.SourcePath);
+				LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 				LoadListView(lvTarget, appSettings.TargetPath);
+
+				FitListView(lvSource);
+				FitListView(lvTarget);
 			}
 			else
 			{
@@ -181,7 +234,7 @@ namespace Push
 			this.MaximizeBox = false;
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 			LoadListView(lvTarget, appSettings.TargetPath);
 
 			FitListView(lvSource);
@@ -225,7 +278,8 @@ namespace Push
 			switch (copyFileResult.Item1)
 			{
 				case Helper.commandResult.Cancel:
-					statusList.Add("Copy Canceled");
+					statusList.Add(string.Format("Duplicates Found", copyFileResult.Item2));
+					statusList.Add(string.Format("Copy Canceled", copyFileResult.Item3));
 					break;
 
 				case Helper.commandResult.Overwrite:
@@ -301,33 +355,68 @@ namespace Push
 
 
 		// Load Source or Target ListView...
-		private bool LoadListView(ListView DestinationListView, string DestinationPath)
+		private bool LoadListView(ListView DestinationListView, string DestinationPath, string ignorePattern = null)
 		{
-			// Fetch all of the files in the source filder...
+
 			if (!Directory.Exists(DestinationPath)) return false;
 
 			DestinationListView.Items.Clear();
 
+			List<string> fileSourceArrayList = new List<string>();
+
+			// Fetch all of the subfolders in the root destination folder...
+			DirectoryInfo directoryInfo = new DirectoryInfo(DestinationPath);
+			DirectoryInfo[] directoryInfoArray = directoryInfo.GetDirectories();
+			foreach (DirectoryInfo dirInfo in directoryInfoArray)
+			{
+				if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(dirInfo.FullName + "\\\\", ignorePattern))
+					continue;
+				
+				fileSourceArrayList.Add(dirInfo.FullName);
+			}
+
+			// Fetch all of the file extensions that shouldbe displayed...
 			List<string> fileExtensionList = new List<string>();
 			fileExtensionList.AddRange(Helper.LoadFileExtensions(appSettings));
 
-			List<string> fileSourceArrayList = new List<string>();
+			// Fetch all of the files in the root destination based on the file extension list...
 			foreach (string FileExtension in fileExtensionList)
 			{
-				fileSourceArrayList.AddRange(Directory.GetFiles(DestinationPath, FileExtension));
-			}
+				string[] fileArray = Directory.GetFiles(DestinationPath, FileExtension);
 
+				foreach (string file in fileArray)
+				{
+					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(file, ignorePattern))
+						continue;
+					fileSourceArrayList.Add(file);
+				}
+			} // END_OUTER_FOREACH
+
+			// Load the list view with the folders and files that have been fetched...
+			string fileName, friendlyFileType, friendlyFileSize, fileDate;
 			foreach (string file in fileSourceArrayList)
 			{
-				FileInfo fileInfo = new FileInfo(file);
-				//
-				string fileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
-				string friendlyFileType = FileTypes.GetFileTypeDescription(file);
-				string friendlyFileSize = FileTypes.StrFormatByteSize(fileInfo.Length);
-				string fileDate = File.GetCreationTime(file).ToString("MM/dd/yyyy h:mm tt");
+				fileName = friendlyFileType = friendlyFileSize = fileDate = string.Empty;
 
-				ListViewItem itemArray = new ListViewItem(new string[] 
-						{ fileName, friendlyFileType, friendlyFileSize, fileDate });
+				// Is the current 'file' a file or a folder??
+				FileAttributes fileAttributes = File.GetAttributes(file);
+				if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
+				{
+					fileName = Path.GetFileNameWithoutExtension(file);
+					friendlyFileType = "File folder";
+					fileDate = File.GetCreationTime(file).ToString("MM/dd/yyyy h:mm tt");
+				}
+				else
+				{
+					FileInfo fileInfo = new FileInfo(file);
+					//
+					fileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
+					friendlyFileType = FileTypes.GetFileTypeDescription(file);
+					friendlyFileSize = FileTypes.StrFormatByteSize(fileInfo.Length);
+					fileDate = File.GetCreationTime(file).ToString("MM/dd/yyyy h:mm tt");
+				}
+
+				ListViewItem itemArray = new ListViewItem(new string[] { fileName, friendlyFileType, friendlyFileSize, fileDate });
 				DestinationListView.Items.Add(itemArray);
 
 			} // END_FOREACH
@@ -335,7 +424,7 @@ namespace Push
 			return true;
 		} // END_METHOD
 
-
+	
 		// Configuration Dialog...
 		private void LoadConfigurationDialog()
 		{
@@ -373,7 +462,7 @@ namespace Push
 			toolStripProgressBar.Visible = false;
 			toolStripLblProgress.Visible = false;
 			//---
-			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 			LoadListView(lvTarget, appSettings.TargetPath);
 
 			FitListView(lvSource);
@@ -395,20 +484,17 @@ namespace Push
 
 		#region [ DEBUG BUTTONS ]
 
-		public ListView SourceControl { get { return this.lvSource; } set { this.lvSource = value; } }
+		public ListView SourceControl { get { return this.lvSource; } set { this.lvSource = value; } } // END_METHOD
 
 
-		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } }
+		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } } // END_METHOD
 
-		// Hot-Key ONE
-		private void DEBUG_MistyRose()
+
+		// Hot-Key ZERO
+		private void DEBUG_Red()
 		{
-			//string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
-			//string TargetTestData = @"C:\DEV_TESTDATA\TargetPictures";
 			string SourceTestData = @"C:\DEV_TESTDATA_0\Source";
 			string TargetTestData = @"C:\DEV_TESTDATA_0\Target";
-		
-
 
 			if (DEBUG_InitFolders())
 				return;
@@ -420,15 +506,52 @@ namespace Push
 				return;
 			}
 
-			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
+			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 			LoadListView(lvTarget, appSettings.TargetPath);
+			
+			FitListView(lvSource);
+			FitListView(lvTarget);
+
+		} // END_METHOD
+
+	
+		// Hot-Key ONE
+		private void DEBUG_MistyRose()
+		{
+			string SourceTestData = @"C:\DEV_TESTDATA_1\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_1\Target";
+
+			if (DEBUG_InitFolders())
+				return;
+
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
+			LoadListView(lvTarget, appSettings.TargetPath);
+
+			FitListView(lvSource);
+			FitListView(lvTarget);
 		} // END_METHOD
 
 
@@ -440,13 +563,24 @@ namespace Push
 				MessageBox.Show("The Source or Target Path do NOT Exist.\nDEBUG Hot-Key Canceled");
 				return true;
 			}
+
+			// Delete all files and subfolders in the source folder...
+			DirectoryInfo directoryInfo = new DirectoryInfo(appSettings.SourcePath);
+
+			foreach (System.IO.FileInfo file in directoryInfo.GetFiles())
+				file.Delete();
+
+			foreach (System.IO.DirectoryInfo subDirectory in directoryInfo.GetDirectories())
+				subDirectory.Delete(true);
 			
-			// Generate a collection of ALL files, source and target, that must be deleted...
-			List<string> fileList = new List<string>(Directory.GetFiles(appSettings.SourcePath));
-			fileList.AddRange(new List<string>(Directory.GetFiles(appSettings.TargetPath)));
-			
-			foreach (string file in fileList) 
-				File.Delete(file);
+			// Delete all files and subfolders in the folder...
+			directoryInfo = new DirectoryInfo(appSettings.TargetPath);
+
+			foreach (System.IO.FileInfo file in directoryInfo.GetFiles())
+				file.Delete();
+
+			foreach (System.IO.DirectoryInfo subDirectory in directoryInfo.GetDirectories())
+				subDirectory.Delete(true);
 
 			return false;
 		} // END_METHOD
@@ -470,11 +604,39 @@ namespace Push
 		} // END_METHOD
 
 
+		private void DEBUG_LoadSubFolderTestData(string TestDataPath, string DestinationPath)
+		{
+			DirectoryInfo dirInfo_TestData = new DirectoryInfo(TestDataPath);
+			DirectoryInfo dirInfo_Destination = new DirectoryInfo(DestinationPath);
+
+			CopyAll(dirInfo_TestData, dirInfo_Destination);
+		} // END_METHOD
+
+
+		public static void CopyAll(DirectoryInfo dirInfo_TestData, DirectoryInfo dirInfo_Destination)
+		{
+			Directory.CreateDirectory(dirInfo_Destination.FullName);
+
+			// Copy each file into the new directory.
+			foreach (FileInfo fileInfo_TestData in dirInfo_TestData.GetFiles())
+			{
+				fileInfo_TestData.CopyTo(Path.Combine(dirInfo_Destination.FullName, fileInfo_TestData.Name), true);
+			}
+
+			// Copy each subdirectory using recursion.
+			foreach (DirectoryInfo dirInfo_TestDataSubDir in dirInfo_TestData.GetDirectories())
+			{
+				DirectoryInfo dirInfo_nextDestinationtSubDir = dirInfo_Destination.CreateSubdirectory(dirInfo_TestDataSubDir.Name);
+				CopyAll(dirInfo_TestDataSubDir, dirInfo_nextDestinationtSubDir);
+			}
+		} // END_METHOD
+
+		
 		// Hot-Key TWO...
 		private void DEBUG_PaleGreen()
 		{
-			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
-			string TargetTestData = @"C:\DEV_TESTDATA_2";
+			string SourceTestData = @"C:\DEV_TESTDATA_2\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_2\Target";
 
 			// Validate Source and Target folders...
 			if (DEBUG_InitFolders())
@@ -488,15 +650,20 @@ namespace Push
 			}
 
 
-			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
+			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 			LoadListView(lvTarget, appSettings.TargetPath);
+
+			FitListView(lvSource);
+			FitListView(lvTarget);
 		} // END_METHOD
 
 
@@ -504,36 +671,6 @@ namespace Push
 		private void DEBUG_PowderBlue()
 		{
 			//DEBUG_InitFolders();
-			string SourceTestData = @"C:\DEV_TESTDATA\Pictures";
-			string TargetTestData = @"C:\DEV_TESTDATA_1";
-
-			// Validate Source and Target folders...
-			if (DEBUG_InitFolders())
-				return;
-
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
-			{
-				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
-				return;
-			}
-
-
-			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
-
-			//-----------------------------------------------------------------
-			// Clear the status list box...
-
-			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath);
-			LoadListView(lvTarget, appSettings.TargetPath);
-		} // END_METHOD
-
-
-		// Hot-Key FOUR...
-		private void DEBUG_Pink()
-		{
 			string SourceTestData = @"C:\DEV_TESTDATA_3\Source";
 			string TargetTestData = @"C:\DEV_TESTDATA_3\Target";
 
@@ -548,15 +685,87 @@ namespace Push
 				return;
 			}
 
-			DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
+			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
 
 			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath);
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 			LoadListView(lvTarget, appSettings.TargetPath);
+
+			FitListView(lvSource);
+			FitListView(lvTarget);
+
+		} // END_METHOD
+
+
+		// Hot-Key FOUR...
+		private void DEBUG_Pink()
+		{
+			string SourceTestData = @"C:\DEV_TESTDATA_4\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_4\Target";
+
+			// Validate Source and Target folders...
+			if (DEBUG_InitFolders())
+				return;
+
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
+			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
+			LoadListView(lvTarget, appSettings.TargetPath);
+
+			FitListView(lvSource);
+			FitListView(lvTarget);
+		} // END_METHOD
+
+
+		// Hot-Key FIVE...
+		private void DEBUG_Orange()
+		{
+			string SourceTestData = @"C:\DEV_TESTDATA_5\Source";
+			string TargetTestData = @"C:\DEV_TESTDATA_5\Target";
+
+			// Validate Source and Target folders...
+			if (DEBUG_InitFolders())
+				return;
+
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
+				return;
+			}
+
+			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
+			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+
+			//-----------------------------------------------------------------
+			// Clear the status list box...
+
+			// Hydrate the Source and Target Listboxes
+			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
+			LoadListView(lvTarget, appSettings.TargetPath);
+
+			FitListView(lvSource);
+			FitListView(lvTarget);
 		} // END_METHOD
 
 		#endregion		
@@ -576,6 +785,10 @@ namespace Push
 
 				switch (keyData)
 				{
+					// Enter 0 (ZERO)...
+					case (Keys.ShiftKey | Keys.Space):
+						DEBUG_Red();
+						break;
 					// Enter 1 (ONE)...
 					case (Keys.LButton | Keys.ShiftKey | Keys.Space):
 						DEBUG_MistyRose();
@@ -594,6 +807,10 @@ namespace Push
 						DEBUG_Pink();
 						break;
 
+					// ENTER (FIVE)
+					case (Keys.LButton | Keys.MButton | Keys.ShiftKey | Keys.Space):
+						DEBUG_Orange();
+						break;
 
 					default:
 						break;
@@ -617,13 +834,16 @@ namespace Push
 				lblStatus1_2.Text = string.Empty;
 				lblStatus2_2.Text = string.Empty;
 				//--
-				LoadListView(lvSource, appSettings.SourcePath);
+				LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 				LoadListView(lvTarget, appSettings.TargetPath);
+
+				FitListView(lvSource);
+				FitListView(lvTarget);
 				return true;
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
-		}
+		} // END_METHOD
 	
 		#endregion
 
@@ -662,33 +882,41 @@ namespace Push
 		{
 			FitListView(lvSource);
 			FitListView(lvTarget);
-		}
+		}  //END_METHOD
 
 
 		private void FitListView(ListView listView)
 		{
 			/*	DESIGN POINT:
 			 *	-1 = resize the column to the length of the longet value in the column.
-			 *	-2 = resize the column to the length of the column header.		*/
+			 *	-2 = resize the column to the length of the column header.		
+			 *
+			 *	NOTE: Keep this code for a while just in case It may get recycled..
+			 */
 
-			if (listView.Items.Count == 0)
-			{
-				// If we get here, there are no entries in the source ListView...
+			//if (listView.Items.Count == 0)
+			//{
+			//	// If we get here, there are no entries in the source ListView...
 
-				// Set the width of the Type, and Size so they will be at least the width of the header...
-				listView.Columns[1].Width = -2;
-				listView.Columns[2].Width = -2;
-				listView.Columns[3].Width = -2;
-			}
-			else
-			{
-				// If we get herem there are entries in the ListView...
+			//	// Set the width of the Type, and Size so they will be at least the width of the header...
+			//	listView.Columns[1].Width = -2;
+			//	listView.Columns[2].Width = -2;
+			//	listView.Columns[3].Width = -2;
+			//}
+			//else
+			//{
+			//	// If we get herem there are entries in the ListView...
 
-				// Set the width of the Type, Size, and Date so they will be at least the width of the longest item in the columnr...
-				listView.Columns[1].Width = -1;
-				listView.Columns[2].Width = -1;
-				listView.Columns[3].Width = -1;
-			}
+			//	// Set the width of the Type, Size, and Date so they will be at least the width of the longest item in the columnr...
+			//	listView.Columns[1].Width = -1;
+			//	listView.Columns[2].Width = -1;
+			//	listView.Columns[3].Width = -1;
+			//}
+
+			// Set the min column width for File Type, Size and Date...
+			listView.Columns[1].Width = listView.Columns[1].Width < 74 ? 74 : listView.Columns[1].Width;
+			listView.Columns[2].Width = listView.Columns[2].Width < 60 ? 60 : listView.Columns[2].Width;
+			listView.Columns[3].Width = listView.Columns[3].Width < 118 ? 118 : listView.Columns[3].Width;
 
 			// Set the File Name to 'fill' the rest of the List View...
 			// Force a minimum column width...
@@ -715,12 +943,14 @@ namespace Push
 
 		private void lvSource_SizeChanged(object sender, EventArgs e)
 		{
-		}
+		} // END_METHOD
+
 
 		private void pictureBox1_Click(object sender, EventArgs e)
 		{
 			lvSource.Columns[0].Width = -2;
-		}
+		} // END_METHOD
+
 
 		private void pictureBox2_Click(object sender, EventArgs e)
 		{

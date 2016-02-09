@@ -314,10 +314,6 @@ namespace Push
 		// https://www.debuggex.com/r/Lyx0F0y1LORvNhwA
 		private bool IsDecimalNumber(string strNumber)
 		{
-			//@"^-?(\d+|(\d{1,3}((,|\.)\d{3})*))((,|\.)\d+)?$"
-
-			//string regex = @"^-?(?:(?:0|[1-9][0-9]*)(?:" + GetNumberDecimalSeparator() + @"[0-9]+)?|[1-9][0-9]{1,2}(?:,[0-9]{3})+)$";
-
 			string regex = @"^-?(\d+|(\d{1,3}((,|\.)\d{3})*))((,|\.)\d+)?$";
 
 			Regex wholePattern = new Regex(regex);

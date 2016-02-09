@@ -14,7 +14,7 @@ namespace Push
 
 		private void ValidateConfigForm()
 		{
-			#region [ CHECK FILE EXTENSION FILTERS ]---------------------------
+			#region [ CHECK FILE EXTENSION FILTERS ]
 			if (!IsValidFileExtensionFilters())
 			{
 				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
@@ -29,7 +29,7 @@ namespace Push
 			}
 			#endregion
 
-			#region [ CHECK DUPLICATE FILE ACTION ]----------------------------
+			#region [ CHECK DUPLICATE FILE ACTION ]
 			if (!rbOverwrite.Checked && !rbRename.Checked
 						&& !rbSkip.Checked && !rbCancel.Checked)
 			{
@@ -43,7 +43,7 @@ namespace Push
 			}
 			#endregion
 
-			#region [ CHECK SOURCE FOLDER PATH ]-------------------------------
+			#region [ CHECK SOURCE FOLDER PATH ]
 			if (!ValidatePath(tbSourceFolder.Text))
 			{
 				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
@@ -58,7 +58,7 @@ namespace Push
 			}
 			#endregion
 
-			#region [ CHECK TARGET FOLDER PATH ]-------------------------------
+			#region [ CHECK TARGET FOLDER PATH ]
 			if (!ValidatePath(tbTargetFolder.Text))
 			{
 				tbSourceFolder.Select(0, tbTargetFolder.Text.Length);
@@ -88,7 +88,7 @@ namespace Push
 		{
 			errorProviderFileExtensions.SetError(tbFileExtensions, "");
 			errorProviderFileExtensions.Dispose();
-		}
+		} // END_METHOD
 
 
 		private void tbFileExtensions_Validating(object sender, CancelEventArgs e)
@@ -109,19 +109,6 @@ namespace Push
 
 			// Parse the File Extension Filter string...
 			List<string> filterList = Helper.LoadFileExtensions(appSettings);
-
-			#region [ DEBUG STRINGS_SAVE ]
-			//// BAD_FILTERS
-			//filterList/*_BAD*/ =
-			//	new List<string>() { "", " ", "  ", ".*", "*.", "*.*text", "*.|*", "|",
-			//						 "#.*", "*.#", "IMG*.JPG", "**.*", "***.*", "*.**",
-			//						 "*.***", "**.*", "***.*", "*.**", "*.***", "IMG*.JPG",
-			//						 "IMAGE**.JPG", "IMAGE**.*JPG", "*.JP*" };
-			//// GOOD_FILTERS
-			//filterList/*_GOOD*/ =
-			//	new List<string>() { "*.*", "*.jpg", "*.JPEG", "*.tif", "*.TIFF", "*.BMP", 
-			//						 "*.DOC", "*.WORD", "*.txt", "*.now", "*.Jpg_Good" };
-			#endregion
 
 			// Iterate over each filter looking for poorly formed filters...
 			bool isValidFilExtensionFilters = true;

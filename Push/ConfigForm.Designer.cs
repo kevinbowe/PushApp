@@ -46,10 +46,7 @@
 			this.lblFileExtensions = new System.Windows.Forms.Label();
 			this.tbFileExtensions = new System.Windows.Forms.TextBox();
 			this.btnFileExtensionsClear = new System.Windows.Forms.Button();
-			this.cbDisableSplashScreen = new System.Windows.Forms.CheckBox();
-			this.cbDisableXMLOptions = new System.Windows.Forms.CheckBox();
 			this.btnFileExtensionsFileSelect = new System.Windows.Forms.Button();
-			this.grpFutureFeatures = new System.Windows.Forms.GroupBox();
 			this.btnTargetClear = new System.Windows.Forms.Button();
 			this.btnSourceFolderClear = new System.Windows.Forms.Button();
 			this.errorProviderSourceFolder = new System.Windows.Forms.ErrorProvider(this.components);
@@ -57,7 +54,6 @@
 			this.errorProviderDuplicateHandeling = new System.Windows.Forms.ErrorProvider(this.components);
 			this.errorProviderFileExtensions = new System.Windows.Forms.ErrorProvider(this.components);
 			this.grpDupeHandeling.SuspendLayout();
-			this.grpFutureFeatures.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProviderSourceFolder)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProviderTargetFolder)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProviderDuplicateHandeling)).BeginInit();
@@ -67,7 +63,7 @@
 			// btnOK
 			// 
 			this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnOK.Location = new System.Drawing.Point(217, 307);
+			this.btnOK.Location = new System.Drawing.Point(217, 210);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
 			this.btnOK.TabIndex = 6;
@@ -78,7 +74,7 @@
 			// btnCancel
 			// 
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(298, 307);
+			this.btnCancel.Location = new System.Drawing.Point(298, 210);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 7;
@@ -249,28 +245,6 @@
 			this.btnFileExtensionsClear.UseVisualStyleBackColor = true;
 			this.btnFileExtensionsClear.Click += new System.EventHandler(this.btnFileExtensionsClear_Click);
 			// 
-			// cbDisableSplashScreen
-			// 
-			this.cbDisableSplashScreen.AutoSize = true;
-			this.cbDisableSplashScreen.Location = new System.Drawing.Point(11, 22);
-			this.cbDisableSplashScreen.Name = "cbDisableSplashScreen";
-			this.cbDisableSplashScreen.Size = new System.Drawing.Size(133, 17);
-			this.cbDisableSplashScreen.TabIndex = 0;
-			this.cbDisableSplashScreen.Text = "Disable Splash Screen";
-			this.cbDisableSplashScreen.UseVisualStyleBackColor = true;
-			this.cbDisableSplashScreen.CheckedChanged += new System.EventHandler(this.cbDisableSplashScreen_CheckedChanged);
-			// 
-			// cbDisableXMLOptions
-			// 
-			this.cbDisableXMLOptions.AutoSize = true;
-			this.cbDisableXMLOptions.Location = new System.Drawing.Point(11, 45);
-			this.cbDisableXMLOptions.Name = "cbDisableXMLOptions";
-			this.cbDisableXMLOptions.Size = new System.Drawing.Size(125, 17);
-			this.cbDisableXMLOptions.TabIndex = 1;
-			this.cbDisableXMLOptions.Text = "Disable XML Options";
-			this.cbDisableXMLOptions.UseVisualStyleBackColor = true;
-			this.cbDisableXMLOptions.CheckedChanged += new System.EventHandler(this.cbDisableXMLOptions_CheckedChanged);
-			// 
 			// btnFileExtensionsFileSelect
 			// 
 			this.btnFileExtensionsFileSelect.Location = new System.Drawing.Point(334, 86);
@@ -280,17 +254,6 @@
 			this.btnFileExtensionsFileSelect.Text = "Load";
 			this.btnFileExtensionsFileSelect.UseVisualStyleBackColor = true;
 			this.btnFileExtensionsFileSelect.Click += new System.EventHandler(this.btnFileExtensionsFileSelect_Click);
-			// 
-			// grpFutureFeatures
-			// 
-			this.grpFutureFeatures.Controls.Add(this.cbDisableSplashScreen);
-			this.grpFutureFeatures.Controls.Add(this.cbDisableXMLOptions);
-			this.grpFutureFeatures.Location = new System.Drawing.Point(20, 221);
-			this.grpFutureFeatures.Name = "grpFutureFeatures";
-			this.grpFutureFeatures.Size = new System.Drawing.Size(353, 66);
-			this.grpFutureFeatures.TabIndex = 5;
-			this.grpFutureFeatures.TabStop = false;
-			this.grpFutureFeatures.Text = "Future Features";
 			// 
 			// btnTargetClear
 			// 
@@ -332,11 +295,10 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(383, 340);
+			this.ClientSize = new System.Drawing.Size(383, 244);
 			this.Controls.Add(this.btnSourceFolderClear);
 			this.Controls.Add(this.btnTargetClear);
 			this.Controls.Add(this.cbHideDupeFileMessage);
-			this.Controls.Add(this.grpFutureFeatures);
 			this.Controls.Add(this.btnFileExtensionsFileSelect);
 			this.Controls.Add(this.btnFileExtensionsClear);
 			this.Controls.Add(this.tbFileExtensions);
@@ -356,8 +318,6 @@
 			this.Load += new System.EventHandler(this.ConfigForm_Load);
 			this.grpDupeHandeling.ResumeLayout(false);
 			this.grpDupeHandeling.PerformLayout();
-			this.grpFutureFeatures.ResumeLayout(false);
-			this.grpFutureFeatures.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProviderSourceFolder)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProviderTargetFolder)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.errorProviderDuplicateHandeling)).EndInit();
@@ -384,10 +344,7 @@
 		private System.Windows.Forms.Label lblFileExtensions;
 		private System.Windows.Forms.TextBox tbFileExtensions;
 		private System.Windows.Forms.Button btnFileExtensionsClear;
-		private System.Windows.Forms.CheckBox cbDisableSplashScreen;
-		private System.Windows.Forms.CheckBox cbDisableXMLOptions;
 		private System.Windows.Forms.Button btnFileExtensionsFileSelect;
-		private System.Windows.Forms.GroupBox grpFutureFeatures;
 		private System.Windows.Forms.Button btnTargetClear;
 		private System.Windows.Forms.Button btnSourceFolderClear;
 		private System.Windows.Forms.ErrorProvider errorProviderSourceFolder;

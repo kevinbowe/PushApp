@@ -23,8 +23,49 @@ namespace Push
 	public class CopyFile
 	{
 		BackgroundWorker bgWorker;
-	
-		// Copy Files from Source folder to Target folder...
+
+
+		private List<string> GetFiles(string SourcePath, List<string> FileExtensionArrayList, List<string> all_FileSourceList, string ignorePattern = null )
+		{
+			// Grab all of the files in the current folder...
+
+			// Build list of files to copy... 
+			foreach (string fileExtension in FileExtensionArrayList)
+			{
+				string[] fileSourceStrArray = Directory.GetFiles(SourcePath, fileExtension);
+
+				if (fileSourceStrArray.Length <= 0)
+					continue;
+
+				foreach (string file in fileSourceStrArray)
+				{
+					// Compare the current file name to the ignore list...
+					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(file, ignorePattern))
+						continue;
+
+					all_FileSourceList.Add(file);
+				}
+			} // END_FOREACH
+
+			// Find any subfolders in the current source path...
+
+			DirectoryInfo directoryInfo = new DirectoryInfo(SourcePath);
+			DirectoryInfo[] directoryInfoArray = directoryInfo.GetDirectories();
+			foreach (DirectoryInfo dirInfo in directoryInfoArray)
+			{
+				string newSourcePath = SourcePath + @"\" + dirInfo + @"\";
+
+				// Compare the current file name to the ignore list...
+				if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(newSourcePath, ignorePattern))
+					continue;
+
+				all_FileSourceList = GetFiles(newSourcePath, FileExtensionArrayList, all_FileSourceList);
+			}
+
+			return all_FileSourceList;
+		} // END_METHOD
+
+
 		public void CopyFiles(MainForm mainForm)
 		{
 			AppSettings appSettings = mainForm.appSettings;
@@ -42,40 +83,34 @@ namespace Push
 			List<string> FileExtensionArrayList = Helper.LoadFileExtensions(appSettings);
 
 			#region [ BUILD LIST OF SOURCE FILES ]
-			// Build list of file to copy... 
-			foreach (string fileExtension in FileExtensionArrayList)
-			{
-				string[] fileSourceStrArray = Directory.GetFiles(appSettings.SourcePath, fileExtension);
-
-				if (fileSourceStrArray.Length <= 0)
-					continue;
-
-				foreach (string s in fileSourceStrArray)
-					fileSourceArrayList.Add(s);
-			} // END_FOREACH
-
-			if (fileSourceArrayList.Count == 0)
+			List<string> all_FileSourceList = new List<string>();
+			all_FileSourceList = GetFiles(appSettings.SourcePath, FileExtensionArrayList, all_FileSourceList, mainForm.ignorePattern);
+			
+			if (all_FileSourceList.Count == 0)
 			{
 				// If we get here, there are not files in the source folder to process...
 				bgWorker.DoWork += new DoWorkEventHandler(CopyFile_BackGround);
 				bgWorker.RunWorkerAsync();
 				return;
 			}
-
 			#endregion
 
 			#region [ BUILD LIST OF TARGET FILES ]
+			List<string> all_FileTargetList = new List<string>();
+			all_FileTargetList = GetFiles(appSettings.TargetPath, FileExtensionArrayList, all_FileTargetList);
+
+
 			// Build a list of files on the target folder...
 			string[] fileTargetStrArray = System.IO.Directory.GetFiles(appSettings.TargetPath);
 			int dupeFileCount = 0;
 
 			// OUTER LOOP -- Iterate over each file in the target list...
-			foreach (string t in fileTargetStrArray)
+			foreach (string t in all_FileTargetList)
 			{
 				FileInfo targetFileInfo = new FileInfo(t);
 
 				// INNER_LOOP -- Iterate over each file in the source list...
-				foreach (string s in fileSourceArrayList)
+				foreach (string s in all_FileSourceList)
 				{
 					FileInfo sourceFileInfo = new FileInfo(s);
 
@@ -94,7 +129,7 @@ namespace Push
 			if (dupeFileCount <= 0)
 			{
 				bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
-				List<object> args = new List<object>() { fileSourceArrayList, appSettings };
+				List<object> args = new List<object>() { all_FileSourceList, appSettings };
 				bgWorker.RunWorkerAsync(args);
 			}
 			else
@@ -105,7 +140,7 @@ namespace Push
 					// If we get here, perform whatever Dupe File Action has been configured...
 
 					List<object> args;
-					
+
 					// Save the Dupe Action. We need this for the statusing return value...
 					DuplicateAction = (Helper.commandResult)Enum.Parse(typeof(Helper.commandResult), appSettings.DuplicateFileAction);
 
@@ -116,30 +151,33 @@ namespace Push
 							// Assign the correct event handler to the worker...
 							bgWorker.DoWork += new DoWorkEventHandler(CopyFileRename.RenameDuplicates_BackGround);
 							// Load DoWorkEvent Arguments
-							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							args = new List<object>() { all_FileSourceList, all_FileTargetList, appSettings };
 							// Start the worker...
 							bgWorker.RunWorkerAsync(args);
 							break;
 
 						case Helper.commandResult.Skip:
 							bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
-							args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings };
+							args = new List<object>() { all_FileSourceList, all_FileTargetList, appSettings };
 							bgWorker.RunWorkerAsync(args);
 							break;
 
 						case Helper.commandResult.Cancel:
-							break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileCancel.CopyCancel_BackGround);
+							args = new List<object>() { null, null, null, };
+							bgWorker.RunWorkerAsync(args);
+							break;			
 
 						case Helper.commandResult.Overwrite:
 						default:
 							bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
-							args = new List<object>() { fileSourceArrayList, appSettings };
+							args = new List<object>() { all_FileSourceList, appSettings };
 							bgWorker.RunWorkerAsync(args);
 							break;
 
 					} // END SWITCH
-				#endregion		
-				
+					#endregion
+
 				}
 				else
 				{
@@ -154,7 +192,7 @@ namespace Push
 							cTaskDialog.ShowTaskDialogBox(
 
 							mainForm, // BUG - Use Correct Thread...
-							
+
 							"Duplicate Files Found",
 							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
 							"What would you like to do?",
@@ -168,8 +206,8 @@ namespace Push
 							eTaskDialogButtons.None,
 							eSysIcons.Information,
 							eSysIcons.Warning);
-					#endregion					
-					
+					#endregion
+
 					//-------------------------------------------------------------
 					// Based on the configuration above, DialogResult and RadioButtonResult is ignored...
 
@@ -182,7 +220,6 @@ namespace Push
 						appSettings.DuplicateFileAction = Enum.GetName(typeof(Helper.commandResult), cTaskDialog.CommandButtonResult);
 					}
 
-
 					#region [ MANUAL DUPE ACTION ]
 
 					List<object> args;
@@ -194,29 +231,32 @@ namespace Push
 					{
 
 						case Helper.commandResult.Rename:
-								// Assign the correct event handler to the worker...
-								bgWorker.DoWork += new DoWorkEventHandler(CopyFileRename.RenameDuplicates_BackGround);
-								// Load DoWorkEvent Arguments
-								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
-								// Start the worker...
-								bgWorker.RunWorkerAsync(args);
-								break;
+							// Assign the correct event handler to the worker...
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileRename.RenameDuplicates_BackGround);
+							// Load DoWorkEvent Arguments
+							args = new List<object>() { all_FileSourceList, all_FileTargetList, appSettings };
+							// Start the worker...
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 						case Helper.commandResult.Skip:
-								bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
-								args = new List<object>() { fileSourceArrayList, fileTargetStrArray, appSettings};
-								bgWorker.RunWorkerAsync(args);
-								break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileSkip.SkipDuplicates_BackGround);
+							args = new List<object>() { all_FileSourceList, all_FileTargetList, appSettings };
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 						case Helper.commandResult.Cancel:
-								break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileCancel.CopyCancel_BackGround);
+							args = new List<object>() { null, null, null, };
+							bgWorker.RunWorkerAsync(args);
+							break;							
 
 						case Helper.commandResult.Overwrite:
 						default:
-								bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
-								args = new List<object>() { fileSourceArrayList, appSettings};
-								bgWorker.RunWorkerAsync(args);
-								break;
+							bgWorker.DoWork += new DoWorkEventHandler(CopyFileOverwrite.CopyOverwrite_BackGround);
+							args = new List<object>() { all_FileSourceList, appSettings };
+							bgWorker.RunWorkerAsync(args);
+							break;
 
 					} // END SWITCH
 					#endregion
@@ -225,16 +265,13 @@ namespace Push
 
 			} // END_IF_ELSE DupeFileCount
 
-		} // END_METHOD
+		}
 
 
 		public static void CopyFile_BackGround(object sender, DoWorkEventArgs doWorkEventArgs)
 		{
 			doWorkEventArgs.Result = new Tuple<Helper.commandResult, int, int>(Helper.commandResult.Fail, 0, 0);
 		} // END_METHOD
-
-
-
 
 	} //END_CLASS
 } // END_NS

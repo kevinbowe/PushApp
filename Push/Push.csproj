@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="CopyFileCancel.cs" />
     <Compile Include="ListViewColumnSort.cs" />
     <Compile Include="ConfigFormValidation.cs">
       <SubType>Form</SubType>
@@ -125,7 +126,8 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir $(TargetDir)\Config\
 copy $(ProjectDir)\Config\FileExtensions.txt   $(TargetDir)\Config\FileExtensions.txt
-copy $(ProjectDir)\Config\PushSettingsDefault  $(TargetDir)\Config\PushSettingsDefault</PostBuildEvent>
+copy $(ProjectDir)\Config\PushSettingsDefault  $(TargetDir)\Config\PushSettingsDefault
+copy $(ProjectDir)\Config\PushIgnore.txt  $(TargetDir)\Config\PushIgnore.txt</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

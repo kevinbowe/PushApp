@@ -35,8 +35,6 @@ namespace Push
 			tbSourceFolder.Text = appSettings.SourcePath;
 			tbTargetFolder.Text = appSettings.TargetPath;
 			tbFileExtensions.Text = appSettings.FileExtensionFilter;
-			cbDisableSplashScreen.Checked = appSettings.DisableSplashScreen.GetValueOrDefault(false);
-			cbDisableXMLOptions.Checked = appSettings.DisableXMLOptions.GetValueOrDefault(false);
 			
 			// Save the original values in the appSettings...
 			originalAppSettings = new AppSettings
@@ -106,8 +104,26 @@ namespace Push
 				//-------------------------------------------------------------
 				// If we get here, the user did not select Cancel...
 
-				appSettings.DisableSplashScreen = cbDisableSplashScreen.Checked;
-				appSettings.DisableXMLOptions = cbDisableSplashScreen.Checked;
+
+				// Warn user when "*.*" is used for the File Filter.
+				//		Provide an option to change the setting.
+				//		Use Message Box with 2x options...
+
+				if (tbFileExtensions.Text.Contains("*.*"))
+				{
+					DialogResult dialogResult = MessageBox.Show("The *.* file extension is capable of doing severe damage to your PC,\n"+
+																"including DELETING System Files necessary to run Windows.\n\n"+
+																"Users are strongly encouraged to change this setting.\n\n"+
+																"Press OK to Continue.\n"+
+																"Press Cancel to Change Filter", 
+																"Warning: File Extension Setting", MessageBoxButtons.OKCancel);
+					if (dialogResult == DialogResult.Cancel)
+					{
+						e.Cancel = true;
+						return;
+					}
+				}
+
 				appSettings.HideDupeMessage = cbHideDupeFileMessage.Checked;
 				appSettings.ShowDetails = appSettings.ShowDetails.GetValueOrDefault(true);
 				return;
@@ -235,21 +251,7 @@ namespace Push
 			}
 		} // END_METHOD		
 		
-		
-		// Splash Screen...
-		private void cbDisableSplashScreen_CheckedChanged(object sender, EventArgs e)
-		{
-			appSettings.DisableSplashScreen = cbDisableSplashScreen.Checked;
-		} // END_METHOD
-
-		
-		// Disable XMP..
-		private void cbDisableXMLOptions_CheckedChanged(object sender, EventArgs e)
-		{
-			appSettings.DisableXMLOptions = cbDisableXMLOptions.Checked;
-		} // END_METHOD
-
-
+	
 		#region [ SOURCE PATH ]
 
 		// Source Path - Changed
@@ -312,7 +314,7 @@ namespace Push
 				errorProviderTargetFolder.SetError(tbTargetFolder, "");
 				errorProviderTargetFolder.Dispose();
 			}
-		}
+		} // END_METHOD
 		
 		#endregion
 

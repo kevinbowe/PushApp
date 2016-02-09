@@ -6,49 +6,39 @@ using System.ComponentModel;
 using System.Threading;
 //---
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Push
 {
 	public class CopyFileOverwrite
 	{
-		public static Tuple<int,int> CopyOverwrite(ArrayList fileSourceArrayList, AppSettings appSettings)
-		{
-			string targetPath = appSettings.TargetPath;
-			int copyCount = 0;
-
-			// Copy files...
-			foreach (string s in fileSourceArrayList)
-			{
-				string srcfileName = Path.GetFileName(s);
-				string destFileName = Path.Combine(targetPath, srcfileName);
-				//---
-				File.Copy(s, destFileName, true);
-				File.Delete(s);
-				//---
-				copyCount++;
-			}
-
-			return new Tuple<int,int>(copyCount, 0);
-		} // END_METHOD
-
 
 		public static void CopyOverwrite_BackGround(object sender, DoWorkEventArgs doWorkEventArgs)
 		{
 			BackgroundWorker bgWorker = sender as BackgroundWorker;
-			
-			ArrayList fileSourceArrayList = (ArrayList)((List<object>)doWorkEventArgs.Argument)[0];
+
+			List<string> all_FileSourceList = (List<string>)((List<object>)doWorkEventArgs.Argument)[0];
+
 			AppSettings appSettings = (AppSettings)((List<object>)doWorkEventArgs.Argument)[1];
 			
-			int sourceFileListCount = fileSourceArrayList.Count;
+			int sourceFileListCount = all_FileSourceList.Count;
 			int copyCount = 0;	
 
 			string targetPath = appSettings.TargetPath;
+			string sourcePath = appSettings.SourcePath;
+
+			// Find all of the unique paths in the file source array list...
+			List<string> uniqueSourcePathList = Helper.BuildUniquePathList(all_FileSourceList, sourcePath);
+
+			// Create each path that does not exist in the target path...
+			foreach (string uniqueSourcePath in uniqueSourcePathList)
+				Helper.CreateTargetPaths(targetPath, uniqueSourcePath);
 
 			// Copy files...
-			foreach (string s in fileSourceArrayList)
+			foreach (string s in all_FileSourceList)
 			{
-				string srcfileName = Path.GetFileName(s);
-				string destFileName = Path.Combine(targetPath, srcfileName);
+				string destFileName = s.Replace(sourcePath, targetPath);
 				//---
 				File.Copy(s, destFileName, true);
 				File.Delete(s);
@@ -62,10 +52,11 @@ namespace Push
 				bgWorker.ReportProgress(percentComplete);
 			}
 
+			// Delete all source paths...
+			Helper.DeleteSourcePaths(appSettings.SourcePath);
+
 			doWorkEventArgs.Result = new Tuple<Helper.commandResult, int, int>(Helper.commandResult.Overwrite, copyCount, 0);
-		} // END_METHOD
-
-
+		}
 
 
 	} // END_CLASS
