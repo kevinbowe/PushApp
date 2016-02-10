@@ -11,7 +11,6 @@ namespace Push
 {
 	public partial class ConfigForm : Form
 	{
-
 		private void ValidateConfigForm()
 		{
 			#region [ CHECK FILE EXTENSION FILTERS ]
@@ -73,13 +72,38 @@ namespace Push
 			}
 			#endregion 
 
+			#region [ COMPARE SOURCE AND TARGET FOLDER PATHS ]
+			if (DuplicateOutputFolders(tbTargetFolder.Text, tbSourceFolder.Text))
+			{
+				tbTargetFolder.Select(0, tbTargetFolder.Text.Length);
+				errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
+				//--
+				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
+				errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
+				//--
+				DialogResult = DialogResult.None;
+			}
+			else
+			{
+				// If all conditions have been met, clear the ErrorProvider of errors.
+				errorProviderTargetFolder.SetError(tbTargetFolder, "");
+				errorProviderTargetFolder.Dispose();
+				//--
+				errorProviderSourceFolder.SetError(tbSourceFolder, "");
+				errorProviderSourceFolder.Dispose();
+			}
+			#endregion 
+
 			if (Helper.AppSettingsEmptyOrNull(appSettings))
 			{
 				DialogResult = DialogResult.None;
 			}
+		}
 
+		private bool DuplicateOutputFolders(string TargetFolder, string SourceFolder)
+		{
+			return SourceFolder.Trim().Equals(TargetFolder.Trim(), StringComparison.OrdinalIgnoreCase);
 		} // END_METHOD
-
 
 		#region [ FILE EXTENSIONS ]
 
@@ -90,7 +114,6 @@ namespace Push
 			errorProviderFileExtensions.Dispose();
 		} // END_METHOD
 
-
 		private void tbFileExtensions_Validating(object sender, CancelEventArgs e)
 		{
 			if (!IsValidFileExtensionFilters())
@@ -100,7 +123,6 @@ namespace Push
 				this.errorProviderFileExtensions.SetError(tbFileExtensions, "One or more extensions are not correct.");
 			}
 		} // END_METHOD
-
 
 		private bool IsValidFileExtensionFilters()
 		{
@@ -129,7 +151,6 @@ namespace Push
 			return isValidFilExtensionFilters;
 		} // END_METHOD
 
-
 		private bool IsValidExtensionFilter(Match match, string filter)
 		{
 			if (match.Success)
@@ -156,17 +177,14 @@ namespace Push
 		} // END_METHOD
 
 		#endregion		
-
 		
 		// Path Common
 		string errorMsg = "Invalid Path";
-
 
 		private bool ValidatePath(string path)
 		{
 			return Directory.Exists(path);
 		} // END_METHOD
-
 
 		#region [ SOURCE FOLDER ]
 
@@ -179,8 +197,19 @@ namespace Push
 				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
 				this.errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
 			}
-		} // END_METHOD
 
+			// Compare Source and Target folders...
+			if (DuplicateOutputFolders(tbSourceFolder.Text, tbTargetFolder.Text))
+			{
+				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
+				this.errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
+				//--
+				tbTargetFolder.Select(0, tbTargetFolder.Text.Length);
+				this.errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
+				//--
+				e.Cancel = true;
+			}
+		} // END_METHOD
 
 		// Source Path
 		private void tbSourceFolder_Validated(object sender, EventArgs e)
@@ -190,7 +219,6 @@ namespace Push
 		} // END_METHOD
 		
 		#endregion		
-
 
 		#region [ TARGET FOLDER ]
 
@@ -203,8 +231,18 @@ namespace Push
 				tbTargetFolder.Select(0, tbTargetFolder.Text.Length);
 				this.errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
 			}
+			// Compare Source and Target folders...
+			if (DuplicateOutputFolders(tbSourceFolder.Text, tbTargetFolder.Text))
+			{
+				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
+				this.errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
+				//--
+				tbTargetFolder.Select(0, tbTargetFolder.Text.Length);
+				this.errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
+				//--
+				e.Cancel = true;
+			}
 		} // END_METHOD
-
 
 		// Target Path
 		private void tbTargetFolder_Validated(object sender, EventArgs e)
@@ -214,6 +252,5 @@ namespace Push
 		} // END_METHOD
 		
 		#endregion
-
 	}
 }
