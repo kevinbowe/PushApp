@@ -125,8 +125,9 @@ namespace Push
 					string f = s.Replace(appSettings.SourcePath, appSettings.TargetPath);
 					string destFileName = f.Replace(sourceFileName, newfileName);
 					//---
-					File.Copy(s, destFileName, false);
-					File.Delete(s);
+					//File.Copy(s, destFileName, false);
+					//File.Delete(s);
+					copyCount = Helper.CopyDelete(copyCount, s, destFileName, false);
 					//---
 					renameCount++;
 				}
@@ -135,8 +136,9 @@ namespace Push
 					// Copy the source file to the target folder...
 					string destFileName = s.Replace(appSettings.SourcePath, appSettings.TargetPath);
 					//---
-					File.Copy(s, destFileName, false);
-					File.Delete(s);
+					//File.Copy(s, destFileName, false);
+					//File.Delete(s);
+					copyCount = Helper.CopyDelete(copyCount, s, destFileName, false);
 					//---
 					copyCount++;
 				}// END_IF

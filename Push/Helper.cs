@@ -12,7 +12,7 @@ namespace Push
 
 		public enum commandResult { Overwrite, Rename, Skip, Cancel, Fail };
 
-		public static int CopyDelete(int copyCount, string s, string destFileName)
+		public static int CopyDelete(int copyCount, string s, string destFileName, bool overwrite = true)
 		{
 			// Increment the copyCount now. Reset the value IF there is an issue...
 			copyCount++;
@@ -33,7 +33,7 @@ namespace Push
 				}
 
 				//-- throw new System.ArgumentException(); // SAVE FOR DEBUG
-				File.Copy(s, destFileName, true);
+				File.Copy(s, destFileName, overwrite);
 
 				#region [ DELETE TRY-CATCH ]
 				try
