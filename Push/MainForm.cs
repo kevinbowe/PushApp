@@ -167,6 +167,9 @@ namespace Push
 						if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s) || s[0] == '#')
 							continue;
 
+						// Swap forward and backward slashes...
+						s = s.Replace(@"/", @"\");
+
 						// Replace Global Find characters with equivelent RegEx expressions...
 						s = s.Replace(@"\", @"\\");  // Escape all slashes - Only Folders are effected...
 						s = s.Replace(".",@"\.");	// Escape periods
