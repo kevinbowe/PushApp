@@ -1,6 +1,5 @@
 ## Push Ignore
 
-
 ## Ignore these PSI file types and folders.
 ## This feature should not be used in exchange of the Push Configuration > File Extensions
 
@@ -17,6 +16,5 @@
 # Folders
 [Ii]mages\
 [Ww]eb[Hh]elp\
-
 
 # User-specific files

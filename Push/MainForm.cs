@@ -54,9 +54,6 @@ namespace Push
 			}
 			else
 			{
-				//var result = (Tuple<Helper.commandResult, int,int>)e.Result;
-				//UpdateStatus(result);
-
 				UpdateStatus((Tuple<Helper.commandResult, int, int>)e.Result);
 			}
 	
@@ -399,8 +396,12 @@ namespace Push
 
 				foreach (string file in fileArray)
 				{
-					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(file, ignorePattern))
+					// Strip the path portion of the file name...
+					string f = Path.GetFileName(file);
+
+					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(f, ignorePattern))
 						continue;
+
 					fileSourceArrayList.Add(file);
 				}
 			} // END_OUTER_FOREACH

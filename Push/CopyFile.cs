@@ -39,8 +39,10 @@ namespace Push
 
 				foreach (string file in fileSourceStrArray)
 				{
-					// Compare the current file name to the ignore list...
-					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(file, ignorePattern))
+					// Strip the path portion of the file name...
+					string f = Path.GetFileName(file);
+
+					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(f, ignorePattern))
 						continue;
 
 					all_FileSourceList.Add(file);
