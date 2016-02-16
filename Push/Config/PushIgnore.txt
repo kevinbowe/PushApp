@@ -5,8 +5,12 @@
 
 # File extensions
 *.avi
-*.csv *.md?; *.cfg, *.exe
-*.dll
+*.csv
+*.md?
+*.cfg
+*.exe
+*.dll 
+*.txt
 
 ## All files in the folders listed below will be ignored even if there are included in
 ## Push Configuration > File Extensions list.

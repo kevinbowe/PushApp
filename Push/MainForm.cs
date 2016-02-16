@@ -103,10 +103,10 @@ namespace Push
 		{
 			// Test to see if any of the required properties are missing...
 			// Test to see if the current source & target folders are valid...	
-			if (Helper.AppSettingsEmptyOrNull(appSettings) || Helper.ValidateDataPaths(appSettings))
+			if (Helper.AppSettingsEmptyOrNull(appSettings) || Helper.ValidateDataPaths(appSettings) || isValidAppSettings(appSettings))
 			{
 				ConfigForm configFormDialog = new ConfigForm();
-
+			
 				// Copy the current settings into the Configuration form...
 				configFormDialog.appSettings = appSettings;
 				configFormDialog.StartPosition = FormStartPosition.CenterParent;
@@ -142,6 +142,15 @@ namespace Push
 
 			// Update the form properties to the last used...
 			UpdateControls();
+		}
+
+		private bool isValidAppSettings(AppSettings appSettings)
+		{
+			if (Directory.Exists(appSettings.ExePath))
+				return true;
+			
+			appSettings.ExePath = null;
+			return false;			
 		} // END_METHOD
 
 		private string BuildIgnorePattern(string ExePath)
