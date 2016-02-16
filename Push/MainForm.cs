@@ -150,6 +150,13 @@ namespace Push
 
 			try
 			{
+				// Verify that the PushIgnore.txt file exists...
+				if (!File.Exists(appSettings.ExePath + @"\Config\PushIgnore.txt"))
+				{
+					// If we get here, the PushIgnore.txt file does NOT exist...
+					File.Copy(appSettings.ExePath + @"\Config\PushIgnore.Default", appSettings.ExePath + @"\Config\PushIgnore.txt", true);
+				}
+
 				using (StreamReader sr = new StreamReader(appSettings.ExePath + @"\Config\PushIgnore.txt"))
 				{
 					while (sr.Peek() >= 0)
@@ -170,9 +177,10 @@ namespace Push
 					}
 				}
 			}
-			catch (Exception e)
+			catch
 			{
-				Console.WriteLine("Reading PushIgnore.txt failed.  {0}", e.Message);
+				MessageBox.Show("Error initializing PushIgnore.", "Error:");
+				System.Environment.Exit(1000);
 			}
 
 			// Add valid Prefix and Suffix to regex pattern...

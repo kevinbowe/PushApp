@@ -41,7 +41,7 @@ namespace Push
 					//-- throw new System.Exception(); // SAVE FOR DEBUG
 					File.Delete(s);
 				}
-				catch (Exception e)
+				catch
 				{
 					// If we get here, the deletion of the file in the source folder failed.
 					// Undo the copy by deleting the file from the target folder...

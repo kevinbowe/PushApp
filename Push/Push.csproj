@@ -127,7 +127,9 @@
     <PostBuildEvent>mkdir $(TargetDir)\Config\
 copy $(ProjectDir)\Config\FileExtensions.txt   $(TargetDir)\Config\FileExtensions.txt
 copy $(ProjectDir)\Config\PushSettingsDefault  $(TargetDir)\Config\PushSettingsDefault
-copy $(ProjectDir)\Config\PushIgnore.txt  $(TargetDir)\Config\PushIgnore.txt</PostBuildEvent>
+copy $(ProjectDir)\Config\PushIgnore.txt  $(TargetDir)\Config\PushIgnore.txt
+
+copy $(ProjectDir)\Config\PushIgnore.Default  $(TargetDir)\Config\PushIgnore.Default</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
