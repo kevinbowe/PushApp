@@ -157,6 +157,8 @@ namespace Push
 					File.Copy(appSettings.ExePath + @"\Config\PushIgnore.Default", appSettings.ExePath + @"\Config\PushIgnore.txt", true);
 				}
 
+				List<string> ignoreList = new List<string>();
+
 				using (StreamReader sr = new StreamReader(appSettings.ExePath + @"\Config\PushIgnore.txt"))
 				{
 					while (sr.Peek() >= 0)
@@ -167,14 +169,25 @@ namespace Push
 						if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s) || s[0] == '#')
 							continue;
 
+						// Split any string that has [space], [comma], [semicolon] tokens dividing multiple filter values...
+						string[] splitArray = s.Split(
+							new char[] {',', ';', ' '},
+							StringSplitOptions.RemoveEmptyEntries);
+
+						// Add result to working List<string>...
+						ignoreList.AddRange(splitArray);
+					}
+
+					foreach(string ignoreItem in ignoreList)
+					{
 						// Swap forward and backward slashes...
-						s = s.Replace(@"/", @"\");
+						string s = ignoreItem.Replace(@"/", @"\");
 
 						// Replace Global Find characters with equivelent RegEx expressions...
 						s = s.Replace(@"\", @"\\");  // Escape all slashes - Only Folders are effected...
-						s = s.Replace(".",@"\.");	// Escape periods
-						s =	s.Replace(@"*",".*");	// Convert *
-						s =	s.Replace(@"?", ".");	// Convert ?
+						s = s.Replace(".", @"\.");	// Escape periods
+						s = s.Replace(@"*", ".*");	// Convert *
+						s = s.Replace(@"?", ".");	// Convert ?
 						// Add token...					
 						sb.Append(sb.Length == 0 ? s : '|' + s);
 					}

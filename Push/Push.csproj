@@ -109,12 +109,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="PushIgnore.Default" />
-    <None Include="PushSettingsDefault" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FileExtensions.txt" />
-    <Content Include="PushIgnore.txt" />
     <Content Include="Resources\Control_Collapser1.gif" />
     <Content Include="Resources\Control_Expander1.gif" />
     <Content Include="Resources\Fit.gif" />

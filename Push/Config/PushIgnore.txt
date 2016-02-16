@@ -5,10 +5,7 @@
 
 # File extensions
 *.avi
-*.csv
-*.md?
-*.cfg
-*.exe
+*.csv *.md?; *.cfg, *.exe
 *.dll
 
 ## All files in the folders listed below will be ignored even if there are included in
