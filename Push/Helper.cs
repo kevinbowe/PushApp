@@ -12,6 +12,78 @@ namespace Push
 
 		public enum commandResult { Overwrite, Rename, Skip, Cancel, Fail };
 
+		public static int CopyDelete(int copyCount, string s, string destFileName)
+		{
+			// Increment the copyCount now. Reset the value IF there is an issue...
+			copyCount++;
+			string tempFileName = string.Empty;
+
+			#region [ COPY TRY-CATCH ]
+			try
+			{
+				// Does the Destination File exist...
+				if (File.Exists(destFileName))
+				{
+					// Rename the Destination File name...
+					tempFileName = Path.GetDirectoryName(destFileName) + @"\TEMP";
+					if (File.Exists(tempFileName))
+						File.Copy(destFileName, tempFileName, true);
+					else
+						File.Move(destFileName, tempFileName);
+				}
+
+				//-- throw new System.ArgumentException(); // SAVE FOR DEBUG
+				File.Copy(s, destFileName, true);
+
+				#region [ DELETE TRY-CATCH ]
+				try
+				{
+					//-- throw new System.Exception(); // SAVE FOR DEBUG
+					File.Delete(s);
+				}
+				catch (Exception e)
+				{
+					// If we get here, the deletion of the file in the source folder failed.
+					// Undo the copy by deleting the file from the target folder...
+
+					// Delete the version that we just copied...
+					File.Delete(destFileName);
+
+					// Restore the original if it exists...
+					if (File.Exists(tempFileName))
+					{
+						File.Move(tempFileName, destFileName);
+						File.Delete(tempFileName);
+					}
+
+					throw new System.Exception("Unexpected error during processing: CopyDelete( )\n", new Exception("Delete Failed/Cleaning Up"));
+
+				} // END_INNER_TRY-CATCH_DELETE
+				#endregion
+
+			}
+			catch( Exception e)
+			{	// If we get here, the copy from the source to the target failed...
+
+				if (e.InnerException != null)
+				{
+					throw new System.Exception(
+						string.Format( "{0}" +
+						"Failed to delete file: {1}\n" +
+						"Removing previously copied file: {2}", e.Message, s, destFileName));
+				}
+
+				throw new System.Exception(
+					string.Format(
+					"Unexpected error during processing: CopyDelete( )\n" + 
+					"Failed to copy file: {0} to {1}", s, destFileName)
+					);
+
+			} // END_OUTER_TRY-CATCH_COPY
+			#endregion
+
+			return copyCount;
+		}
 
 		public static bool ValidateDataPaths(AppSettings appSettings)
 		{

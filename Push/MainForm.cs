@@ -43,7 +43,22 @@ namespace Push
 
 		public void bgRunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e)
 		{
-			var result = (Tuple<Helper.commandResult, int,int>)e.Result;
+
+			if (e.Error != null)
+			{
+				MessageBox.Show(
+					e.Error.Message,
+					"Exception:",
+					System.Windows.Forms.MessageBoxButtons.OK,
+					System.Windows.Forms.MessageBoxIcon.Information);
+			}
+			else
+			{
+				//var result = (Tuple<Helper.commandResult, int,int>)e.Result;
+				//UpdateStatus(result);
+
+				UpdateStatus((Tuple<Helper.commandResult, int, int>)e.Result);
+			}
 	
 			// Update Source & Target Listboxes...
 			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
@@ -51,8 +66,6 @@ namespace Push
 			
 			FitListView(lvSource);
 			FitListView(lvTarget);
-
-			UpdateStatus(result);
 
 			// Enable Controls...
 			SetControlStatus(ctrlStatus.Enable);

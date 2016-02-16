@@ -39,12 +39,10 @@ namespace Push
 			foreach (string s in all_FileSourceList)
 			{
 				string destFileName = s.Replace(sourcePath, targetPath);
-				//---
-				File.Copy(s, destFileName, true);
-				File.Delete(s);
-				//---
-				copyCount++;
 
+				// Copy source and then delete source is sucessful...
+				copyCount = Helper.CopyDelete(copyCount, s, destFileName);
+				
 				// Calculate Progress...
 				int percentComplete = (int)Math.Round((double)(100 * copyCount) / sourceFileListCount);
 				//---
@@ -57,7 +55,6 @@ namespace Push
 
 			doWorkEventArgs.Result = new Tuple<Helper.commandResult, int, int>(Helper.commandResult.Overwrite, copyCount, 0);
 		}
-
 
 	} // END_CLASS
 } // END_NS
