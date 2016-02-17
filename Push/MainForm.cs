@@ -145,9 +145,9 @@ namespace Push
 
 		private bool ValidateAppSettings(AppSettings appSettings)
 		{
-			if (Helper.AppSettingsEmptyOrNull(appSettings)) 
+			if (Helper.AppSettingsEmptyOrNull(appSettings))
 				// Invalid
-				return true;
+				return false;
 
 			// If we get here, there is data in appSettings...
 			// Validate the data using the existing ConfigForm validation code...
@@ -184,6 +184,13 @@ namespace Push
 
 			try
 			{
+				// Check the ExePath...
+				if (appSettings.ExePath == null)
+				{
+					FileInfo exePath = new FileInfo("Push.exe");
+					appSettings.ExePath = exePath.DirectoryName;
+				}
+
 				// Verify that the PushIgnore.txt file exists...
 				if (!File.Exists(appSettings.ExePath + @"\Config\PushIgnore.txt"))
 				{

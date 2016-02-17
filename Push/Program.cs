@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Push
 {
@@ -16,7 +17,15 @@ namespace Push
 				{
 					// This loads the properties, defined in AppSettings, with values...
 					//		If the value of a property has not been defined, all properties will be set to null...
-					appSettings.Load();
+					try
+					{
+						var ConfigFilePath = Itenso.Configuration.ApplicationSettings.UserConfigurationFilePath;
+						appSettings.Load();
+					}
+					catch (System.Configuration.ConfigurationErrorsException e)
+					{
+						File.Delete(e.Filename);
+					}
 
 					Application.EnableVisualStyles();
 					Application.SetCompatibleTextRenderingDefault(false);

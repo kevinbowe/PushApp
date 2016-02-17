@@ -129,10 +129,7 @@ namespace Push
 				string.IsNullOrEmpty(setting.ExePath) ||
 				string.IsNullOrEmpty(setting.FileExtensionFilter) ||
 				string.IsNullOrEmpty(setting.SourcePath) ||
-				string.IsNullOrEmpty(setting.TargetPath) ||
-				setting.HideDupeMessage == null ||
-				setting.ShowDetails == null;
-
+				string.IsNullOrEmpty(setting.TargetPath); 
 			return result;
 		} // END_METHOD
 
