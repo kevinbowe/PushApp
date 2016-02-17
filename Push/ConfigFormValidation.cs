@@ -11,14 +11,17 @@ namespace Push
 {
 	public partial class ConfigForm : Form
 	{
-		private void ValidateConfigForm()
+		public bool ValidateConfigForm()
 		{
+			bool isValid = true;
+
 			#region [ CHECK FILE EXTENSION FILTERS ]
 			if (!IsValidFileExtensionFilters())
 			{
 				tbFileExtensions.Select(0, tbFileExtensions.Text.Length);
 				errorProviderFileExtensions.SetError(tbFileExtensions, "Valid file extension filter is required");
 				DialogResult = DialogResult.None;
+				isValid = false;
 			}
 			else
 			{
@@ -34,6 +37,7 @@ namespace Push
 			{
 				errorProviderDuplicateHandeling.SetError(rbOverwrite, "Please choose a Duplicate Action");
 				DialogResult = DialogResult.None;
+				isValid = false;
 			}
 			else
 			{
@@ -48,6 +52,7 @@ namespace Push
 				tbSourceFolder.Select(0, tbSourceFolder.Text.Length);
 				errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
 				DialogResult = DialogResult.None;
+				isValid = false;
 			}
 			else
 			{
@@ -62,7 +67,8 @@ namespace Push
 			{
 				tbSourceFolder.Select(0, tbTargetFolder.Text.Length);
 				errorProviderTargetFolder.SetError(tbTargetFolder, errorMsg);
-				DialogResult = DialogResult.None;
+				DialogResult = DialogResult.None; 
+				isValid = false;
 			}
 			else
 			{
@@ -82,6 +88,7 @@ namespace Push
 				errorProviderSourceFolder.SetError(tbSourceFolder, errorMsg);
 				//--
 				DialogResult = DialogResult.None;
+				isValid = false;
 			}
 			else
 			{
@@ -97,7 +104,9 @@ namespace Push
 			if (Helper.AppSettingsEmptyOrNull(appSettings))
 			{
 				DialogResult = DialogResult.None;
+				isValid = false;
 			}
+			return isValid;
 		}
 
 		private bool DuplicateOutputFolders(string TargetFolder, string SourceFolder)

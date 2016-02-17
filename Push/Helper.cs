@@ -85,14 +85,6 @@ namespace Push
 			return copyCount;
 		}
 
-		public static bool ValidateDataPaths(AppSettings appSettings)
-		{
-			// Validate the source and target folders...
-			// Return true is either folder or both folders do not exist...
-			return !Directory.Exists(appSettings.SourcePath) || !Directory.Exists(appSettings.TargetPath);
-		} // END_METHOD
-
-
 		public static bool ContainsFilterStarDotStar(string[] fefArray)
 		{
 			return fefArray.Where(f => f.Equals("*.*")).DefaultIfEmpty("").First() == "*.*";
@@ -107,7 +99,7 @@ namespace Push
 			 * but it would make the code harder to read and debug.
 			 * Performance is not dramatically affected.  */
 
-			string[] delimiters = new string[] { ";", "|", ":" };
+			string[] delimiters = new string[] { ";", "|", ":", ",", " " };
 
 			// Split the FileExtensionFilter string into an array of strings.
 			string[] fefArray = appSettings.FileExtensionFilter
@@ -120,6 +112,9 @@ namespace Push
 			// Scan for duplicate filters with Linq Query...
 			fefArray = fefArray.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
+			// Strip any empty strings...
+			fefArray = fefArray.Where(r => !string.IsNullOrEmpty(r)).ToArray();
+
 			// Check for "*.*" filter. Discard all other filters since *.* rules...
 			if (ContainsFilterStarDotStar(fefArray))
 				fefArray = new string[] { "*.*" };
@@ -130,15 +125,14 @@ namespace Push
 
 		public static bool AppSettingsEmptyOrNull(AppSettings setting)
 		{
-			bool result = string.IsNullOrEmpty(setting.DuplicateFileAction) &&
-							string.IsNullOrEmpty(setting.ExePath) &&
-							string.IsNullOrEmpty(setting.FileExtensionFilter) &&
-							string.IsNullOrEmpty(setting.SourcePath) &&
-							string.IsNullOrEmpty(setting.TargetPath) &&
-							setting.DisableSplashScreen == null &&
-							setting.DisableXMLOptions == null &&
-							setting.HideDupeMessage == null &&
-							setting.ShowDetails == null;
+			bool result = string.IsNullOrEmpty(setting.DuplicateFileAction) ||
+				string.IsNullOrEmpty(setting.ExePath) ||
+				string.IsNullOrEmpty(setting.FileExtensionFilter) ||
+				string.IsNullOrEmpty(setting.SourcePath) ||
+				string.IsNullOrEmpty(setting.TargetPath) ||
+				setting.HideDupeMessage == null ||
+				setting.ShowDetails == null;
+
 			return result;
 		} // END_METHOD
 

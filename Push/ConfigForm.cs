@@ -27,7 +27,7 @@ namespace Push
 
 
 		// Form Load...
-		private void ConfigForm_Load(object sender, EventArgs e)
+		public void ConfigForm_Load(object sender, EventArgs e)
 		{
 			// Hydrate the controls with the current settings...
 			cbHideDupeFileMessage.Checked = appSettings.HideDupeMessage.GetValueOrDefault(false);

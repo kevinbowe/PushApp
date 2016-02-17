@@ -101,12 +101,10 @@ namespace Push
 
 		private void InitControls()
 		{
-			// Test to see if any of the required properties are missing...
-			// Test to see if the current source & target folders are valid...	
-			if (Helper.AppSettingsEmptyOrNull(appSettings) || Helper.ValidateDataPaths(appSettings) || isValidAppSettings(appSettings))
+			if (!ValidateAppSettings(appSettings))
 			{
 				ConfigForm configFormDialog = new ConfigForm();
-			
+
 				// Copy the current settings into the Configuration form...
 				configFormDialog.appSettings = appSettings;
 				configFormDialog.StartPosition = FormStartPosition.CenterParent;
@@ -144,14 +142,41 @@ namespace Push
 			UpdateControls();
 		}
 
-		private bool isValidAppSettings(AppSettings appSettings)
+
+		private bool ValidateAppSettings(AppSettings appSettings)
 		{
-			if (Directory.Exists(appSettings.ExePath))
+			if (Helper.AppSettingsEmptyOrNull(appSettings)) 
+				// Invalid
 				return true;
-			
-			appSettings.ExePath = null;
-			return false;			
-		} // END_METHOD
+
+			// If we get here, there is data in appSettings...
+			// Validate the data using the existing ConfigForm validation code...
+
+			// Verify the ExePath...
+			if (!Directory.Exists(appSettings.ExePath))
+			{
+				appSettings.ExePath = null;
+				// Invalid
+				return false;
+			}
+
+			// NOTE: We are not going to show the form. We are only going to use the
+			//		 validation code.
+			ConfigForm configFormDialog = new ConfigForm();
+			configFormDialog.appSettings = appSettings;
+			configFormDialog.ConfigForm_Load(null, null);
+
+			// ValidateConfigForm return: True = valid || False = invalid;
+			bool isValid = configFormDialog.ValidateConfigForm();
+
+			// Make sure the form object is completely cleaned up...
+			configFormDialog.Close();
+			configFormDialog.Dispose();
+
+			// true = invalid || false = valid
+			return isValid;
+		}
+
 
 		private string BuildIgnorePattern(string ExePath)
 		{
