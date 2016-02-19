@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Green_Hand_04.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Itenso.Configuration">
       <HintPath>Lib\Itenso.Configuration.dll</HintPath>
@@ -111,6 +114,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Green_Hand_04.ico" />
     <Content Include="Resources\Control_Collapser1.gif" />
     <Content Include="Resources\Control_Expander1.gif" />
     <Content Include="Resources\Fit.gif" />
