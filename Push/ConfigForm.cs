@@ -29,6 +29,12 @@ namespace Push
 		// Form Load...
 		public void ConfigForm_Load(object sender, EventArgs e)
 		{
+			// Hide the Minimize and Maximize controls.
+			// Disable the ability to resize the form...
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog; 
+			MinimizeBox = false;
+			MaximizeBox = false;
+
 			// Hydrate the controls with the current settings...
 			cbHideDupeFileMessage.Checked = appSettings.HideDupeMessage.GetValueOrDefault(false);
 			

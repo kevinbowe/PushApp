@@ -25,7 +25,7 @@ namespace Push
 				if (File.Exists(destFileName))
 				{
 					// Rename the Destination File name...
-					tempFileName = Path.GetDirectoryName(destFileName) + @"\TEMP";
+					tempFileName = Path.GetDirectoryName(destFileName) + @"\PushTemp";
 					if (File.Exists(tempFileName))
 						File.Copy(destFileName, tempFileName, true);
 					else
@@ -59,6 +59,11 @@ namespace Push
 					throw new System.Exception("Unexpected error during processing: CopyDelete( )\n", new Exception("Delete Failed/Cleaning Up"));
 
 				} // END_INNER_TRY-CATCH_DELETE
+				finally
+				{
+					if (File.Exists(tempFileName)) 
+						File.Delete(tempFileName);
+				}
 				#endregion
 
 			}
