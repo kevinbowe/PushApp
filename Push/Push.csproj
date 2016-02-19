@@ -116,6 +116,7 @@
     <Content Include="Resources\Fit.gif" />
     <Content Include="Resources\gear.gif" />
     <Content Include="Resources\Green Button1.gif" />
+    <None Include="Resources\Grey Button1.gif" />
     <Content Include="Resources\Refresh.gif" />
     <Content Include="Resources\Run.gif" />
   </ItemGroup>

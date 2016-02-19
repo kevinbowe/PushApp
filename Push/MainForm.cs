@@ -66,7 +66,6 @@ namespace Push
 
 			// Enable Controls...
 			SetControlStatus(ctrlStatus.Enable);
-
 		} // END_METHOD
 
 
@@ -94,8 +93,6 @@ namespace Push
 			listViewColumnSorter = new ListViewColumnSorter();
 			this.lvSource.ListViewItemSorter = listViewColumnSorter;
 			this.lvTarget.ListViewItemSorter = listViewColumnSorter;
-
-
 		} // END_CTOR
 
 
@@ -339,6 +336,12 @@ namespace Push
 		{
 			bool status = Convert.ToBoolean(ctrlStatus);
 			picBxPush.Enabled = status;
+
+			if (status)
+				picBxPush.Image = Properties.Resources.Green_Button1;
+			else
+				picBxPush.Image = Properties.Resources.Grey_Button1;
+			
 			toolStripBtnPush.Enabled = status;
 			toolStripBtnRefresh.Enabled = status;
 			toolStripBtnConfig.Enabled = status;
