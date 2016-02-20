@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Green_Hand_04.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Itenso.Configuration">
       <HintPath>Lib\Itenso.Configuration.dll</HintPath>
@@ -111,11 +114,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Green_Hand_04.ico" />
     <Content Include="Resources\Control_Collapser1.gif" />
     <Content Include="Resources\Control_Expander1.gif" />
     <Content Include="Resources\Fit.gif" />
     <Content Include="Resources\gear.gif" />
     <Content Include="Resources\Green Button1.gif" />
+    <None Include="Resources\Grey Button1.gif" />
     <Content Include="Resources\Refresh.gif" />
     <Content Include="Resources\Run.gif" />
   </ItemGroup>
@@ -127,7 +132,9 @@
     <PostBuildEvent>mkdir $(TargetDir)\Config\
 copy $(ProjectDir)\Config\FileExtensions.txt   $(TargetDir)\Config\FileExtensions.txt
 copy $(ProjectDir)\Config\PushSettingsDefault  $(TargetDir)\Config\PushSettingsDefault
-copy $(ProjectDir)\Config\PushIgnore.txt  $(TargetDir)\Config\PushIgnore.txt</PostBuildEvent>
+copy $(ProjectDir)\Config\PushIgnore.txt  $(TargetDir)\Config\PushIgnore.txt
+
+copy $(ProjectDir)\Config\PushIgnore.Default  $(TargetDir)\Config\PushIgnore.Default</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -12,14 +12,83 @@ namespace Push
 
 		public enum commandResult { Overwrite, Rename, Skip, Cancel, Fail };
 
-
-		public static bool ValidateDataPaths(AppSettings appSettings)
+		public static int CopyDelete(int copyCount, string s, string destFileName, bool overwrite = true)
 		{
-			// Validate the source and target folders...
-			// Return true is either folder or both folders do not exist...
-			return !Directory.Exists(appSettings.SourcePath) || !Directory.Exists(appSettings.TargetPath);
-		} // END_METHOD
+			// Increment the copyCount now. Reset the value IF there is an issue...
+			copyCount++;
+			string tempFileName = string.Empty;
 
+			#region [ COPY TRY-CATCH ]
+			try
+			{
+				// Does the Destination File exist...
+				if (File.Exists(destFileName))
+				{
+					// Rename the Destination File name...
+					tempFileName = Path.GetDirectoryName(destFileName) + @"\PushTemp";
+					if (File.Exists(tempFileName))
+						File.Copy(destFileName, tempFileName, true);
+					else
+						File.Move(destFileName, tempFileName);
+				}
+
+				//-- throw new System.ArgumentException(); // SAVE FOR DEBUG
+				File.Copy(s, destFileName, overwrite);
+
+				#region [ DELETE TRY-CATCH ]
+				try
+				{
+					//-- throw new System.Exception(); // SAVE FOR DEBUG
+					File.Delete(s);
+				}
+				catch
+				{
+					// If we get here, the deletion of the file in the source folder failed.
+					// Undo the copy by deleting the file from the target folder...
+
+					// Delete the version that we just copied...
+					File.Delete(destFileName);
+
+					// Restore the original if it exists...
+					if (File.Exists(tempFileName))
+					{
+						File.Move(tempFileName, destFileName);
+						File.Delete(tempFileName);
+					}
+
+					throw new System.Exception("Unexpected error during processing: CopyDelete( )\n", new Exception("Delete Failed/Cleaning Up"));
+
+				} // END_INNER_TRY-CATCH_DELETE
+				finally
+				{
+					if (File.Exists(tempFileName)) 
+						File.Delete(tempFileName);
+				}
+				#endregion
+
+			}
+			catch( Exception e)
+			{	// If we get here, the copy from the source to the target failed...
+
+				if (e.InnerException != null)
+				{
+					throw new System.Exception(
+						string.Format( "{0}" +
+						"Failed to delete file: {1}\n" +
+						"Removing previously copied file: {2}", e.Message, s, destFileName));
+				}
+
+				throw new System.Exception(
+					string.Format(
+					"Unexpected error during processing: CopyDelete( )\n" + 
+					"Failed to copy file: {0} to {1}", s, destFileName)
+					);
+
+			} // END_OUTER_TRY-CATCH_COPY
+			#endregion
+
+			return copyCount;
+		}
 
 		public static bool ContainsFilterStarDotStar(string[] fefArray)
 		{
@@ -35,7 +104,7 @@ namespace Push
 			 * but it would make the code harder to read and debug.
 			 * Performance is not dramatically affected.  */
 
-			string[] delimiters = new string[] { ";", "|", ":" };
+			string[] delimiters = new string[] { ";", "|", ":", ",", " " };
 
 			// Split the FileExtensionFilter string into an array of strings.
 			string[] fefArray = appSettings.FileExtensionFilter
@@ -48,6 +117,9 @@ namespace Push
 			// Scan for duplicate filters with Linq Query...
 			fefArray = fefArray.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
+			// Strip any empty strings...
+			fefArray = fefArray.Where(r => !string.IsNullOrEmpty(r)).ToArray();
+
 			// Check for "*.*" filter. Discard all other filters since *.* rules...
 			if (ContainsFilterStarDotStar(fefArray))
 				fefArray = new string[] { "*.*" };
@@ -58,15 +130,11 @@ namespace Push
 
 		public static bool AppSettingsEmptyOrNull(AppSettings setting)
 		{
-			bool result = string.IsNullOrEmpty(setting.DuplicateFileAction) &&
-							string.IsNullOrEmpty(setting.ExePath) &&
-							string.IsNullOrEmpty(setting.FileExtensionFilter) &&
-							string.IsNullOrEmpty(setting.SourcePath) &&
-							string.IsNullOrEmpty(setting.TargetPath) &&
-							setting.DisableSplashScreen == null &&
-							setting.DisableXMLOptions == null &&
-							setting.HideDupeMessage == null &&
-							setting.ShowDetails == null;
+			bool result = string.IsNullOrEmpty(setting.DuplicateFileAction) ||
+				string.IsNullOrEmpty(setting.ExePath) ||
+				string.IsNullOrEmpty(setting.FileExtensionFilter) ||
+				string.IsNullOrEmpty(setting.SourcePath) ||
+				string.IsNullOrEmpty(setting.TargetPath); 
 			return result;
 		} // END_METHOD
 

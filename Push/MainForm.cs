@@ -43,7 +43,19 @@ namespace Push
 
 		public void bgRunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e)
 		{
-			var result = (Tuple<Helper.commandResult, int,int>)e.Result;
+
+			if (e.Error != null)
+			{
+				MessageBox.Show(
+					e.Error.Message,
+					"Exception:",
+					System.Windows.Forms.MessageBoxButtons.OK,
+					System.Windows.Forms.MessageBoxIcon.Information);
+			}
+			else
+			{
+				UpdateStatus((Tuple<Helper.commandResult, int, int>)e.Result);
+			}
 	
 			// Update Source & Target Listboxes...
 			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
@@ -52,11 +64,8 @@ namespace Push
 			FitListView(lvSource);
 			FitListView(lvTarget);
 
-			UpdateStatus(result);
-
 			// Enable Controls...
 			SetControlStatus(ctrlStatus.Enable);
-
 		} // END_METHOD
 
 
@@ -84,16 +93,12 @@ namespace Push
 			listViewColumnSorter = new ListViewColumnSorter();
 			this.lvSource.ListViewItemSorter = listViewColumnSorter;
 			this.lvTarget.ListViewItemSorter = listViewColumnSorter;
-
-
 		} // END_CTOR
 
 
 		private void InitControls()
 		{
-			// Test to see if any of the required properties are missing...
-			// Test to see if the current source & target folders are valid...	
-			if (Helper.AppSettingsEmptyOrNull(appSettings) || Helper.ValidateDataPaths(appSettings))
+			if (!ValidateAppSettings(appSettings))
 			{
 				ConfigForm configFormDialog = new ConfigForm();
 
@@ -132,7 +137,43 @@ namespace Push
 
 			// Update the form properties to the last used...
 			UpdateControls();
-		} // END_METHOD
+		}
+
+
+		private bool ValidateAppSettings(AppSettings appSettings)
+		{
+			if (Helper.AppSettingsEmptyOrNull(appSettings))
+				// Invalid
+				return false;
+
+			// If we get here, there is data in appSettings...
+			// Validate the data using the existing ConfigForm validation code...
+
+			// Verify the ExePath...
+			if (!Directory.Exists(appSettings.ExePath))
+			{
+				appSettings.ExePath = null;
+				// Invalid
+				return false;
+			}
+
+			// NOTE: We are not going to show the form. We are only going to use the
+			//		 validation code.
+			ConfigForm configFormDialog = new ConfigForm();
+			configFormDialog.appSettings = appSettings;
+			configFormDialog.ConfigForm_Load(null, null);
+
+			// ValidateConfigForm return: True = valid || False = invalid;
+			bool isValid = configFormDialog.ValidateConfigForm();
+
+			// Make sure the form object is completely cleaned up...
+			configFormDialog.Close();
+			configFormDialog.Dispose();
+
+			// true = invalid || false = valid
+			return isValid;
+		}
+
 
 		private string BuildIgnorePattern(string ExePath)
 		{
@@ -140,6 +181,22 @@ namespace Push
 
 			try
 			{
+				// Check the ExePath...
+				if (appSettings.ExePath == null)
+				{
+					FileInfo exePath = new FileInfo("Push.exe");
+					appSettings.ExePath = exePath.DirectoryName;
+				}
+
+				// Verify that the PushIgnore.txt file exists...
+				if (!File.Exists(appSettings.ExePath + @"\Config\PushIgnore.txt"))
+				{
+					// If we get here, the PushIgnore.txt file does NOT exist...
+					File.Copy(appSettings.ExePath + @"\Config\PushIgnore.Default", appSettings.ExePath + @"\Config\PushIgnore.txt", true);
+				}
+
+				List<string> ignoreList = new List<string>();
+
 				using (StreamReader sr = new StreamReader(appSettings.ExePath + @"\Config\PushIgnore.txt"))
 				{
 					while (sr.Peek() >= 0)
@@ -150,19 +207,34 @@ namespace Push
 						if (string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s) || s[0] == '#')
 							continue;
 
+						// Split any string that has [space], [comma], [semicolon] tokens dividing multiple filter values...
+						string[] splitArray = s.Split(
+							new char[] {',', ';', ' '},
+							StringSplitOptions.RemoveEmptyEntries);
+
+						// Add result to working List<string>...
+						ignoreList.AddRange(splitArray);
+					}
+
+					foreach(string ignoreItem in ignoreList)
+					{
+						// Swap forward and backward slashes...
+						string s = ignoreItem.Replace(@"/", @"\");
+
 						// Replace Global Find characters with equivelent RegEx expressions...
 						s = s.Replace(@"\", @"\\");  // Escape all slashes - Only Folders are effected...
-						s = s.Replace(".",@"\.");	// Escape periods
-						s =	s.Replace(@"*",".*");	// Convert *
-						s =	s.Replace(@"?", ".");	// Convert ?
+						s = s.Replace(".", @"\.");	// Escape periods
+						s = s.Replace(@"*", ".*");	// Convert *
+						s = s.Replace(@"?", ".");	// Convert ?
 						// Add token...					
 						sb.Append(sb.Length == 0 ? s : '|' + s);
 					}
 				}
 			}
-			catch (Exception e)
+			catch
 			{
-				Console.WriteLine("Reading PushIgnore.txt failed.  {0}", e.Message);
+				MessageBox.Show("Error initializing PushIgnore.", "Error:");
+				System.Environment.Exit(1000);
 			}
 
 			// Add valid Prefix and Suffix to regex pattern...
@@ -264,6 +336,12 @@ namespace Push
 		{
 			bool status = Convert.ToBoolean(ctrlStatus);
 			picBxPush.Enabled = status;
+
+			if (status)
+				picBxPush.Image = Properties.Resources.Green_Button1;
+			else
+				picBxPush.Image = Properties.Resources.Grey_Button1;
+			
 			toolStripBtnPush.Enabled = status;
 			toolStripBtnRefresh.Enabled = status;
 			toolStripBtnConfig.Enabled = status;
@@ -386,8 +464,12 @@ namespace Push
 
 				foreach (string file in fileArray)
 				{
-					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(file, ignorePattern))
+					// Strip the path portion of the file name...
+					string f = Path.GetFileName(file);
+
+					if (!string.IsNullOrEmpty(ignorePattern) && Regex.IsMatch(f, ignorePattern))
 						continue;
+
 					fileSourceArrayList.Add(file);
 				}
 			} // END_OUTER_FOREACH

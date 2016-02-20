@@ -63,8 +63,9 @@ namespace Push
 
 					string destFileName = Path.Combine(destinationPath, sourcefileName);
 					//---
-					File.Copy(s, destFileName, true);
-					File.Delete(s);
+					//File.Copy(s, destFileName, true);
+					//File.Delete(s);
+					copyCount = Helper.CopyDelete(copyCount, s, destFileName);
 					//---
 					copyCount++;
 				}

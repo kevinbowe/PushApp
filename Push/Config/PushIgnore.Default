@@ -9,13 +9,12 @@
 *.md?
 *.cfg
 *.exe
-*.dll 
-*.txt
+*.dll
 
 ## All files in the folders listed below will be ignored even if there are included in
 ## Push Configuration > File Extensions list.
 # Folders
-[Ii]mages/
-[Ww]eb[Hh]elp/
+[Ii]mages\
+[Ww]eb[Hh]elp\
 
 # User-specific files
