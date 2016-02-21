@@ -26,7 +26,6 @@ namespace Push
 			string targetPath = appSettings.TargetPath;
 			string sourcePath = appSettings.SourcePath;
 			bool okToRename = false;
-			ArrayList deleteSourceArrayList = new ArrayList();
 			int suffixInteger = 0;
 			int matchInteger = 0;
 			int renameCount = 0;

@@ -72,7 +72,6 @@ namespace Push
 		{
 			AppSettings appSettings = mainForm.appSettings;
 
-			ArrayList fileSourceArrayList = new ArrayList();
 			Helper.commandResult DuplicateAction;
 
 			bgWorker = new BackgroundWorker();
@@ -103,7 +102,6 @@ namespace Push
 
 
 			// Build a list of files on the target folder...
-			string[] fileTargetStrArray = System.IO.Directory.GetFiles(appSettings.TargetPath);
 			int dupeFileCount = 0;
 
 			// OUTER LOOP -- Iterate over each file in the target list...
@@ -190,11 +188,8 @@ namespace Push
 					cTaskDialog.ForceEmulationMode = true;
 					cTaskDialog.EmulatedFormWidth = 450;
 
-					DialogResult res =
-							cTaskDialog.ShowTaskDialogBox(
-
-							mainForm, // BUG - Use Correct Thread...
-
+					cTaskDialog.ShowTaskDialogBox(
+							mainForm,
 							"Duplicate Files Found",
 							string.Format("There were {0} duplicate files found in the Target Folder.", dupeFileCount),
 							"What would you like to do?",

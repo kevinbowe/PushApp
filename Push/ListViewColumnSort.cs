@@ -77,16 +77,6 @@ namespace Push
 			listviewX = (ListViewItem)x;
 			listviewY = (ListViewItem)y;
 
-			ListView listViewMain = listviewX.ListView;
-
-			//// Calculate correct return value based on object comparison
-			//if (listViewMain.Sorting != SortOrder.Ascending &&
-			//	listViewMain.Sorting != SortOrder.Descending)
-			//{
-			//	// Return '0' to indicate they are equal
-			//	return compareResult;
-			//}
-
 			if (mySortModifier.Equals(SortModifiers.SortByText) || ColumnToSort > 0)
 			{
 				// Compare the two items
@@ -304,11 +294,6 @@ namespace Push
 		//    Regex wholePattern = new Regex(@"^\d+$");
 		//    return wholePattern.IsMatch(strNumber);
 		//}
-
-		private string GetNumberDecimalSeparator()
-		{
-			return System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-		}
 
 		// http://stackoverflow.com/questions/4246077/matching-numbers-with-regular-expressions-only-digits-and-commas/4247184#4247184
 		// https://www.debuggex.com/r/Lyx0F0y1LORvNhwA

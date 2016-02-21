@@ -76,8 +76,6 @@ namespace Push
 
 		static void FormClosed(object sender, FormClosedEventArgs e)
 		{
-			appSettings.DisableSplashScreen = ((MainForm)sender).appSettings.DisableSplashScreen;
-			appSettings.DisableXMLOptions = ((MainForm)sender).appSettings.DisableXMLOptions;
 			appSettings.DuplicateFileAction = ((MainForm)sender).appSettings.DuplicateFileAction;
 			appSettings.ExePath = ((MainForm)sender).appSettings.ExePath;
 			appSettings.FileExtensionFilter = ((MainForm)sender).appSettings.FileExtensionFilter;

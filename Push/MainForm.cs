@@ -33,8 +33,6 @@ namespace Push
 		{
 			toolStripLblProgress.Visible = true;
 			toolStripProgressBar.Visible = true;
-
-			string progress = e.ProgressPercentage.ToString() + "%";
 			toolStripLblProgress.Text = "Processing... "+ e.ProgressPercentage.ToString() + "%";
 
 			toolStripProgressBar.Value = e.ProgressPercentage;
@@ -121,7 +119,7 @@ namespace Push
 			}
 
 			// Build the Ignore File regular expression pattern...
-			ignorePattern = BuildIgnorePattern(appSettings.ExePath);
+			ignorePattern = BuildIgnorePattern();
 
 			// Init Controls...
 			lblStatus1_1.Text = string.Empty;
@@ -175,7 +173,7 @@ namespace Push
 		}
 
 
-		private string BuildIgnorePattern(string ExePath)
+		private string BuildIgnorePattern()
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -566,32 +564,24 @@ namespace Push
 
 		#region [ DEBUG BUTTONS ]
 
-		public ListView SourceControl { get { return this.lvSource; } set { this.lvSource = value; } } // END_METHOD
-
-
-		public ListView TargetControl { get { return this.lvTarget; } set { this.lvTarget = value; } } // END_METHOD
-
-
 		// Hot-Key ZERO
 		private void DEBUG_Red()
 		{
 			string SourceTestData = @"C:\DEV_TESTDATA_0\Source";
 			string TargetTestData = @"C:\DEV_TESTDATA_0\Target";
+			
+			// Validate the test data folders... 
+			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			{
+				MessageBox.Show("Debug folders are not available: \n\n\tC:\\DEV_TESTDATA_0\\Source \n\tC:\\DEV_TESTDATA_0\\Target", "DEBUG Hot-Key Canceled");
+				return;
+			}
 
 			if (DEBUG_InitFolders())
 				return;
 
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
-			{
-				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
-				return;
-			}
-
 			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
 			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
-			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
 
 			//-----------------------------------------------------------------
 			// Clear the status list box...
@@ -599,44 +589,13 @@ namespace Push
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
 			LoadListView(lvTarget, appSettings.TargetPath);
-			
+
 			FitListView(lvSource);
 			FitListView(lvTarget);
 
 		} // END_METHOD
 
 	
-		// Hot-Key ONE
-		private void DEBUG_MistyRose()
-		{
-			string SourceTestData = @"C:\DEV_TESTDATA_1\Source";
-			string TargetTestData = @"C:\DEV_TESTDATA_1\Target";
-
-			if (DEBUG_InitFolders())
-				return;
-
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
-			{
-				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
-				return;
-			}
-
-			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
-
-			//-----------------------------------------------------------------
-			// Clear the status list box...
-
-			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
-			LoadListView(lvTarget, appSettings.TargetPath);
-
-			FitListView(lvSource);
-			FitListView(lvTarget);
-		} // END_METHOD
-
-
 		private bool DEBUG_InitFolders()
 		{
 			// Validate the source and target folders...
@@ -668,24 +627,6 @@ namespace Push
 		} // END_METHOD
 
 		
-		private void DEBUG_LoadFolderTestData(string TestDataPath, string destinationPath)
-		{
-			List<string> fileExtensionList = new List<string>();
-			fileExtensionList.AddRange(Helper.LoadFileExtensions(appSettings));
-
-			List<string> fileTestDataList = new List<string>();
-			foreach (string fileExtension in fileExtensionList)
-			{
-				fileTestDataList.AddRange(Directory.GetFiles(TestDataPath, fileExtension));
-			} // END_FOREACH
-
-			foreach (string s in fileTestDataList)
-			{
-				File.Copy(s, Path.Combine(destinationPath, Path.GetFileName(s)), true);
-			}
-		} // END_METHOD
-
-
 		private void DEBUG_LoadSubFolderTestData(string TestDataPath, string DestinationPath)
 		{
 			DirectoryInfo dirInfo_TestData = new DirectoryInfo(TestDataPath);
@@ -713,143 +654,6 @@ namespace Push
 			}
 		} // END_METHOD
 
-		
-		// Hot-Key TWO...
-		private void DEBUG_PaleGreen()
-		{
-			string SourceTestData = @"C:\DEV_TESTDATA_2\Source";
-			string TargetTestData = @"C:\DEV_TESTDATA_2\Target";
-
-			// Validate Source and Target folders...
-			if (DEBUG_InitFolders())
-				return;
-
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
-			{
-				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
-				return;
-			}
-
-
-			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
-			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
-
-			//-----------------------------------------------------------------
-			// Clear the status list box...
-
-			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
-			LoadListView(lvTarget, appSettings.TargetPath);
-
-			FitListView(lvSource);
-			FitListView(lvTarget);
-		} // END_METHOD
-
-
-		// Hot-Key THREE...
-		private void DEBUG_PowderBlue()
-		{
-			//DEBUG_InitFolders();
-			string SourceTestData = @"C:\DEV_TESTDATA_3\Source";
-			string TargetTestData = @"C:\DEV_TESTDATA_3\Target";
-
-			// Validate Source and Target folders...
-			if (DEBUG_InitFolders())
-				return;
-
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
-			{
-				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
-				return;
-			}
-
-			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
-			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
-
-			//-----------------------------------------------------------------
-			// Clear the status list box...
-
-			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
-			LoadListView(lvTarget, appSettings.TargetPath);
-
-			FitListView(lvSource);
-			FitListView(lvTarget);
-
-		} // END_METHOD
-
-
-		// Hot-Key FOUR...
-		private void DEBUG_Pink()
-		{
-			string SourceTestData = @"C:\DEV_TESTDATA_4\Source";
-			string TargetTestData = @"C:\DEV_TESTDATA_4\Target";
-
-			// Validate Source and Target folders...
-			if (DEBUG_InitFolders())
-				return;
-
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
-			{
-				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
-				return;
-			}
-
-			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
-			//DEBUG_LoadFolderTestData(SourceTestData, appSettings.SourcePath);
-			//DEBUG_LoadFolderTestData(TargetTestData, appSettings.TargetPath);
-
-			//-----------------------------------------------------------------
-			// Clear the status list box...
-
-			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
-			LoadListView(lvTarget, appSettings.TargetPath);
-
-			FitListView(lvSource);
-			FitListView(lvTarget);
-		} // END_METHOD
-
-
-		// Hot-Key FIVE...
-		private void DEBUG_Orange()
-		{
-			string SourceTestData = @"C:\DEV_TESTDATA_5\Source";
-			string TargetTestData = @"C:\DEV_TESTDATA_5\Target";
-
-			// Validate Source and Target folders...
-			if (DEBUG_InitFolders())
-				return;
-
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
-			{
-				MessageBox.Show("The Debug test data is not available.\nDEBUG Hot-Key Canceled");
-				return;
-			}
-
-			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
-
-			//-----------------------------------------------------------------
-			// Clear the status list box...
-
-			// Hydrate the Source and Target Listboxes
-			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
-			LoadListView(lvTarget, appSettings.TargetPath);
-
-			FitListView(lvSource);
-			FitListView(lvTarget);
-		} // END_METHOD
-
 		#endregion		
 
 
@@ -871,29 +675,6 @@ namespace Push
 					case (Keys.ShiftKey | Keys.Space):
 						DEBUG_Red();
 						break;
-					// Enter 1 (ONE)...
-					case (Keys.LButton | Keys.ShiftKey | Keys.Space):
-						DEBUG_MistyRose();
-						break;
-					// Enter 2 (TWO)
-					case (Keys.RButton | Keys.ShiftKey | Keys.Space):
-						DEBUG_PaleGreen();
-						break;
-					// ENTER 3 (THREE)
-					case (Keys.LButton | Keys.RButton | Keys.ShiftKey | Keys.Space):
-						DEBUG_PowderBlue();
-						break;
-
-					// ENTER (FOUR)
-					case (Keys.MButton | Keys.ShiftKey | Keys.Space):
-						DEBUG_Pink();
-						break;
-
-					// ENTER (FIVE)
-					case (Keys.LButton | Keys.MButton | Keys.ShiftKey | Keys.Space):
-						DEBUG_Orange();
-						break;
-
 					default:
 						break;
 				} // END_SWITCH

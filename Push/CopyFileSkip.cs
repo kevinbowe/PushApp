@@ -24,7 +24,6 @@ namespace Push
 			string targetPath = appSettings.TargetPath;
 			string sourcePath = appSettings.SourcePath;
 			bool okToCopy = true;
-			ArrayList deleteSourceArrayList = new ArrayList();
 			int skipCount = 0;
 			int copyCount = 0;
 
