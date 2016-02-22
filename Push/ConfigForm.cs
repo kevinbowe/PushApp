@@ -45,8 +45,6 @@ namespace Push
 			// Save the original values in the appSettings...
 			originalAppSettings = new AppSettings
 			{
-				DisableSplashScreen = appSettings.DisableSplashScreen,
-				DisableXMLOptions = appSettings.DisableXMLOptions,
 				DuplicateFileAction = appSettings.DuplicateFileAction,
 				ExePath = appSettings.ExePath,
 				FileExtensionFilter = appSettings.FileExtensionFilter,

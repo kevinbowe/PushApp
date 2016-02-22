@@ -22,6 +22,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\RuleSet1.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,6 +37,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Green_Hand_04.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Itenso.Configuration">
@@ -129,12 +135,16 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir $(TargetDir)\Config\
-copy $(ProjectDir)\Config\FileExtensions.txt   $(TargetDir)\Config\FileExtensions.txt
-copy $(ProjectDir)\Config\PushSettingsDefault  $(TargetDir)\Config\PushSettingsDefault
-copy $(ProjectDir)\Config\PushIgnore.txt  $(TargetDir)\Config\PushIgnore.txt
-
-copy $(ProjectDir)\Config\PushIgnore.Default  $(TargetDir)\Config\PushIgnore.Default</PostBuildEvent>
+    <PostBuildEvent>mkdir $(TargetDir)Config
+copy $(ProjectDir)Config\FileExtensions.txt   $(TargetDir)Config\FileExtensions.txt
+copy $(ProjectDir)Config\PushSettingsDefault  $(TargetDir)Config\PushSettingsDefault
+copy $(ProjectDir)Config\PushIgnore.txt  $(TargetDir)Config\PushIgnore.txt
+copy $(ProjectDir)Config\PushREADME.pdf  $(TargetDir)Config\PushREADME.pdf
+copy $(ProjectDir)Config\PushIgnore.Default  $(TargetDir)Config\PushIgnore.Default</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
