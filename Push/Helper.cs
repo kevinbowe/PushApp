@@ -154,29 +154,23 @@ namespace Push
 
 		public static void CreateTargetPaths(string targetPath, string uniqueSourcePath)
 		{
-			if (string.IsNullOrEmpty(uniqueSourcePath)) return;
-
-			// Build the path to check and create...
-
+			if (string.IsNullOrEmpty(uniqueSourcePath)) 
+				return;
+			
 			// Grab the next folder in the pathFragment...
-			string nextFolderArray = uniqueSourcePath.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries).First();
-
-			// Remove the the nextFolder from the uniqueSourcePath...
-			Regex regEx = new Regex(Regex.Escape("\\" + nextFolderArray));
-			uniqueSourcePath = regEx.Replace(uniqueSourcePath, string.Empty, 1);
-
+			string nextFolder = uniqueSourcePath.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries).First();
 			// Append next folder to the targetPath...
-			targetPath = targetPath + "\\" + nextFolderArray;
+			targetPath = targetPath + "\\" + nextFolder;
+
+			string s = uniqueSourcePath.Replace("\\", "");
+			uniqueSourcePath = s.Replace(nextFolder, "");
 
 			if (!Directory.Exists(targetPath))
 			{
-				// If we get here, the path doesn't exist, so create it...
-
 				Directory.CreateDirectory(targetPath);
 			}
 
 			CreateTargetPaths(targetPath, uniqueSourcePath);
-
 			return;
 
 		} // END_METHOD
@@ -204,9 +198,7 @@ namespace Push
 				uniqueSourcePathList.Add(sp);
 			}
 			return uniqueSourcePathList;
-		}
+		} // END_METHOD
 
-
-
-	}
+	} 
 }
