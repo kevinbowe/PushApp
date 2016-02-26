@@ -16,6 +16,7 @@ namespace Push
 {
 	public partial class MainForm : Form
 	{
+
 		private ListViewColumnSorter listViewColumnSorter;
 		private readonly FormSettings formSettings;
 		public AppSettings appSettings;
@@ -564,27 +565,32 @@ namespace Push
 
 		#region [ DEBUG BUTTONS ]
 
+
 		// Hot-Key ZERO
 		private void DEBUG_Red()
 		{
-			string SourceTestData = @"C:\DEV_TESTDATA_0\Source";
-			string TargetTestData = @"C:\DEV_TESTDATA_0\Target";
-			
-			// Validate the test data folders... 
-			if (!Directory.Exists(SourceTestData) || !Directory.Exists(TargetTestData))
+			var dirDic = new Dictionary<string,string>()
 			{
-				MessageBox.Show("Debug folders are not available: \n\n\tC:\\DEV_TESTDATA_0\\Source \n\tC:\\DEV_TESTDATA_0\\Target", "DEBUG Hot-Key Canceled");
-				return;
-			}
+				{ "SRC_DATA", @"C:\Program Files\Push\DEBUG\DATA\SRC"},
+				{"DEST_DATA", @"C:\Program Files\Push\DEBUG\DATA\DEST"},
+				{      "SRC", @"C:\Program Files\Push\DEBUG\SRC"},
+				{     "DEST", @"C:\Program Files\Push\DEBUG\DEST"}
+			};
 
-			if (DEBUG_InitFolders())
+			// Make sure the required degug folders exist... 
+			if (!IsValidDebugDependencies(dirDic))
 				return;
+			
+			// Delete any existing data in the source and target filders...
+			DEBUG_InitFolders(dirDic);
 
-			DEBUG_LoadSubFolderTestData(SourceTestData, appSettings.SourcePath);
-			DEBUG_LoadSubFolderTestData(TargetTestData, appSettings.TargetPath);
+			DEBUG_LoadSubFolderTestData(dirDic["SRC_DATA"], dirDic["SRC"]);
+			DEBUG_LoadSubFolderTestData(dirDic["DEST_DATA"], dirDic["DEST"]);
 
 			//-----------------------------------------------------------------
-			// Clear the status list box...
+			//	NOTE:
+			//	The LoadListView and FitListView methods use the appSettings 
+			//	properties --NOT-- the DEBUG directories...
 
 			// Hydrate the Source and Target Listboxes
 			LoadListView(lvSource, appSettings.SourcePath, ignorePattern);
@@ -595,18 +601,28 @@ namespace Push
 
 		} // END_METHOD
 
-	
-		private bool DEBUG_InitFolders()
-		{
-			// Validate the source and target folders...
-			if (!Directory.Exists(appSettings.SourcePath) || !Directory.Exists(appSettings.TargetPath))
-			{
-				MessageBox.Show("The Source or Target Path do NOT Exist.\nDEBUG Hot-Key Canceled");
-				return true;
-			}
 
+		private bool IsValidDebugDependencies(Dictionary<string,string> dirDic)
+		{
+			// Validate the test data folders... 
+			foreach (string folder in dirDic.Values)
+			{
+				if (Directory.Exists(folder)) continue;
+
+				// If we get here, one of the folders doesn't exist...
+				MessageBox.Show(string.Format(
+					"This folder is required for Debug Hot-Keys to function. \n\t{0}", folder),
+					"Debug Hot-Key Canceled");
+				return false;
+			}
+			return true;
+		} // END_METHOD
+
+
+		private void DEBUG_InitFolders(Dictionary<string, string> dirDic)
+		{
 			// Delete all files and subfolders in the source folder...
-			DirectoryInfo directoryInfo = new DirectoryInfo(appSettings.SourcePath);
+			DirectoryInfo directoryInfo = new DirectoryInfo(dirDic["SRC"]);
 
 			foreach (System.IO.FileInfo file in directoryInfo.GetFiles())
 				file.Delete();
@@ -615,7 +631,7 @@ namespace Push
 				subDirectory.Delete(true);
 			
 			// Delete all files and subfolders in the folder...
-			directoryInfo = new DirectoryInfo(appSettings.TargetPath);
+			directoryInfo = new DirectoryInfo(dirDic["DEST"]);
 
 			foreach (System.IO.FileInfo file in directoryInfo.GetFiles())
 				file.Delete();
@@ -623,7 +639,6 @@ namespace Push
 			foreach (System.IO.DirectoryInfo subDirectory in directoryInfo.GetDirectories())
 				subDirectory.Delete(true);
 
-			return false;
 		} // END_METHOD
 
 		
